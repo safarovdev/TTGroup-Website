@@ -9,14 +9,14 @@ export function Hero() {
 
   return (
     <section className="container grid lg:grid-cols-2 gap-12 items-center py-20 md:py-32">
-      <div className="flex flex-col gap-6 items-start">
+      <div className="flex flex-col gap-6 items-center lg:items-start text-center lg:text-left">
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter !leading-tight">
           Ваш путь по Узбекистану начинается здесь
         </h1>
-        <p className="text-lg text-muted-foreground max-w-xl">
+        <p className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0">
           Профессиональные пассажирские перевозки: от индивидуальных встреч в аэропорту до групповых туров.
         </p>
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap justify-center lg:justify-start w-full">
           <Button asChild size="lg">
             <Link href="#booking">
               Забронировать <ArrowRight className="ml-2 h-5 w-5" />
@@ -34,7 +34,7 @@ export function Hero() {
             alt={heroImage.description}
             width={1200}
             height={800}
-            className="rounded-3xl object-cover shadow-2xl transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
+            className="rounded-2xl object-cover shadow-2xl transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
             data-ai-hint={heroImage.imageHint}
             priority
           />

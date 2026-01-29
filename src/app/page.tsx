@@ -7,7 +7,7 @@ import { Booking } from '@/components/sections/booking';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden">
+    <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-grow">
         <Hero />
