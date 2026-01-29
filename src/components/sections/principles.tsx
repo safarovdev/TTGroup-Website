@@ -33,7 +33,7 @@ export function Principles() {
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {principles.map((p, i) => (
-            <div key={i} className="text-center p-8 bg-card border rounded-2xl flex flex-col items-center shadow-lg">
+            <div key={i} className="text-center p-8 bg-card border rounded-lg flex flex-col items-center shadow-lg">
               <div className="bg-primary/10 p-4 rounded-full">
                 {p.icon}
               </div>

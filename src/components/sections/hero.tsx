@@ -5,17 +5,9 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useEffect } from "react";
 
 export function Hero() {
   const heroImage = PlaceHolderImages.find((img) => img.id === "hero-lixiang-l7");
-
-  useEffect(() => {
-    if (heroImage) {
-      console.log('Attempting to load hero image with data:', heroImage);
-    }
-  }, [heroImage]);
-
 
   return (
     <section className="relative w-full h-[70vh] md:h-[90vh] flex items-center justify-start text-white">
@@ -29,10 +21,10 @@ export function Hero() {
           priority
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent" />
       <div className="container relative z-10 text-left">
         <div className="max-w-2xl">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter !leading-tight drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter !leading-tight drop-shadow-lg">
             Ваш путь по Узбекистану начинается здесь
           </h1>
           <p className="mt-4 text-lg md:text-xl text-white/90 max-w-2xl drop-shadow-md">

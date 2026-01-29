@@ -68,7 +68,7 @@ export function Fleet() {
         {vehicles.map((vehicle) => {
           const image = PlaceHolderImages.find((img) => img.id === vehicle.id);
           return (
-            <Card key={vehicle.id} className="flex flex-col rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+            <Card key={vehicle.id} className="flex flex-col rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
               {image && (
                 <div className="relative h-48">
                   <Image

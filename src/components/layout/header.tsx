@@ -25,9 +25,9 @@ export function Header() {
     <header className="w-full border-b bg-background">
       <div className="container flex h-20 items-center">
         <Link href="/" className="mr-6 flex items-center gap-2">
-          <span className="font-black text-xl uppercase tracking-wider">Silk Road Rides</span>
+          <span className="font-extrabold text-xl uppercase tracking-wider">Silk Road Rides</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -64,7 +64,7 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="left">
               <Link href="/" className="mr-6 flex items-center gap-2 mb-8">
-                 <span className="font-black text-xl uppercase tracking-wider">Silk Road Rides</span>
+                 <span className="font-extrabold text-xl uppercase tracking-wider">Silk Road Rides</span>
               </Link>
               <nav className="flex flex-col gap-6 text-lg font-medium">
                 {navLinks.map((link) => (
