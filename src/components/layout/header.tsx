@@ -23,12 +23,12 @@ export function Header() {
 
   return (
     <header className="w-full border-b bg-background">
-      <div className="container flex h-20 items-center">
-        <Link href="/" className="mr-6 flex items-center gap-2">
+      <div className="container relative flex h-20 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
           <span className="hidden font-extrabold text-xl uppercase tracking-wider md:inline">TourEast Transport Group</span>
           <span className="font-extrabold text-xl uppercase tracking-wider md:hidden">TTGGROUP</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -39,7 +39,7 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-1 text-sm">
