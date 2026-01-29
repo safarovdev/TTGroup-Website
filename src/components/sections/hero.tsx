@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -6,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   const heroImage = PlaceHolderImages.find((img) => img.id === "hero-lixiang-l7");
+  console.log("Attempting to load hero image with data:", heroImage);
 
   return (
     <section className="relative w-full h-[70vh] md:h-[90vh] flex items-center justify-start text-white">
@@ -17,6 +20,12 @@ export function Hero() {
           className="object-cover -z-10"
           data-ai-hint={heroImage.imageHint}
           priority
+          onError={(e) => {
+            console.error('Image Error: Failed to load image.', 'SRC:', (e.target as HTMLImageElement).src);
+          }}
+          onLoad={() => {
+            console.log('Image successfully loaded.');
+          }}
         />
       )}
       <div className="absolute inset-0 bg-black/50" />
