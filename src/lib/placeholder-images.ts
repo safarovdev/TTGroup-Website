@@ -9,7 +9,7 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     {
       "id": "hero-lixiang-l7",
       "description": "Белый внедорожник на фоне горного пейзажа",
-      "imageUrl": "/images/hero-background.jpg",
+      "imageUrl": "/images/hero-background.jpg?v=2",
       "imageHint": "suv mountains"
     },
     {
