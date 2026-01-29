@@ -1,49 +1,81 @@
-import { Car, UserCheck, Plane } from "lucide-react";
-
-const features = [
-  {
-    icon: <Car className="w-8 h-8 text-primary" />,
-    text: "Премиальные автомобили",
-  },
-  {
-    icon: <UserCheck className="w-8 h-8 text-primary" />,
-    text: "Водители с безупречным сервисом",
-  },
-  {
-    icon: <Plane className="w-8 h-8 text-primary" />,
-    text: "Трансферы, встречи, индивидуальные маршруты",
-  },
-];
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export function Principles() {
+  const topImage = PlaceHolderImages.find((img) => img.id === "location-samarkand");
+  const bottomImage = PlaceHolderImages.find((img) => img.id === "location-bukhara");
+
+  const stats = [
+    {
+      icon: '🚘',
+      text: "Премиальные автомобили",
+    },
+    {
+      icon: '👔',
+      text: "Водители с безупречным сервисом",
+    },
+    {
+      icon: '✈️',
+      text: "Трансферы, встречи, индивидуальные маршруты",
+    },
+  ];
+
   return (
-    <section id="services" className="bg-background py-20 md:py-28">
+    <section id="about" className="py-20 md:py-28 bg-background">
       <div className="container">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Добро пожаловать в TourEast Transport Group
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-              Мы создаём комфортные и безопасные поездки по всему Узбекистану — для тех, кто ценит уровень.
-            </p>
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          
+          <div className="relative h-96 lg:h-[500px]">
+            {bottomImage && (
+              <Image
+                src={bottomImage.imageUrl}
+                alt={bottomImage.description}
+                data-ai-hint={bottomImage.imageHint}
+                width={480}
+                height={320}
+                className="object-cover shadow-2xl absolute bottom-0 left-0"
+              />
+            )}
+            {topImage && (
+               <Image
+                src={topImage.imageUrl}
+                alt={topImage.description}
+                data-ai-hint={topImage.imageHint}
+                width={360}
+                height={240}
+                className="object-cover shadow-2xl absolute top-0 right-0 border-8 border-background"
+              />
+            )}
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-8 pt-8">
-            {features.map((feature, index) => (
-              <div key={index} className="flex flex-col items-center text-center gap-4">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  {feature.icon}
+          <div className="space-y-8">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Добро пожаловать в TourEast Transport Group
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Мы создаём комфортные и безопасные поездки по всему Узбекистану — для тех, кто ценит уровень. TourEast Transport Group — ваш надёжный партнёр в мире премиальных перевозок.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+               <Button asChild size="lg" className="font-bold">
+                 <Link href="#booking">Бронировать онлайн</Link>
+               </Button>
+               <Button asChild variant="outline" size="lg" className="font-bold">
+                 <Link href="#booking">Связаться с нами</Link>
+               </Button>
+            </div>
+             <div className="border-t pt-8 mt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                    {stats.map((stat, index) => (
+                    <div key={index} className="text-center">
+                        <div className="text-4xl mb-2">{stat.icon}</div>
+                        <p className="font-semibold text-foreground uppercase text-sm tracking-wider">{stat.text}</p>
+                    </div>
+                    ))}
                 </div>
-                <p className="font-semibold text-base">{feature.text}</p>
-              </div>
-            ))}
-          </div>
-          
-          <div className="pt-8">
-             <p className="text-lg font-medium text-foreground">
-                TourEast Transport Group — ваш надёжный партнёр в мире премиальных перевозок.
-             </p>
+            </div>
           </div>
         </div>
       </div>
