@@ -8,9 +8,9 @@ export type ImagePlaceholder = {
 export const PlaceHolderImages: ImagePlaceholder[] = [
     {
       "id": "hero-lixiang-l7",
-      "description": "A white SUV on a road in front of a historic building in Uzbekistan at sunset.",
-      "imageUrl": "https://storage.googleapis.com/studiogood/99245100-3601-4475-b04f-a7b3b3a64c45.jpeg",
-      "imageHint": "car historic"
+      "description": "Белый внедорожник на фоне горного пейзажа",
+      "imageUrl": "https://i.ibb.co/NT4Tf7D/image.png",
+      "imageHint": "suv mountains"
     },
     {
       "id": "fleet-lixiang-l7",
