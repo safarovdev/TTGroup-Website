@@ -14,7 +14,7 @@ export function Hero() {
           src={heroImage.imageUrl}
           alt={heroImage.description}
           fill
-          className="object-cover"
+          className="object-cover -z-10"
           data-ai-hint={heroImage.imageHint}
           priority
         />
