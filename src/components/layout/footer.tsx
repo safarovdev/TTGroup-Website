@@ -13,7 +13,7 @@ export function Footer() {
       <div className="container py-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
-            <p className="font-bold text-lg">Silk Road Rides</p>
+            <p className="font-bold text-lg">TourEast Transport Group</p>
             <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} Все права защищены.</p>
           </div>
           <div className="flex flex-col items-center md:items-end gap-4">

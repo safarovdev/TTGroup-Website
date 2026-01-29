@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'Silk Road Rides | Premium Transport in Uzbekistan',
+  title: 'TourEast Transport Group | Premium Transport in Uzbekistan',
   description: 'Professional passenger transport across Uzbekistan. Airport transfers, tours, and corporate travel.',
 };
 
