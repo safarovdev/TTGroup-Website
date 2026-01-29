@@ -8,7 +8,7 @@ export function Hero() {
   const heroImage = PlaceHolderImages.find((img) => img.id === "hero-lixiang-l7");
 
   return (
-    <section className="container grid lg:grid-cols-2 gap-12 items-center py-20 md:py-32">
+    <section className="container grid lg:grid-cols-2 gap-12 items-center py-20 md:py-28">
       <div className="flex flex-col gap-6 items-center lg:items-start text-center lg:text-left">
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter !leading-tight">
           Ваш путь по Узбекистану начинается здесь

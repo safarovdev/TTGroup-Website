@@ -182,7 +182,7 @@ export function Booking() {
                       <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4"
+                        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                       >
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
