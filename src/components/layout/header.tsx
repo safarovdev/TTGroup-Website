@@ -13,8 +13,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
 const navLinks = [
+  { href: "#services", label: "О нас" },
   { href: "#fleet", label: "Автопарк" },
-  { href: "#services", label: "Наши принципы" },
   { href: "#booking", label: "Контакты" },
 ];
 

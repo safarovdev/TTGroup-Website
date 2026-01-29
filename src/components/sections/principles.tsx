@@ -1,46 +1,50 @@
-import { ShieldCheck, Clock, Award } from "lucide-react";
+import { Car, UserCheck, Plane } from "lucide-react";
 
-const principles = [
+const features = [
   {
-    icon: <ShieldCheck className="w-10 h-10 text-primary" />,
-    title: "Безопасность",
-    description: "Наши водители — профессионалы с многолетним стажем. Все автомобили проходят регулярный техосмотр.",
+    icon: <Car className="w-8 h-8 text-primary" />,
+    text: "Премиальные автомобили",
   },
   {
-    icon: <Clock className="w-10 h-10 text-primary" />,
-    title: "Пунктуальность",
-    description: "Мы ценим ваше время. Подача автомобиля в строго оговоренное время — наш главный приоритет.",
+    icon: <UserCheck className="w-8 h-8 text-primary" />,
+    text: "Водители с безупречным сервисом",
   },
   {
-    icon: <Award className="w-10 h-10 text-primary" />,
-    title: "Профессионализм",
-    description: "Индивидуальный подход к каждому клиенту, чистые салоны и вежливые водители, знающие города.",
+    icon: <Plane className="w-8 h-8 text-primary" />,
+    text: "Трансферы, встречи, индивидуальные маршруты",
   },
 ];
 
 export function Principles() {
   return (
-    <section id="services" className="bg-muted/50 py-20 md:py-28">
+    <section id="services" className="bg-background py-20 md:py-28">
       <div className="container">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-primary font-bold">НАШИ ПРИНЦИПЫ</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight">
-            24/7. Надежность и комфорт в каждой поездке
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Мы не просто перевозим вас из точки А в точку Б. Мы заботимся о том, чтобы ваше путешествие было безопасным, своевременным и максимально комфортным.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {principles.map((p, i) => (
-            <div key={i} className="text-center p-8 bg-card border rounded-lg flex flex-col items-center shadow-lg">
-              <div className="bg-primary/10 p-4 rounded-full">
-                {p.icon}
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Добро пожаловать в TourEast Transport Group
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+              Мы создаём комфортные и безопасные поездки по всему Узбекистану — для тех, кто ценит уровень.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-8 pt-8">
+            {features.map((feature, index) => (
+              <div key={index} className="flex flex-col items-center text-center gap-4">
+                <div className="bg-primary/10 p-4 rounded-full">
+                  {feature.icon}
+                </div>
+                <p className="font-semibold text-base">{feature.text}</p>
               </div>
-              <h3 className="text-xl font-bold mt-6">{p.title}</h3>
-              <p className="text-muted-foreground mt-2">{p.description}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          <div className="pt-8">
+             <p className="text-lg font-medium text-foreground">
+                TourEast Transport Group — ваш надёжный партнёр в мире премиальных перевозок.
+             </p>
+          </div>
         </div>
       </div>
     </section>
