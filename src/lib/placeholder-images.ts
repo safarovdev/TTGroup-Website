@@ -8,9 +8,9 @@ export type ImagePlaceholder = {
 export const PlaceHolderImages: ImagePlaceholder[] = [
     {
       "id": "hero-lixiang-l7",
-      "description": "A white SUV on a road in front of a historic building in Uzbekistan at sunset.",
-      "imageUrl": "https://storage.googleapis.com/studiogood/99245100-3601-4475-b04f-a7b3b3a64c45.jpeg",
-      "imageHint": "car historic"
+      "description": "Registan square in Samarkand.",
+      "imageUrl": "https://images.unsplash.com/photo-1567309176066-e63caed09e0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxoaXN0b3JpYyUyMHNxdWFyZXxlbnwwfHx8fDE3Njk2ODQwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "historic square"
     },
     {
       "id": "fleet-lixiang-l7",
@@ -45,7 +45,7 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     {
       "id": "location-samarkand",
       "description": "Registan square in Samarkand.",
-      "imageUrl": "https://images.unsplash.com/photo-1567309176066-e63caed09e0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxoaXN0b3JpYyUyMHNxdWFyZXxlbnwwfHx8fDE3Njk2ODQwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://storage.googleapis.com/studiogood/99245100-3601-4475-b04f-a7b3b3a64c45.jpeg",
       "imageHint": "historic square"
     }
   ];
