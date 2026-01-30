@@ -1,5 +1,6 @@
 export type ImagePlaceholder = {
   id: string;
+  name: string;
   description: string;
   imageUrl: string;
   imageHint: string;
@@ -8,44 +9,93 @@ export type ImagePlaceholder = {
 export const PlaceHolderImages: ImagePlaceholder[] = [
     {
       "id": "hero-lixiang-l7",
+      "name": "LiXiang L7",
       "description": "Белый внедорожник на фоне горного пейзажа",
       "imageUrl": "/images/hero-background.jpg?v=2",
       "imageHint": "suv mountains"
     },
     {
-      "id": "fleet-lixiang-l7",
-      "description": "Front view of a white LiXiang L7.",
-      "imageUrl": "https://images.unsplash.com/photo-1758411898215-fd378b500042?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3aGl0ZSUyMFNVViUyMGZyb250fGVufDB8fHx8MTc2OTY4NDAwNXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "white SUV front"
-    },
-    {
-      "id": "fleet-hyundai-h1",
-      "description": "A silver Hyundai H1 van.",
-      "imageUrl": "https://images.unsplash.com/photo-1762927544684-fd91257fd0fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzaWx2ZXIlMjB2YW58ZW58MHx8fHwxNzY5Njg0MDA1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "silver van"
-    },
-    {
-      "id": "fleet-mercedes-v",
-      "description": "A black Mercedes-Benz V-Class van.",
-      "imageUrl": "https://images.unsplash.com/photo-1747594079379-2614a58945f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxibGFjayUyMGx1eHVyeSUyMHZhbnxlbnwwfHx8fDE3Njk2ODQwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "black luxury van"
-    },
-    {
-      "id": "fleet-toyota-hiace",
-      "description": "A white Toyota Hiace van.",
-      "imageUrl": "https://images.unsplash.com/photo-1610446491000-8952763f1b7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3aGl0ZSUyMHBhc3NlbmdlciUyMHZhbnxlbnwwfHx8fDE3Njk2ODQwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "white passenger van"
-    },
-    {
       "id": "location-bukhara",
+      "name": "Bukhara",
       "description": "Ark of Bukhara fortress at sunset.",
-      "imageUrl": "https://images.unsplash.com/photo-1634630487113-14fdb677d2a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhbmNpZW50JTIwZm9ydHJlc3N8ZW58MHx8fHwxNzY5Njg0MDA1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/images/about-1.jpg?v=2",
       "imageHint": "ancient fortress"
     },
     {
       "id": "location-samarkand",
+      "name": "Samarkand",
       "description": "Registan square in Samarkand.",
-      "imageUrl": "https://images.unsplash.com/photo-1567309176066-e63caed09e0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxoaXN0b3JpYyUyMHNxdWFyZXxlbnwwfHx8fDE3Njk2ODQwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/images/about-2.jpg?v=2",      
       "imageHint": "historic square"
+    },
+    {
+      "id": "fleet-lixiang-l7",
+      "name": "LiXiang L7",
+      "description": "Front view of a white LiXiang L7.",
+      "imageUrl": "https://picsum.photos/seed/lixiang/600/400",
+      "imageHint": "white suv"
+    },
+    {
+      "id": "fleet-mercedes-s500",
+      "name": "Mercedes S500",
+      "description": "A luxury black Mercedes S500 sedan.",
+      "imageUrl": "https://picsum.photos/seed/s500/600/400",
+      "imageHint": "black sedan"
+    },
+    {
+      "id": "fleet-chevrolet-tahoe",
+      "name": "Chevrolet Tahoe",
+      "description": "A large black Chevrolet Tahoe SUV.",
+      "imageUrl": "https://picsum.photos/seed/tahoe/600/400",
+      "imageHint": "black suv"
+    },
+    {
+      "id": "fleet-kia-carnival",
+      "name": "Kia Carnival",
+      "description": "A modern white Kia Carnival minivan.",
+      "imageUrl": "https://picsum.photos/seed/carnival/600/400",
+      "imageHint": "white minivan"
+    },
+    {
+      "id": "fleet-hyundai-staria",
+      "name": "Hyundai Staria",
+      "description": "A futuristic silver Hyundai Staria van.",
+      "imageUrl": "https://picsum.photos/seed/staria/600/400",
+      "imageHint": "silver van"
+    },
+    {
+      "id": "fleet-yutong-bus",
+      "name": "Yutong Bus",
+      "description": "A large white Yutong tour bus.",
+      "imageUrl": "https://picsum.photos/seed/yutong/600/400",
+      "imageHint": "tour bus"
+    },
+    {
+      "id": "fleet-mercedes-sprinter",
+      "name": "Mercedes Sprinter",
+      "description": "A white Mercedes Sprinter passenger van.",
+      "imageUrl": "https://picsum.photos/seed/sprinter/600/400",
+      "imageHint": "white van"
+    },
+    {
+      "id": "fleet-chevrolet-cobalt",
+      "name": "Chevrolet Cobalt",
+      "description": "A silver Chevrolet Cobalt sedan.",
+      "imageUrl": "https://picsum.photos/seed/cobalt/600/400",
+      "imageHint": "silver sedan"
+    },
+    {
+      "id": "fleet-chevrolet-malibu",
+      "name": "Chevrolet Malibu 2",
+      "description": "A modern white Chevrolet Malibu sedan.",
+      "imageUrl": "https://picsum.photos/seed/malibu/600/400",
+      "imageHint": "white sedan"
+    },
+    {
+      "id": "fleet-kia-k5",
+      "name": "Kia K5",
+      "description": "A stylish grey Kia K5 sedan.",
+      "imageUrl": "https://picsum.photos/seed/k5/600/400",
+      "imageHint": "grey sedan"
     }
   ];

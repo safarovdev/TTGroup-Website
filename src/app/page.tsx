@@ -4,6 +4,7 @@ import { Hero } from '@/components/sections/hero';
 import { Fleet } from '@/components/sections/fleet';
 import { Principles } from '@/components/sections/principles';
 import { Booking } from '@/components/sections/booking';
+import { Stats } from '@/components/sections/stats';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <Principles />
+        <Stats />
         <Fleet />
         <Booking />
       </main>
