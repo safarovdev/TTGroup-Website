@@ -21,24 +21,28 @@ export function Principles() {
           
           <div className="relative h-96 lg:h-[500px]">
             {bottomImage && (
-              <Image
-                src={bottomImage.imageUrl}
-                alt={bottomImage.description}
-                data-ai-hint={bottomImage.imageHint}
-                width={480}
-                height={320}
-                className="object-cover shadow-2xl absolute bottom-0 left-0 rounded-md"
-              />
+              <div className="absolute bottom-0 left-0 w-[65%] h-[65%] md:w-[480px] md:h-[320px] rounded-md shadow-2xl overflow-hidden">
+                <Image
+                  src={bottomImage.imageUrl}
+                  alt={bottomImage.description}
+                  data-ai-hint={bottomImage.imageHint}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 65vw, 480px"
+                />
+              </div>
             )}
             {topImage && (
-               <Image
-                src={topImage.imageUrl}
-                alt={topImage.description}
-                data-ai-hint={topImage.imageHint}
-                width={360}
-                height={240}
-                className="object-cover shadow-2xl absolute top-0 right-0 border-8 border-background rounded-md"
-              />
+              <div className="absolute top-0 right-0 w-[55%] h-[55%] md:w-[360px] md:h-[240px] rounded-md shadow-2xl overflow-hidden border-8 border-background">
+                <Image
+                  src={topImage.imageUrl}
+                  alt={topImage.description}
+                  data-ai-hint={topImage.imageHint}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 55vw, 360px"
+                />
+              </div>
             )}
           </div>
 
