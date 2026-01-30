@@ -97,5 +97,12 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
       "description": "A stylish grey Kia K5 sedan.",
       "imageUrl": "https://picsum.photos/seed/k5/600/400",
       "imageHint": "grey sedan"
+    },
+    {
+      "id": "stats-background",
+      "name": "Abstract background for stats",
+      "description": "Abstract colorful shapes background",
+      "imageUrl": "https://picsum.photos/seed/statsbg/512/512",
+      "imageHint": "abstract colorful"
     }
   ];
