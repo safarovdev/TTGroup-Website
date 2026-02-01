@@ -31,7 +31,7 @@ export function Stats() {
     return (
         <section id="stats" className="py-20 md:py-28 bg-muted/50 border-y">
             <div className="container">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div className="grid lg:grid-cols-2 gap-16 items-start">
                     {/* Left Column: Text */}
                     <div className="space-y-8 text-center lg:text-left">
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight">TTGroup в цифрах</h2>
