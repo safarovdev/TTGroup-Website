@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import React from 'react';
@@ -6,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 
 const tripScenarios = [
   {
@@ -35,7 +37,7 @@ const tripScenarios = [
   }
 ];
 
-const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria"];
+const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
 const popularVehicles = popular_ids
   .map(id => PlaceHolderImages.find(v => v.id === id))
   .filter((v): v is NonNullable<typeof v> => v !== undefined);
@@ -110,6 +112,20 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
 };
 
 export function Fleet() {
+  const [api, setApi] = React.useState<CarouselApi>();
+
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [api]);
+  
   return (
     <section id="fleet" className="py-20 md:py-28">
       <div className="container">
@@ -120,7 +136,7 @@ export function Fleet() {
                     Наши самые востребованные автомобили 2024 года, которые сочетают в себе комфорт, стиль и надежность.
                 </p>
             </div>
-            <Carousel opts={{ loop: true }} className="w-full max-w-6xl mx-auto mt-12">
+            <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-6xl mx-auto mt-12">
                 <CarouselContent>
                     {popularVehicles.map(vehicle => (
                         <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
