@@ -11,21 +11,21 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
       "id": "hero-lixiang-l7",
       "name": "LiXiang L7",
       "description": "Белый внедорожник на фоне горного пейзажа",
-      "imageUrl": "/images/hero-background.jpg?v=2",
+      "imageUrl": "/images/h-background.jpg",
       "imageHint": "suv mountains"
     },
     {
       "id": "location-bukhara",
       "name": "Bukhara",
       "description": "Ark of Bukhara fortress at sunset.",
-      "imageUrl": "/images/about-1.jpg?v=2",
+      "imageUrl": "/images/about-1.jpg",
       "imageHint": "ancient fortress"
     },
     {
       "id": "location-samarkand",
       "name": "Samarkand",
       "description": "Registan square in Samarkand.",
-      "imageUrl": "/images/about-2.jpg?v=2",      
+      "imageUrl": "/images/about-2.jpg",      
       "imageHint": "historic square"
     },
     {
@@ -102,7 +102,7 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
       "id": "stats-background",
       "name": "Abstract background for stats",
       "description": "Abstract colorful shapes background",
-      "imageUrl": "https://picsum.photos/seed/statsbg/512/512",
+      "imageUrl": "/images/stats.jpg",
       "imageHint": "abstract colorful"
     }
   ];
