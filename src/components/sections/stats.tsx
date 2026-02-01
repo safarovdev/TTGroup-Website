@@ -33,12 +33,12 @@ export function Stats() {
             <div className="container">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Left Column: Text */}
-                    <div className="space-y-6 text-center lg:text-left">
-                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight">TTGroup в цифрах</h2>
-                        <p className="text-lg text-muted-foreground">
+                    <div className="space-y-8 text-center lg:text-left">
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight">TTGroup в цифрах</h2>
+                        <p className="text-xl text-muted-foreground">
                             Наша надежность и качество, подтвержденные фактами. Мы гордимся нашим сервисом и предлагаем вам лучшие условия для комфортных и безопасных поездок.
                         </p>
-                        <p className="text-muted-foreground">
+                        <p className="text-lg text-muted-foreground">
                            Наш автопарк постоянно обновляется, водители проходят строгий отбор, а география наших услуг покрывает все популярные туристические и деловые направления в Узбекистане.
                         </p>
                     </div>
@@ -88,7 +88,7 @@ export function Stats() {
                                     <StatItem stat={seatsStat} />
                                     <Separator />
                                     <StatItem stat={clientsStat} />
-                                </CardContent>
+                                 </CardContent>
                             </Card>
                              <Card className="absolute top-0 right-0 w-80 shadow-2xl rounded-2xl bg-card/80 backdrop-blur-sm">
                                 <CardContent className="p-8 space-y-6">
