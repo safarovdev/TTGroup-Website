@@ -91,6 +91,12 @@ export function FleetIntro() {
         setIsPaused(true);
     };
 
+    const handleCategoryClick = (index: number) => {
+        setActiveCategoryIndex(index);
+        setActiveVehicleIndex(0);
+        setIsPaused(true);
+    };
+
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
 
     return (
@@ -114,11 +120,12 @@ export function FleetIntro() {
                             {fleetCategories.map((category, index) => (
                                 <div
                                     key={category.name}
+                                    onClick={() => handleCategoryClick(index)}
                                     className={cn(
                                         'p-6 rounded-2xl text-left transition-all duration-500 border-2',
                                         activeCategoryIndex === index
-                                            ? 'bg-primary text-primary-foreground border-primary shadow-lg'
-                                            : 'bg-card border-transparent'
+                                            ? 'bg-primary text-primary-foreground border-primary shadow-lg cursor-default'
+                                            : 'bg-card border-transparent hover:border-primary/20 hover:bg-primary/5 cursor-pointer'
                                     )}
                                 >
                                     <p className="font-bold text-xl">{category.name}</p>
