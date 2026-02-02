@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Calendar, Snowflake, ShieldCheck, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -11,22 +11,22 @@ const fleetCategories = [
     { 
         name: 'Премиум & VIP', 
         description: 'Для деловых встреч и гостей, ценящих эксклюзивный комфорт.',
-        vehicleId: 'fleet-lixiang-l7' 
+        vehicle_ids: ["fleet-lixiang-l7", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500", "fleet-toyota-lc-200", "fleet-haval-h6", "fleet-haval-dargo", "fleet-byd-champion", "fleet-aiqar-eq7"]
     },
     { 
         name: 'Комфорт & Стандарт', 
         description: 'Оптимальный выбор для ежедневных поездок и туров по городу.',
-        vehicleId: 'fleet-kia-k5' 
+        vehicle_ids: ["fleet-chevrolet-malibu-2", "fleet-kia-k5", "fleet-kia-sportage", "fleet-chevrolet-captiva-5", "fleet-chevrolet-cobalt", "fleet-jac-j7"]
     },
     { 
         name: 'Минивэны', 
         description: 'Идеально для семейных путешествий и небольших делегаций.',
-        vehicleId: 'fleet-hyundai-staria'
+        vehicle_ids: ["fleet-hyundai-staria", "fleet-kia-carnival", "fleet-hyundai-starex", "fleet-kia-carens", "fleet-baw-m7", "fleet-jac-refine-m4", "fleet-mercedes-vito"]
     },
     { 
         name: 'Автобусы', 
         description: 'Решения для корпоративных выездов, экскурсий и больших групп.',
-        vehicleId: 'fleet-mercedes-sprinter'
+        vehicle_ids: ["fleet-mercedes-sprinter", "fleet-toyota-hiace", "fleet-foton-view-cs2", "fleet-joylong", "fleet-jac-sunray", "fleet-setra-minibus", "fleet-yutong-bus"]
     },
 ];
 
@@ -54,16 +54,50 @@ const standards = [
 ];
 
 export function FleetIntro() {
-    const [activeCategoryId, setActiveCategoryId] = useState(fleetCategories[0].vehicleId);
+    const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+    const [activeVehicleIndex, setActiveVehicleIndex] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
 
-    const activeVehicle = useMemo(() => {
-        return Vehicles.find(v => v.id === activeCategoryId) || Vehicles.find(v => v.id === fleetCategories[0].vehicleId);
-    }, [activeCategoryId]);
-    
+    const activeCategory = useMemo(() => fleetCategories[activeCategoryIndex], [activeCategoryIndex]);
+    const activeVehicleId = useMemo(() => activeCategory.vehicle_ids[activeVehicleIndex], [activeCategory, activeVehicleIndex]);
+    const activeVehicle = useMemo(() => Vehicles.find(v => v.id === activeVehicleId) || null, [activeVehicleId]);
+
+    const selectVehicle = useCallback((index: number) => {
+        setActiveVehicleIndex(index);
+    }, []);
+
+    useEffect(() => {
+        if (isPaused) return;
+
+        const vehicleInterval = setInterval(() => {
+            setActiveVehicleIndex(prev => (prev + 1) % (activeCategory.vehicle_ids.length || 1));
+        }, 3000);
+
+        const categoryInterval = setInterval(() => {
+            setActiveCategoryIndex(prev => {
+                const nextIndex = (prev + 1) % fleetCategories.length;
+                setActiveVehicleIndex(0);
+                return nextIndex;
+            });
+        }, 9000);
+        
+        return () => {
+            clearInterval(vehicleInterval);
+            clearInterval(categoryInterval);
+        };
+    }, [isPaused, activeCategory.vehicle_ids.length]);
+
+    const handleMouseEnter = () => setIsPaused(true);
+    const handleMouseLeave = () => setIsPaused(false);
+    const handleDotClick = (index: number) => {
+        selectVehicle(index);
+        handleMouseEnter(); // Pause when user interacts
+    };
+
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
 
     return (
-        <section id="fleet-intro" className="py-20 md:py-28 bg-muted/20 border-b">
+        <section id="fleet-intro" className="py-20 md:py-28 bg-muted/20 border-b" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="container">
                 {/* 1. Headline */}
                 <div className="text-center max-w-4xl mx-auto mb-16">
@@ -80,20 +114,19 @@ export function FleetIntro() {
                     {/* Left: Categories */}
                     <div className="lg:col-span-4">
                         <div className="flex flex-col gap-4">
-                            {fleetCategories.map(category => (
-                                <button
-                                    key={category.vehicleId}
-                                    onMouseEnter={() => setActiveCategoryId(category.vehicleId)}
+                            {fleetCategories.map((category, index) => (
+                                <div
+                                    key={category.name}
                                     className={cn(
                                         'p-6 rounded-2xl text-left transition-all duration-300 border-2',
-                                        activeCategoryId === category.vehicleId
+                                        activeCategoryIndex === index
                                             ? 'bg-primary text-primary-foreground border-primary shadow-lg'
-                                            : 'bg-card hover:bg-card/80 border-transparent'
+                                            : 'bg-card border-transparent'
                                     )}
                                 >
                                     <p className="font-bold text-xl">{category.name}</p>
-                                    <p className={cn('text-sm mt-1', activeCategoryId === category.vehicleId ? 'text-primary-foreground/80' : 'text-muted-foreground')}>{category.description}</p>
-                                </button>
+                                    <p className={cn('text-sm mt-1', activeCategoryIndex === index ? 'text-primary-foreground/80' : 'text-muted-foreground')}>{category.description}</p>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -101,7 +134,7 @@ export function FleetIntro() {
                     {/* Right: Image */}
                     <div className="lg:col-span-8 relative aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group">
                         <Image
-                            key={imageUrl}
+                            key={activeVehicleId}
                             src={imageUrl}
                             alt={activeVehicle?.name || 'Flagship vehicle'}
                             fill
@@ -111,9 +144,22 @@ export function FleetIntro() {
                         />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                          <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white">
-                            <p className="text-sm uppercase tracking-widest text-white/80">Флагман категории</p>
+                            <p className="text-sm uppercase tracking-widest text-white/80">{activeCategory.name}</p>
                             <h4 className="text-2xl md:text-4xl font-bold drop-shadow-md mt-1">{activeVehicle?.name}</h4>
                          </div>
+                         <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+                            {activeCategory.vehicle_ids.map((id, index) => (
+                                <button
+                                    key={id}
+                                    onClick={() => handleDotClick(index)}
+                                    aria-label={`Показать ${Vehicles.find(v => v.id === id)?.name}`}
+                                    className={cn(
+                                        'w-2 h-2 rounded-full transition-all duration-300',
+                                        activeVehicleIndex === index ? 'bg-white scale-150' : 'bg-white/50 hover:bg-white'
+                                    )}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
