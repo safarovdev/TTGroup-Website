@@ -46,8 +46,12 @@ const popularVehicles = popular_ids
 
 const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
   const vehicle = Vehicles.find(v => v.id === vehicleId);
-  const [isLoading, setIsLoading] = React.useState(true);
+  // Start loading only if there is a real image URL provided
+  const [isLoading, setIsLoading] = React.useState(!!vehicle?.imageUrl);
+  
   if (!vehicle) return null;
+
+  const finalImageUrl = vehicle.imageUrl || "/images/placeholder.jpg";
   
   const featureIcons: { [key: string]: React.ReactElement } = {
     'мест': <Users />,
@@ -80,7 +84,7 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
                 <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
             )}
             <Image
-                src={vehicle.imageUrl}
+                src={finalImageUrl}
                 alt={vehicle.name}
                 fill
                 className={cn(
@@ -88,6 +92,7 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
                     isLoading ? "opacity-0" : "opacity-100"
                 )}
                 onLoad={() => setIsLoading(false)}
+                onError={() => setIsLoading(false)}
                 data-ai-hint={vehicle.imageHint}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
