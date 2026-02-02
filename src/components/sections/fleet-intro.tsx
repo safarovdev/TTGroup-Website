@@ -118,7 +118,7 @@ export function FleetIntro() {
                                 <div
                                     key={category.name}
                                     className={cn(
-                                        'p-6 rounded-2xl text-left transition-all duration-300 border-2',
+                                        'p-6 rounded-2xl text-left transition-all duration-500 border-2',
                                         activeCategoryIndex === index
                                             ? 'bg-primary text-primary-foreground border-primary shadow-lg'
                                             : 'bg-card border-transparent'
@@ -138,12 +138,15 @@ export function FleetIntro() {
                             src={imageUrl}
                             alt={activeVehicle?.name || 'Flagship vehicle'}
                             fill
-                            className="object-cover transition-all duration-500 ease-in-out transform group-hover:scale-105"
+                            className="object-cover transition-all duration-500 ease-in-out transform group-hover:scale-105 animate-in fade-in duration-1000"
                             sizes="(max-width: 1024px) 100vw, 66vw"
                             data-ai-hint={activeVehicle?.imageHint}
                         />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                         <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white">
+                         <div
+                            key={activeVehicleId + '-text'} 
+                            className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white animate-in fade-in-0 slide-in-from-bottom-5 duration-700"
+                         >
                             <p className="text-sm uppercase tracking-widest text-white/80">{activeCategory.name}</p>
                             <h4 className="text-2xl md:text-4xl font-bold drop-shadow-md mt-1">{activeVehicle?.name}</h4>
                          </div>
