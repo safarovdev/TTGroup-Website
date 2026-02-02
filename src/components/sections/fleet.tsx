@@ -6,7 +6,7 @@ import React from 'react';
 import { ArrowRight, Briefcase, Users, Star, Sun, Zap, Armchair, Car, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Vehicles, Vehicle } from "@/lib/vehicles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
@@ -41,11 +41,11 @@ const tripScenarios = [
 
 const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
 const popularVehicles = popular_ids
-  .map(id => PlaceHolderImages.find(v => v.id === id))
+  .map(id => Vehicles.find(v => v.id === id))
   .filter((v): v is NonNullable<typeof v> => v !== undefined);
 
 const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
-  const vehicle = PlaceHolderImages.find(v => v.id === vehicleId);
+  const vehicle = Vehicles.find(v => v.id === vehicleId);
   const [isLoading, setIsLoading] = React.useState(true);
   if (!vehicle) return null;
   
