@@ -62,10 +62,6 @@ export function FleetIntro() {
     const activeVehicleId = useMemo(() => activeCategory.vehicle_ids[activeVehicleIndex], [activeCategory, activeVehicleIndex]);
     const activeVehicle = useMemo(() => Vehicles.find(v => v.id === activeVehicleId) || null, [activeVehicleId]);
 
-    const selectVehicle = useCallback((index: number) => {
-        setActiveVehicleIndex(index);
-    }, []);
-
     useEffect(() => {
         if (isPaused) return;
 
@@ -89,9 +85,10 @@ export function FleetIntro() {
 
     const handleMouseEnter = () => setIsPaused(true);
     const handleMouseLeave = () => setIsPaused(false);
+    
     const handleDotClick = (index: number) => {
-        selectVehicle(index);
-        handleMouseEnter(); // Pause when user interacts
+        setActiveVehicleIndex(index);
+        setIsPaused(true);
     };
 
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
