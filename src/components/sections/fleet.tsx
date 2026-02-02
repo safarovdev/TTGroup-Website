@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 
 const tripScenarios = [
   {
@@ -113,17 +114,32 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
 
 export function Fleet() {
   const [api, setApi] = React.useState<CarouselApi>();
+  const [current, setCurrent] = React.useState(0);
+  const [count, setCount] = React.useState(0);
 
   React.useEffect(() => {
     if (!api) {
       return;
     }
 
+    const onSelect = () => {
+      if (api) {
+        setCurrent(api.selectedScrollSnap());
+      }
+    };
+    
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", onSelect);
+
     const interval = setInterval(() => {
       api.scrollNext();
     }, 3000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      api.off("select", onSelect);
+    };
   }, [api]);
   
   return (
@@ -143,19 +159,34 @@ export function Fleet() {
                     </Link>
                 </Button>
             </div>
-            <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-6xl mx-auto mt-12">
-                <CarouselContent>
-                    {popularVehicles.map(vehicle => (
-                        <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
-                            <div className="p-2 h-full">
-                                <VehicleCard vehicleId={vehicle.id} />
-                            </div>
-                        </CarouselItem>
+            <div className="w-full max-w-6xl mx-auto mt-12">
+                <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+                    <CarouselContent>
+                        {popularVehicles.map(vehicle => (
+                            <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
+                                <div className="p-2 h-full">
+                                    <VehicleCard vehicleId={vehicle.id} />
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="-left-4 md:-left-12 hidden md:inline-flex" />
+                    <CarouselNext className="-right-4 md:-right-12 hidden md:inline-flex" />
+                </Carousel>
+                <div className="flex justify-center gap-2 mt-4">
+                    {Array.from({ length: count }).map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => api?.scrollTo(index)}
+                            aria-label={`Перейти к слайду ${index + 1}`}
+                            className={cn(
+                                "h-2 w-2 rounded-full transition-all duration-300",
+                                current === index ? 'w-4 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
+                            )}
+                        />
                     ))}
-                </CarouselContent>
-                <CarouselPrevious className="-left-4 md:-left-12" />
-                <CarouselNext className="-right-4 md:-right-12" />
-            </Carousel>
+                </div>
+            </div>
         </div>
 
         <div id="fleet-tabs" className="text-center max-w-2xl mx-auto">
