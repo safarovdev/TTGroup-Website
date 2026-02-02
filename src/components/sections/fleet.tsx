@@ -130,11 +130,18 @@ export function Fleet() {
     <section id="fleet" className="py-20 md:py-28">
       <div className="container">
         <div className="mb-20">
-            <div className="text-center max-w-2xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Популярные модели</h2>
-                <p className="mt-4 text-lg text-muted-foreground">
-                    Наши самые востребованные автомобили 2024 года, которые сочетают в себе комфорт, стиль и надежность.
-                </p>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Популярные модели</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">
+                        Наши самые востребованные автомобили 2024 года.
+                    </p>
+                </div>
+                <Button asChild variant="outline" className="shrink-0">
+                    <Link href="#fleet-tabs">
+                    Смотреть все модели <ArrowRight className="ml-2" />
+                    </Link>
+                </Button>
             </div>
             <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-6xl mx-auto mt-12">
                 <CarouselContent>
@@ -151,7 +158,7 @@ export function Fleet() {
             </Carousel>
         </div>
 
-        <div className="text-center max-w-2xl mx-auto">
+        <div id="fleet-tabs" className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Наш автопарк</h2>
           <p className="mt-4 text-lg text-muted-foreground">
             Выберите цель поездки, и мы предложим лучшие варианты.
