@@ -46,7 +46,6 @@ const popularVehicles = popular_ids
 
 const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
   const vehicle = Vehicles.find(v => v.id === vehicleId);
-  // Start loading only if there is a real image URL provided
   const [isLoading, setIsLoading] = React.useState(!!vehicle?.imageUrl);
   
   if (!vehicle) return null;
@@ -161,53 +160,49 @@ export function Fleet() {
   }, [api]);
   
   return (
-    <section id="fleet" className="py-20 md:py-28">
+    <section id="fleet" className="py-20 md:py-28 bg-muted/20">
       <div className="container">
-        <div className="mb-20">
-            <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Популярные модели</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">
-                        Наши самые востребованные автомобили 2024 года.
-                    </p>
-                </div>
-                <Button asChild variant="outline" className="shrink-0">
-                    <Link href="#fleet-tabs">
-                    Смотреть все модели <ArrowRight className="ml-2" />
-                    </Link>
-                </Button>
-            </div>
-            <div className="w-full max-w-6xl mx-auto mt-12">
-                <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
-                    <CarouselContent>
-                        {popularVehicles.map(vehicle => (
-                            <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
-                                <div className="p-2 h-full">
-                                    <VehicleCard vehicleId={vehicle.id} />
-                                </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="-left-4 md:-left-12 hidden md:inline-flex" />
-                    <CarouselNext className="-right-4 md:-right-12 hidden md:inline-flex" />
-                </Carousel>
-                <div className="flex justify-center gap-2 mt-4">
-                    {Array.from({ length: count }).map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => api?.scrollTo(index)}
-                            aria-label={`Перейти к слайду ${index + 1}`}
-                            className={cn(
-                                "h-2 w-2 rounded-full transition-all duration-300",
-                                current === index ? 'w-4 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
-                            )}
-                        />
-                    ))}
-                </div>
-            </div>
+        <div className="mb-20 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Хиты нашего автопарка</h2>
+          <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+            Откройте для себя автомобили, которые наши клиенты выбирают чаще всего. Эти модели — идеальное сочетание комфорта, стиля и надежности, проверенное сотнями поездок по дорогам Узбекистана.
+          </p>
+          <div className="w-full max-w-6xl mx-auto mt-12">
+              <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+                  <CarouselContent>
+                      {popularVehicles.map(vehicle => (
+                          <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
+                              <div className="p-2 h-full">
+                                  <VehicleCard vehicleId={vehicle.id} />
+                              </div>
+                          </CarouselItem>
+                      ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="-left-4 md:-left-12 hidden md:inline-flex" />
+                  <CarouselNext className="-right-4 md:-right-12 hidden md:inline-flex" />
+              </Carousel>
+              <div className="flex justify-center gap-2 mt-4">
+                  {Array.from({ length: count }).map((_, index) => (
+                      <button
+                          key={index}
+                          onClick={() => api?.scrollTo(index)}
+                          aria-label={`Перейти к слайду ${index + 1}`}
+                          className={cn(
+                              "h-2 w-2 rounded-full transition-all duration-300",
+                              current === index ? 'w-4 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
+                          )}
+                      />
+                  ))}
+              </div>
+          </div>
+          <Button asChild size="lg" className="mt-12 font-bold">
+            <Link href="#fleet-tabs">
+              Смотреть весь автопарк <ArrowRight className="ml-2" />
+            </Link>
+          </Button>
         </div>
 
-        <div id="fleet-tabs" className="text-center max-w-2xl mx-auto">
+        <div id="fleet-tabs" className="text-center max-w-2xl mx-auto scroll-mt-24">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Наш автопарк</h2>
           <p className="mt-4 text-lg text-muted-foreground">
             Выберите цель поездки, и мы предложим лучшие варианты.
