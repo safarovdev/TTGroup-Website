@@ -5,6 +5,7 @@ import { Fleet } from '@/components/sections/fleet';
 import { Principles } from '@/components/sections/principles';
 import { Booking } from '@/components/sections/booking';
 import { Stats } from '@/components/sections/stats';
+import { FleetIntro } from '@/components/sections/fleet-intro';
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
         <Hero />
         <Principles />
         <Stats />
+        <FleetIntro />
         <Fleet />
         <Booking />
       </main>
