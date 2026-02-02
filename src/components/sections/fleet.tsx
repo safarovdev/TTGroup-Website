@@ -10,6 +10,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const tripScenarios = [
   {
@@ -45,6 +46,7 @@ const popularVehicles = popular_ids
 
 const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
   const vehicle = PlaceHolderImages.find(v => v.id === vehicleId);
+  const [isLoading, setIsLoading] = React.useState(true);
   if (!vehicle) return null;
   
   const featureIcons: { [key: string]: React.ReactElement } = {
@@ -74,11 +76,18 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col bg-card h-full">
       <CardHeader className="p-0">
         <div className="relative aspect-[4/3] w-full">
+            {isLoading && (
+                <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
+            )}
             <Image
                 src={vehicle.imageUrl}
                 alt={vehicle.name}
                 fill
-                className="object-cover"
+                className={cn(
+                    "object-cover transition-opacity duration-300",
+                    isLoading ? "opacity-0" : "opacity-100"
+                )}
+                onLoad={() => setIsLoading(false)}
                 data-ai-hint={vehicle.imageHint}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
@@ -133,7 +142,11 @@ export function Fleet() {
     api.on("select", onSelect);
 
     const interval = setInterval(() => {
-      api.scrollNext();
+      if (api.selectedScrollSnap() === api.scrollSnapList().length - 1) {
+        api.scrollTo(0);
+      } else {
+        api.scrollNext();
+      }
     }, 3000);
 
     return () => {
