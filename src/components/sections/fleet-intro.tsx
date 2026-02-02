@@ -81,21 +81,19 @@ export function FleetIntro() {
             clearInterval(vehicleInterval);
             clearInterval(categoryInterval);
         };
-    }, [isPaused, activeCategory.vehicle_ids.length]);
+    }, [isPaused, activeCategoryIndex, activeVehicleIndex, activeCategory.vehicle_ids.length]);
 
-    const handleMouseEnter = () => setIsPaused(true);
-    const handleMouseLeave = () => setIsPaused(false);
+    const handleMouseEnter = useCallback(() => setIsPaused(true), []);
+    const handleMouseLeave = useCallback(() => setIsPaused(false), []);
     
-    const handleDotClick = (index: number) => {
+    const handleDotClick = useCallback((index: number) => {
         setActiveVehicleIndex(index);
-        setIsPaused(true);
-    };
+    }, []);
 
-    const handleCategoryClick = (index: number) => {
+    const handleCategoryClick = useCallback((index: number) => {
         setActiveCategoryIndex(index);
         setActiveVehicleIndex(0);
-        setIsPaused(true);
-    };
+    }, []);
 
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
 
