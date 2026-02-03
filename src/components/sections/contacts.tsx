@@ -87,7 +87,7 @@ export function Contacts() {
                 <p className="font-semibold text-sm text-muted-foreground mb-4">Документы</p>
                 <ul className="space-y-2">
                     {docLinks.map((link) => (
-                        <li key={link.href}>
+                        <li key={link.label}>
                             <Link href={link.href} className="text-base hover:text-primary transition-colors">{link.label}</Link>
                         </li>
                     ))}
