@@ -5,6 +5,7 @@ import { Principles } from '@/components/sections/principles';
 import { Booking } from '@/components/sections/booking';
 import { Stats } from '@/components/sections/stats';
 import { FleetIntro } from '@/components/sections/fleet-intro';
+import { Fleet } from '@/components/sections/fleet';
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <Principles />
         <Stats />
         <FleetIntro />
+        <Fleet />
         <Booking />
       </main>
       <Footer />

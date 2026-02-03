@@ -3,41 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from 'react';
-import { ArrowRight, Briefcase, Users, Star, Sun, Zap, Armchair, Car, Check } from "lucide-react";
+import { Briefcase, Users, Star, Sun, Zap, Armchair, Car, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Vehicles, Vehicle } from "@/lib/vehicles";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const tripScenarios = [
-  {
-    value: "premium",
-    title: "Премиум и VIP",
-    description: "Для деловых встреч и самых взыскательных гостей.",
-    vehicle_ids: ["fleet-lixiang-l7", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500", "fleet-toyota-lc-200", "fleet-haval-h6", "fleet-haval-dargo", "fleet-byd-champion", "fleet-aiqar-eq7"]
-  },
-  {
-    value: "comfort",
-    title: "Комфорт и Стандарт",
-    description: "Оптимальное сочетание цены и качества для любых поездок.",
-    vehicle_ids: ["fleet-chevrolet-malibu-2", "fleet-kia-k5", "fleet-kia-sportage", "fleet-chevrolet-captiva-5", "fleet-chevrolet-cobalt", "fleet-jac-j7"]
-  },
-  {
-    value: "minivans",
-    title: "Минивэны",
-    description: "Идеально для семейных путешествий и небольших групп.",
-    vehicle_ids: ["fleet-hyundai-staria", "fleet-kia-carnival", "fleet-hyundai-starex", "fleet-kia-carens", "fleet-baw-m7", "fleet-jac-refine-m4", "fleet-mercedes-vito"]
-  },
-  {
-    value: "buses",
-    title: "Автобусы",
-    description: "Для больших групп, экскурсий и корпоративных выездов.",
-    vehicle_ids: ["fleet-mercedes-sprinter", "fleet-toyota-hiace", "fleet-foton-view-cs2", "fleet-joylong", "fleet-jac-sunray", "fleet-setra-minibus", "fleet-yutong-bus"]
-  }
-];
 
 const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
 const popularVehicles = popular_ids
@@ -162,7 +134,7 @@ export function Fleet() {
   return (
     <section id="fleet" className="py-20 md:py-28 bg-muted/20">
       <div className="container">
-        <div className="mb-20 text-center">
+        <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Хиты нашего автопарка</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
             Откройте для себя автомобили, которые наши клиенты выбирают чаще всего. Эти модели — идеальное сочетание комфорта, стиля и надежности, проверенное сотнями поездок по дорогам Узбекистана.
@@ -195,39 +167,7 @@ export function Fleet() {
                   ))}
               </div>
           </div>
-          <Button asChild size="lg" className="mt-12 font-bold">
-            <Link href="#fleet-tabs">
-              Смотреть весь автопарк <ArrowRight className="ml-2" />
-            </Link>
-          </Button>
         </div>
-
-        <div id="fleet-tabs" className="text-center max-w-2xl mx-auto scroll-mt-24">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Наш автопарк</h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Выберите цель поездки, и мы предложим лучшие варианты.
-          </p>
-        </div>
-
-        <Tabs defaultValue={tripScenarios[0].value} className="w-full max-w-6xl mx-auto mt-12">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto -mx-1">
-            {tripScenarios.map((scenario) => (
-              <TabsTrigger key={scenario.value} value={scenario.value} className="py-3 text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                {scenario.title}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {tripScenarios.map((scenario) => (
-            <TabsContent key={scenario.value} value={scenario.value} className="mt-8">
-              <p className="text-lg text-center text-muted-foreground mb-8 max-w-xl mx-auto">{scenario.description}</p>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {scenario.vehicle_ids.map((id) => (
-                  <VehicleCard key={id} vehicleId={id} />
-                ))}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
       </div>
     </section>
   );
