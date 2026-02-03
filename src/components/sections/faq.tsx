@@ -41,6 +41,18 @@ import {
       <section id="faq" className="py-20 md:py-28 bg-muted/50 border-t">
         <div className="container">
            <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            {faqImage && (
+                <div className="relative w-full aspect-[4/5] max-w-md mx-auto rounded-2xl overflow-hidden shadow-xl">
+                    <Image 
+                        src={faqImage.imageUrl}
+                        alt={faqImage.description}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={faqImage.imageHint}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                </div>
+            )}
             <div className="space-y-8">
               <div className="max-w-md">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Частые вопросы</h2>
@@ -59,18 +71,6 @@ import {
                 ))}
               </Accordion>
             </div>
-            {faqImage && (
-                <div className="relative w-full aspect-[4/5] max-w-sm mx-auto lg:max-w-none lg:mx-0 rounded-2xl overflow-hidden shadow-xl">
-                    <Image 
-                        src={faqImage.imageUrl}
-                        alt={faqImage.description}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={faqImage.imageHint}
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                </div>
-            )}
            </div>
         </div>
       </section>
