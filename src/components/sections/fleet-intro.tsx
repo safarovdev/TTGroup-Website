@@ -59,7 +59,13 @@ export function FleetIntro() {
     const [isPaused, setIsPaused] = useState(false);
 
     const activeCategory = useMemo(() => fleetCategories[activeCategoryIndex], [activeCategoryIndex]);
-    const activeVehicleId = useMemo(() => activeCategory.vehicle_ids[activeVehicleIndex], [activeCategory, activeVehicleIndex]);
+    const activeVehicleId = useMemo(() => {
+        // Ensure vehicle index is valid for the current category
+        const vehicleIds = activeCategory.vehicle_ids;
+        const validVehicleIndex = activeVehicleIndex % (vehicleIds.length || 1);
+        return vehicleIds[validVehicleIndex];
+    }, [activeCategory, activeVehicleIndex]);
+
     const activeVehicle = useMemo(() => Vehicles.find(v => v.id === activeVehicleId) || null, [activeVehicleId]);
 
     useEffect(() => {
@@ -72,7 +78,7 @@ export function FleetIntro() {
         const categoryInterval = setInterval(() => {
             setActiveCategoryIndex(prev => {
                 const nextIndex = (prev + 1) % fleetCategories.length;
-                setActiveVehicleIndex(0);
+                setActiveVehicleIndex(0); // Reset vehicle index when category changes
                 return nextIndex;
             });
         }, 9000);
@@ -160,7 +166,7 @@ export function FleetIntro() {
                                     aria-label={`Показать ${Vehicles.find(v => v.id === id)?.name}`}
                                     className={cn(
                                         'w-2 h-2 rounded-full transition-all duration-300',
-                                        activeVehicleIndex === index ? 'bg-white scale-150' : 'bg-white/50 hover:bg-white'
+                                        activeVehicleIndex % (activeCategory.vehicle_ids.length || 1) === index ? 'bg-white scale-150' : 'bg-white/50 hover:bg-white'
                                     )}
                                 />
                             ))}
