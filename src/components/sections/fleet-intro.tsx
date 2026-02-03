@@ -58,49 +58,40 @@ export function FleetIntro() {
     const [activeVehicleIndex, setActiveVehicleIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
 
+    useEffect(() => {
+        if (isPaused) return;
+
+        const interval = setInterval(() => {
+            const randomCategoryIndex = Math.floor(Math.random() * fleetCategories.length);
+            const vehicleIds = fleetCategories[randomCategoryIndex].vehicle_ids;
+            
+            if (!vehicleIds || vehicleIds.length === 0) return;
+
+            const randomVehicleIndex = Math.floor(Math.random() * vehicleIds.length);
+
+            setActiveCategoryIndex(randomCategoryIndex);
+            setActiveVehicleIndex(randomVehicleIndex);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isPaused]);
+
+
     const activeCategory = useMemo(() => fleetCategories[activeCategoryIndex], [activeCategoryIndex]);
+    
     const activeVehicleId = useMemo(() => {
-        // Ensure vehicle index is valid for the current category
         const vehicleIds = activeCategory.vehicle_ids;
-        const validVehicleIndex = activeVehicleIndex % (vehicleIds.length || 1);
-        return vehicleIds[validVehicleIndex];
+        if (!vehicleIds || !vehicleIds[activeVehicleIndex]) {
+            return vehicleIds[0];
+        }
+        return vehicleIds[activeVehicleIndex];
     }, [activeCategory, activeVehicleIndex]);
 
     const activeVehicle = useMemo(() => Vehicles.find(v => v.id === activeVehicleId) || null, [activeVehicleId]);
 
-    useEffect(() => {
-        if (isPaused) return;
-
-        const vehicleInterval = setInterval(() => {
-            setActiveVehicleIndex(prev => (prev + 1) % (activeCategory.vehicle_ids.length || 1));
-        }, 3000);
-
-        const categoryInterval = setInterval(() => {
-            setActiveCategoryIndex(prev => {
-                const nextIndex = (prev + 1) % fleetCategories.length;
-                setActiveVehicleIndex(0); // Reset vehicle index when category changes
-                return nextIndex;
-            });
-        }, 9000);
-        
-        return () => {
-            clearInterval(vehicleInterval);
-            clearInterval(categoryInterval);
-        };
-    }, [isPaused, activeCategoryIndex, activeVehicleIndex, activeCategory.vehicle_ids.length]);
-
     const handleMouseEnter = useCallback(() => setIsPaused(true), []);
     const handleMouseLeave = useCallback(() => setIsPaused(false), []);
     
-    const handleDotClick = useCallback((index: number) => {
-        setActiveVehicleIndex(index);
-    }, []);
-
-    const handleCategoryClick = useCallback((index: number) => {
-        setActiveCategoryIndex(index);
-        setActiveVehicleIndex(0);
-    }, []);
-
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
 
     return (
@@ -124,12 +115,11 @@ export function FleetIntro() {
                             {fleetCategories.map((category, index) => (
                                 <div
                                     key={category.name}
-                                    onClick={() => handleCategoryClick(index)}
                                     className={cn(
                                         'p-6 rounded-2xl text-left transition-all duration-500 border-2',
                                         activeCategoryIndex === index
                                             ? 'bg-primary text-primary-foreground border-primary shadow-lg cursor-default'
-                                            : 'bg-card border-transparent hover:border-primary/20 hover:bg-primary/5 cursor-pointer'
+                                            : 'bg-card border-transparent'
                                     )}
                                 >
                                     <p className="font-bold text-xl">{category.name}</p>
@@ -158,19 +148,6 @@ export function FleetIntro() {
                             <p className="text-sm uppercase tracking-widest text-white/80">{activeCategory.name}</p>
                             <h4 className="text-2xl md:text-4xl font-bold drop-shadow-md mt-1">{activeVehicle?.name}</h4>
                          </div>
-                         <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3">
-                            {activeCategory.vehicle_ids.map((id, index) => (
-                                <button
-                                    key={id}
-                                    onClick={() => handleDotClick(index)}
-                                    aria-label={`Показать ${Vehicles.find(v => v.id === id)?.name}`}
-                                    className={cn(
-                                        'w-2 h-2 rounded-full transition-all duration-300',
-                                        activeVehicleIndex % (activeCategory.vehicle_ids.length || 1) === index ? 'bg-white scale-150' : 'bg-white/50 hover:bg-white'
-                                    )}
-                                />
-                            ))}
-                        </div>
                     </div>
                 </div>
 

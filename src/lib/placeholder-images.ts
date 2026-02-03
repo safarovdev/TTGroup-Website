@@ -42,7 +42,7 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     "id": "faq-image",
     "name": "FAQ Section Image",
     "description": "Architectural detail of a building in Uzbekistan.",
-    "imageUrl": "/images/about-2.jpg",
+    "imageUrl": "/images/faq.jpg",
     "imageHint": "uzbekistan architecture"
   }
 ];
