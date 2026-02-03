@@ -27,7 +27,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="w-full border-b bg-background">
+    <header className="w-full border-b bg-background animate-in fade-in-0 duration-500">
       <div className="container relative flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="hidden font-extrabold text-xl uppercase tracking-wider md:inline">TourEast Transport Group</span>

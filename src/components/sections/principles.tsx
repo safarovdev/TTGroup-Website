@@ -19,7 +19,7 @@ export function Principles() {
       <div className="container">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
-          <div className="relative h-96 lg:h-[500px]">
+          <div className="relative h-96 lg:h-[500px] animate-in fade-in-0 zoom-in-95 duration-700">
             {bottomImage && (
               <div className="absolute bottom-0 left-0 w-[65%] h-[65%] md:w-[480px] md:h-[320px] rounded-md shadow-2xl overflow-hidden">
                 <Image
@@ -46,7 +46,7 @@ export function Principles() {
             )}
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-8 animate-in fade-in-0 slide-in-from-bottom-5 duration-700 delay-200">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
               Добро пожаловать в TourEast Transport Group
             </h2>

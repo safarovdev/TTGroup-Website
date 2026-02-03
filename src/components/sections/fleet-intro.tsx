@@ -92,7 +92,7 @@ export function FleetIntro() {
         <section id="fleet-intro" className="py-20 md:py-28 bg-muted/20 border-b">
             <div className="container">
                 {/* 1. Headline */}
-                <div className="text-center max-w-4xl mx-auto mb-16">
+                <div className="text-center max-w-4xl mx-auto mb-16 animate-in fade-in-0 slide-in-from-top-8 duration-700">
                     <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
                         Больше, чем просто транспорт. <span className="text-primary">Ваш личный флот</span> в Узбекистане.
                     </h2>
@@ -102,7 +102,7 @@ export function FleetIntro() {
                 </div>
 
                 {/* 2. Interactive Gallery */}
-                <div className="grid lg:grid-cols-12 gap-8 md:gap-12 mb-20 items-center">
+                <div className="grid lg:grid-cols-12 gap-8 md:gap-12 mb-20 items-center animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200">
                     {/* Left: Categories */}
                     <div className="lg:col-span-4">
                         <div className="flex flex-col gap-4">
@@ -146,7 +146,7 @@ export function FleetIntro() {
                 </div>
 
                 {/* 3. Standards Block */}
-                 <div className="mb-20">
+                 <div className="mb-20 animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-300">
                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                          {standards.map(standard => (
                             <Card key={standard.title} className="border-0 bg-transparent shadow-none">
@@ -165,7 +165,7 @@ export function FleetIntro() {
                  </div>
 
                 {/* 4. SEO Block */}
-                <div className="max-w-5xl mx-auto text-center">
+                <div className="max-w-5xl mx-auto text-center animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-400">
                     <h3 className="text-3xl font-bold mb-4">Для любых задач и маршрутов</h3>
                     <p className="text-lg text-muted-foreground">
                         Мы понимаем разницу между туристической прогулкой по Бухаре и официальным визитом делегации. Поэтому в TTGroup мы предлагаем гибкие решения: быстрый заказ седана за 15 минут, организацию логистики для конференций на автобусах Yutong или премиальное сопровождение на LiXiang L7. Весь транспорт оборудован для комфортных поездок на дальние дистанции между городами Узбекистана.

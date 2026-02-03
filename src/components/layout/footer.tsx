@@ -9,7 +9,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-muted/50 border-t">
+    <footer className="bg-muted/50 border-t animate-in fade-in-0 duration-500">
       <div className="container py-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">

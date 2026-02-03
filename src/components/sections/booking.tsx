@@ -70,13 +70,13 @@ export function Booking() {
   return (
     <section id="booking" className="py-20 md:py-28 bg-primary text-primary-foreground">
       <div className="container">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-12 animate-in fade-in-0 slide-in-from-top-8 duration-700">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Забронировать поездку</h2>
           <p className="mt-4 text-lg text-primary-foreground/80">
             Заполните форму, и мы свяжемся с вами в ближайшее время для уточнения деталей.
           </p>
         </div>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-6">

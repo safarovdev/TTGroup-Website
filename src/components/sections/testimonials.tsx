@@ -42,7 +42,7 @@ export function Testimonials() {
   return (
     <section id="testimonials" className="py-20 md:py-28 bg-background border-t">
       <div className="container">
-        <div className="max-w-4xl mx-auto text-center mb-16">
+        <div className="max-w-4xl mx-auto text-center mb-16 animate-in fade-in-0 slide-in-from-top-8 duration-700">
             <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase !leading-tight">
                 <span className="block text-muted-foreground/80">Сервис, которому</span>
                 <span className="block text-primary">Доверяют</span>
@@ -52,7 +52,7 @@ export function Testimonials() {
             </p>
         </div>
         
-        <div className="grid lg:grid-cols-3 gap-12 items-start">
+        <div className="grid lg:grid-cols-3 gap-12 items-start animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200">
             {/* Left column: Testimonials */}
             <div className="lg:col-span-2 space-y-8">
                 {testimonialsData.map((testimonial, index) => (

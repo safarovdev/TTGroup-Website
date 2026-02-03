@@ -24,7 +24,7 @@ export function Hero() {
       )}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent" />
       <div className="container relative z-10 text-left">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl animate-in fade-in-0 slide-in-from-bottom-8 duration-1000 ease-out">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter !leading-tight drop-shadow-lg">
             TourEast Transport Group
           </h1>
