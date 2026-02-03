@@ -1,8 +1,13 @@
+"use client";
+
 import { Briefcase, Users, Calendar, Clock, Smile, MapPin } from "lucide-react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import React from "react";
+import { useOnScreen } from "@/hooks/use-on-screen";
+import { cn } from "@/lib/utils";
 
 const parkStat = { value: "50+", label: "автомобилей в парке", icon: <Briefcase className="w-6 h-6 text-primary" /> };
 const seatsStat = { value: "3-55", label: "посадочных мест", icon: <Users className="w-6 h-6 text-primary" /> };
@@ -26,14 +31,15 @@ const StatItem = ({ stat }: { stat: { value: string; label: string; icon: React.
 );
 
 export function Stats() {
+    const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.2 });
     const statsImage = PlaceHolderImages.find((img) => img.id === "stats-background");
 
     return (
-        <section id="stats" className="py-20 md:py-28 bg-muted/50 border-y">
+        <section ref={ref} id="stats" className="py-20 md:py-28 bg-muted/50 border-y">
             <div className="container">
                 <div className="grid lg:grid-cols-2 gap-16 items-start">
                     {/* Left Column: Text */}
-                    <div className="space-y-8 text-center lg:text-left animate-in fade-in-0 slide-in-from-left-10 duration-700">
+                    <div className={cn("space-y-8 text-center lg:text-left opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-left-10 duration-700")}>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight">TTGroup в цифрах</h2>
                         <p className="text-xl text-muted-foreground">
                             Наша надежность и качество, подтвержденные фактами. Мы гордимся нашим сервисом и предлагаем вам лучшие условия для комфортных и безопасных поездок.
@@ -44,7 +50,7 @@ export function Stats() {
                     </div>
 
                     {/* Right Column: Visualization */}
-                    <div className="relative animate-in fade-in-0 slide-in-from-right-10 duration-700 delay-200">
+                    <div className={cn("relative opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-right-10 duration-700 delay-200")}>
                         {/* Mobile Layout */}
                         <div className="flex flex-col items-center gap-8 lg:hidden">
                             <Card className="shadow-xl rounded-2xl w-full max-w-sm">

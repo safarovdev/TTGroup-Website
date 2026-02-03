@@ -21,6 +21,8 @@ import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useOnScreen } from "@/hooks/use-on-screen";
+import React from "react";
 
 const bookingSchema = z.object({
   name: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }),
@@ -41,6 +43,7 @@ const vehicleOptions = [
 ];
 
 export function Booking() {
+  const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.2 });
   const { toast } = useToast();
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -68,15 +71,15 @@ export function Booking() {
   }
 
   return (
-    <section id="booking" className="py-20 md:py-28 bg-primary text-primary-foreground">
+    <section ref={ref} id="booking" className="py-20 md:py-28 bg-primary text-primary-foreground">
       <div className="container">
-        <div className="text-center max-w-2xl mx-auto mb-12 animate-in fade-in-0 slide-in-from-top-8 duration-700">
+        <div className={cn("text-center max-w-2xl mx-auto mb-12 opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-top-8 duration-700")}>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Забронировать поездку</h2>
           <p className="mt-4 text-lg text-primary-foreground/80">
             Заполните форму, и мы свяжемся с вами в ближайшее время для уточнения деталей.
           </p>
         </div>
-        <div className="max-w-2xl mx-auto animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200">
+        <div className={cn("max-w-2xl mx-auto opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200")}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-6">

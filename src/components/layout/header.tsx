@@ -31,7 +31,7 @@ export function Header() {
       <div className="container relative flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="hidden font-extrabold text-xl uppercase tracking-wider md:inline">TourEast Transport Group</span>
-          <span className="font-extrabold text-xl uppercase tracking-wider md:hidden">TTGGROUP</span>
+          <span className="font-extrabold text-xl uppercase tracking-wider md:hidden">TTGROUP</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-semibold absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
@@ -76,7 +76,7 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="left">
                 <Link href="/" className="mr-6 flex items-center gap-2 mb-8">
-                   <span className="font-extrabold text-xl uppercase tracking-wider">TTGGROUP</span>
+                   <span className="font-extrabold text-xl uppercase tracking-wider">TTGROUP</span>
                 </Link>
                 <nav className="flex flex-col gap-6 text-lg font-medium">
                   {navLinks.map((link) => (
