@@ -6,6 +6,7 @@ import { Booking } from '@/components/sections/booking';
 import { Stats } from '@/components/sections/stats';
 import { FleetIntro } from '@/components/sections/fleet-intro';
 import { Fleet } from '@/components/sections/fleet';
+import { Testimonials } from '@/components/sections/testimonials';
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
         <Stats />
         <FleetIntro />
         <Fleet />
+        <Testimonials />
         <Booking />
       </main>
       <Footer />
