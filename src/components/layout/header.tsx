@@ -15,6 +15,9 @@ import { useState, useEffect } from "react";
 const navLinks = [
   { href: "#about", label: "О нас" },
   { href: "#fleet-intro", label: "Автопарк" },
+  { href: "#testimonials", label: "Отзывы" },
+  { href: "#gallery", label: "Галерея" },
+  { href: "#faq", label: "FAQ" },
   { href: "#contacts", label: "Контакты" },
 ];
 
@@ -27,7 +30,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="w-full border-b bg-background animate-in fade-in-0 duration-500">
+    <header className="w-full border-b bg-background/95 backdrop-blur-sm animate-in fade-in-0 duration-500 sticky top-0 z-50">
       <div className="container relative flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="hidden font-extrabold text-xl uppercase tracking-wider md:inline">TourEast Transport Group</span>

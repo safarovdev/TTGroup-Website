@@ -22,7 +22,7 @@ export function Gallery() {
             Узбекистан из окна комфортного авто
           </h2>
           <p className="mt-6 text-lg text-muted-foreground">
-            Это не просто фотографии — это реальные кадры из поездок наших клиентов. Посмотрите, каким может быть ваше путешествие: комфортабельные автомобили, живописные маршруты и остановки в самых красивых местах. <span className="font-semibold text-foreground">Вдохновитесь на свою следующую поездку.</span>
+            Это не просто фотографии — это реальные кадры. Посмотрите, каким может быть ваше путешествие: комфортабельные автомобили, живописные маршруты и остановки в самых красивых местах. <span className="font-semibold text-foreground">Вдохновитесь на свою следующую поездку.</span>
           </p>
           <Button asChild size="lg" className="mt-8 bg-[#E1306C] hover:bg-[#c13584] text-white font-bold">
             <Link href="#" target="_blank" rel="noopener noreferrer">
