@@ -39,7 +39,7 @@ export function Stats() {
             <div className="container">
                 <div className="grid lg:grid-cols-2 gap-16 items-start">
                     {/* Left Column: Text */}
-                    <div className={cn("space-y-8 text-center lg:text-left opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-left-10 duration-700")}>
+                    <div className={cn("space-y-8 text-center lg:text-left", isVisible ? "animate-in fade-in-0 slide-in-from-left-10 duration-700" : "opacity-0")}>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight">TTGroup в цифрах</h2>
                         <p className="text-xl text-muted-foreground">
                             Наша надежность и качество, подтвержденные фактами. Мы гордимся нашим сервисом и предлагаем вам лучшие условия для комфортных и безопасных поездок.
@@ -50,7 +50,7 @@ export function Stats() {
                     </div>
 
                     {/* Right Column: Visualization */}
-                    <div className={cn("relative opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-right-10 duration-700 delay-200")}>
+                    <div className={cn("relative", isVisible ? "animate-in fade-in-0 slide-in-from-right-10 duration-700 delay-200" : "opacity-0")}>
                         {/* Mobile Layout */}
                         <div className="flex flex-col items-center gap-8 lg:hidden">
                             <Card className="shadow-xl rounded-2xl w-full max-w-sm">

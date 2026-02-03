@@ -73,13 +73,13 @@ export function Booking() {
   return (
     <section ref={ref} id="booking" className="py-20 md:py-28 bg-primary text-primary-foreground">
       <div className="container">
-        <div className={cn("text-center max-w-2xl mx-auto mb-12 opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-top-8 duration-700")}>
+        <div className={cn("text-center max-w-2xl mx-auto mb-12", isVisible ? "animate-in fade-in-0 slide-in-from-top-8 duration-700" : "opacity-0")}>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Забронировать поездку</h2>
           <p className="mt-4 text-lg text-primary-foreground/80">
             Заполните форму, и мы свяжемся с вами в ближайшее время для уточнения деталей.
           </p>
         </div>
-        <div className={cn("max-w-2xl mx-auto opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200")}>
+        <div className={cn("max-w-2xl mx-auto", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200" : "opacity-0")}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-6">

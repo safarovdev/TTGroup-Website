@@ -48,7 +48,7 @@ export function Faq() {
       <div className="container">
          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           {faqImage && (
-              <div className={cn("relative w-full aspect-[4/5] max-w-md mx-auto rounded-2xl overflow-hidden shadow-xl opacity-0", isVisible && "animate-in fade-in-0 zoom-in-95 duration-700")}>
+              <div className={cn("relative w-full aspect-[4/5] max-w-md mx-auto rounded-2xl overflow-hidden shadow-xl", isVisible ? "animate-in fade-in-0 zoom-in-95 duration-700" : "opacity-0")}>
                   <Image 
                       src={faqImage.imageUrl}
                       alt={faqImage.description}
@@ -59,7 +59,7 @@ export function Faq() {
                   />
               </div>
           )}
-          <div className={cn("space-y-8 opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-bottom-5 duration-700 delay-200")}>
+          <div className={cn("space-y-8", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-5 duration-700 delay-200" : "opacity-0")}>
             <div className="max-w-md">
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Частые вопросы</h2>
               <p className="mt-4 text-lg text-muted-foreground">

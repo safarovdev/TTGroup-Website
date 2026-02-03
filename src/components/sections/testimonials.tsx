@@ -47,7 +47,7 @@ export function Testimonials() {
   return (
     <section ref={ref} id="testimonials" className="py-20 md:py-28 bg-background border-t">
       <div className="container">
-        <div className={cn("max-w-4xl mx-auto text-center mb-16 opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-top-8 duration-700")}>
+        <div className={cn("max-w-4xl mx-auto text-center mb-16", isVisible ? "animate-in fade-in-0 slide-in-from-top-8 duration-700" : "opacity-0")}>
             <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase !leading-tight">
                 <span className="block text-muted-foreground/80">Сервис, которому</span>
                 <span className="block text-primary">Доверяют</span>
@@ -57,7 +57,7 @@ export function Testimonials() {
             </p>
         </div>
         
-        <div className={cn("grid lg:grid-cols-3 gap-12 items-start opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200")}>
+        <div className={cn("grid lg:grid-cols-3 gap-12 items-start", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200" : "opacity-0")}>
             {/* Left column: Testimonials */}
             <div className="lg:col-span-2 space-y-8">
                 {testimonialsData.map((testimonial, index) => (

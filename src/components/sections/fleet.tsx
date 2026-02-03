@@ -128,13 +128,13 @@ export function Fleet() {
     <section ref={ref} id="fleet" className="py-20 md:py-28 bg-muted/20">
       <div className="container">
         <div className="text-center">
-          <div className={cn("opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-top-8 duration-700")}>
+          <div className={cn(isVisible ? "animate-in fade-in-0 slide-in-from-top-8 duration-700" : "opacity-0")}>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Хиты нашего автопарка</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
               Откройте для себя автомобили, которые наши клиенты выбирают чаще всего. Эти модели — идеальное сочетание комфорта, стиля и надежности, проверенное сотнями поездок по дорогам Узбекистана.
             </p>
           </div>
-          <div className={cn("w-full max-w-6xl mx-auto mt-12 opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200")}>
+          <div className={cn("w-full max-w-6xl mx-auto mt-12", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200" : "opacity-0")}>
               <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                   <CarouselContent>
                       {popularVehicles.map(vehicle => (
@@ -163,7 +163,7 @@ export function Fleet() {
               </div>
           </div>
           
-          <div className={cn("mt-20 text-center border-t pt-16 opacity-0", isVisible && "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-300")}>
+          <div className={cn("mt-20 text-center border-t pt-16", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-300" : "opacity-0")}>
             <h3 className="text-2xl font-bold tracking-tight">Не нашли то, что искали?</h3>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
               Наш полный автопарк включает более 50 моделей. Мы подберем идеальный вариант для любой задачи — от деловой встречи до большого туристического тура.
