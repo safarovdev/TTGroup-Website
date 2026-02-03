@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 const navLinks = [
   { href: "#about", label: "О нас" },
   { href: "#fleet-intro", label: "Автопарк" },
-  { href: "#booking", label: "Контакты" },
+  { href: "#contacts", label: "Контакты" },
 ];
 
 export function Header() {
