@@ -8,15 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import { cn } from "@/lib/utils";
-
-const parkStat = { value: "50+", label: "автомобилей в парке", icon: <Briefcase className="w-6 h-6 text-primary" /> };
-const seatsStat = { value: "3-55", label: "посадочных мест", icon: <Users className="w-6 h-6 text-primary" /> };
-const clientsStat = { value: "1000+", label: "довольных клиентов", icon: <Smile className="w-6 h-6 text-primary" /> };
-
-const yearStat = { value: "2023-24", label: "средний год выпуска авто", icon: <Calendar className="w-6 h-6 text-primary" /> };
-const dispatchStat = { value: "15 мин", label: "среднее время подачи", icon: <Clock className="w-6 h-6 text-primary" /> };
-const citiesStat = { value: "12+", label: "городов по Узбекистану", icon: <MapPin className="w-6 h-6 text-primary" /> };
-
+import { useTranslation } from "@/hooks/useTranslation";
 
 const StatItem = ({ stat }: { stat: { value: string; label: string; icon: React.ReactNode } }) => (
     <div className="flex items-center gap-4">
@@ -32,7 +24,16 @@ const StatItem = ({ stat }: { stat: { value: string; label: string; icon: React.
 
 export function Stats() {
     const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.2 });
+    const { t } = useTranslation();
     const statsImage = PlaceHolderImages.find((img) => img.id === "stats-background");
+
+    const parkStat = { value: "50+", label: t('stats.park'), icon: <Briefcase className="w-6 h-6 text-primary" /> };
+    const seatsStat = { value: "3-55", label: t('stats.seats'), icon: <Users className="w-6 h-6 text-primary" /> };
+    const clientsStat = { value: "1000+", label: t('stats.clients'), icon: <Smile className="w-6 h-6 text-primary" /> };
+
+    const yearStat = { value: "2023-24", label: t('stats.year'), icon: <Calendar className="w-6 h-6 text-primary" /> };
+    const dispatchStat = { value: "15 min", label: t('stats.dispatch'), icon: <Clock className="w-6 h-6 text-primary" /> };
+    const citiesStat = { value: "12+", label: t('stats.cities'), icon: <MapPin className="w-6 h-6 text-primary" /> };
 
     return (
         <section ref={ref} id="stats" className="py-20 md:py-28 bg-muted/50 border-y">
@@ -40,12 +41,12 @@ export function Stats() {
                 <div className="grid lg:grid-cols-2 gap-16 items-start">
                     {/* Left Column: Text */}
                     <div className={cn("space-y-8 text-center lg:text-left", isVisible ? "animate-in fade-in-0 slide-in-from-left-10 duration-700" : "opacity-0")}>
-                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight">TTGroup в цифрах</h2>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('stats.title')}</h2>
                         <p className="text-xl text-muted-foreground">
-                            Наша надежность и качество, подтвержденные фактами. Мы гордимся нашим сервисом и предлагаем вам лучшие условия для комфортных и безопасных поездок.
+                            {t('stats.description1')}
                         </p>
                         <p className="text-lg text-muted-foreground">
-                           Наш автопарк постоянно обновляется, водители проходят строгий отбор, а география наших услуг покрывает все популярные туристические и деловые направления в Узбекистане.
+                           {t('stats.description2')}
                         </p>
                     </div>
 
@@ -79,7 +80,7 @@ export function Stats() {
                                 <div className="absolute w-full max-w-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                                     <Image
                                         src={statsImage.imageUrl}
-                                        alt={statsImage.description}
+                                        alt={t(statsImage.descriptionKey)}
                                         width={448}
                                         height={448}
                                         className="object-contain"

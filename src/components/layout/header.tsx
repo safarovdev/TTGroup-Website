@@ -11,23 +11,27 @@ import {
 import { ChevronDown, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-
-const navLinks = [
-  { href: "#about", label: "О нас" },
-  { href: "#fleet-intro", label: "Автопарк" },
-  { href: "#testimonials", label: "Отзывы" },
-  { href: "#gallery", label: "Галерея" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contacts", label: "Контакты" },
-];
+import { useLanguage } from "@/context/LanguageContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const { locale, setLocale } = useLanguage();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const navLinks = [
+    { href: "#about", label: t('header.about') },
+    { href: "#fleet-intro", label: t('header.fleet') },
+    { href: "#testimonials", label: t('header.testimonials') },
+    { href: "#gallery", label: t('header.gallery') },
+    { href: "#faq", label: t('header.faq') },
+    { href: "#contacts", label: t('header.contacts') },
+  ];
 
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur-sm animate-in fade-in-0 duration-500 sticky top-0 z-50">
@@ -52,13 +56,13 @@ export function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-1 text-sm">
-                  RU <ChevronDown className="h-4 w-4" />
+                  {locale.toUpperCase()} <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>RU</DropdownMenuItem>
-                <DropdownMenuItem>UZ</DropdownMenuItem>
-                <DropdownMenuItem>EN</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocale('ru')}>RU</DropdownMenuItem>
+                <DropdownMenuItem disabled>UZ</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocale('en')}>EN</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -66,7 +70,7 @@ export function Header() {
           )}
 
           <Button asChild className="hidden sm:inline-flex">
-            <Link href="#booking">Забронировать</Link>
+            <Link href="#booking">{t('header.book')}</Link>
           </Button>
 
           {isMounted ? (
@@ -94,7 +98,7 @@ export function Header() {
                   ))}
                 </nav>
                  <Button asChild className="mt-8 w-full">
-                  <Link href="#booking" onClick={() => setIsMobileMenuOpen(false)}>Забронировать</Link>
+                  <Link href="#booking" onClick={() => setIsMobileMenuOpen(false)}>{t('header.book')}</Link>
                 </Button>
               </SheetContent>
             </Sheet>

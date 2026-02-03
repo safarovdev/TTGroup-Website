@@ -6,11 +6,12 @@ import React from 'react';
 import { Briefcase, Users, Star, Sun, Zap, Armchair, Car, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Vehicles, Vehicle } from "@/lib/vehicles";
+import { Vehicles } from "@/lib/vehicles";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOnScreen } from "@/hooks/use-on-screen";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
 const popularVehicles = popular_ids
@@ -18,6 +19,7 @@ const popularVehicles = popular_ids
   .filter((v): v is NonNullable<typeof v> => v !== undefined);
 
 const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
+  const { t } = useTranslation();
   const vehicle = Vehicles.find(v => v.id === vehicleId);
   const [isLoading, setIsLoading] = React.useState(!!vehicle?.imageUrl);
   
@@ -27,15 +29,24 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
   
   const featureIcons: { [key: string]: React.ReactElement } = {
     'мест': <Users />,
+    'seats': <Users />,
     'пассажир': <Users />,
+    'passenger': <Users />,
     'салон': <Armchair />,
+    'leather': <Armchair />,
     'панорама': <Sun />,
+    'panorama': <Sun />,
     'электро': <Zap />,
+    'electric': <Zap />,
     'внедорожник': <Car />,
+    'suv': <Car />,
     'кроссовер': <Car />,
+    'crossover': <Car />,
     'vip': <Star />,
     'бизнес': <Briefcase />,
+    'business': <Briefcase />,
     'кресла': <Armchair />,
+    'captain': <Armchair />,
   };
 
   const getFeatureIcon = (feature: string) => {
@@ -73,12 +84,12 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
       <CardContent className="p-6 flex-grow flex flex-col">
         <CardTitle className="text-xl font-bold">{vehicle.name}</CardTitle>
         
-        {vehicle.features && (
+        {vehicle.featureKeys && (
           <ul className="space-y-2 text-muted-foreground text-sm pt-4">
-            {vehicle.features.map((feature, index) => (
+            {vehicle.featureKeys.map((featureKey, index) => (
               <li key={index} className="flex items-center gap-3">
-                {getFeatureIcon(feature)}
-                <span>{feature}</span>
+                {getFeatureIcon(t(`vehicleFeatures.${featureKey}`))}
+                <span>{t(`vehicleFeatures.${featureKey}`)}</span>
               </li>
             ))}
           </ul>
@@ -86,12 +97,12 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
 
         <div className="flex-grow" />
 
-        {vehicle.price && (
-            <p className="text-2xl font-bold text-foreground mt-4">{vehicle.price}</p>
+        {vehicle.priceKey && (
+            <p className="text-2xl font-bold text-foreground mt-4">{t(`vehiclePrices.${vehicle.priceKey}`)}</p>
         )}
         
         <Button asChild size="lg" className="w-full mt-4 font-semibold">
-            <Link href="#booking">Забронировать</Link>
+            <Link href="#booking">{t('fleet.bookButton')}</Link>
         </Button>
       </CardContent>
     </Card>
@@ -100,6 +111,7 @@ const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
 
 export function Fleet() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.1 });
+  const { t } = useTranslation();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
@@ -129,9 +141,9 @@ export function Fleet() {
       <div className="container">
         <div className="text-center">
           <div className={cn(isVisible ? "animate-in fade-in-0 slide-in-from-top-8 duration-700" : "opacity-0")}>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Хиты нашего автопарка</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('fleet.title')}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-              Откройте для себя автомобили, которые наши клиенты выбирают чаще всего. Эти модели — идеальное сочетание комфорта, стиля и надежности, проверенное сотнями поездок по дорогам Узбекистана.
+              {t('fleet.description')}
             </p>
           </div>
           <div className={cn("w-full max-w-6xl mx-auto mt-12", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200" : "opacity-0")}>
@@ -153,7 +165,7 @@ export function Fleet() {
                       <button
                           key={index}
                           onClick={() => api?.scrollTo(index)}
-                          aria-label={`Перейти к слайду ${index + 1}`}
+                          aria-label={`${t('fleet.goToSlide')} ${index + 1}`}
                           className={cn(
                               "h-2 w-2 rounded-full transition-all duration-300",
                               current === index ? 'w-4 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
@@ -164,16 +176,16 @@ export function Fleet() {
           </div>
           
           <div className={cn("mt-20 text-center border-t pt-16", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-300" : "opacity-0")}>
-            <h3 className="text-2xl font-bold tracking-tight">Не нашли то, что искали?</h3>
+            <h3 className="text-2xl font-bold tracking-tight">{t('fleet.notFound.title')}</h3>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Наш полный автопарк включает более 50 моделей. Мы подберем идеальный вариант для любой задачи — от деловой встречи до большого туристического тура.
+              {t('fleet.notFound.description')}
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="font-bold">
-                <Link href="#">Посмотреть все модели</Link>
+                <Link href="#">{t('fleet.notFound.allModelsButton')}</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="font-bold">
-                <Link href="#booking">Связаться с нами</Link>
+                <Link href="#booking">{t('fleet.notFound.contactUsButton')}</Link>
               </Button>
             </div>
           </div>

@@ -7,17 +7,19 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function Principles() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.2 });
+  const { t } = useTranslation();
 
   const topImage = PlaceHolderImages.find((img) => img.id === "location-samarkand");
   const bottomImage = PlaceHolderImages.find((img) => img.id === "location-bukhara");
 
   const stats = [
-    { text: "Премиальные автомобили" },
-    { text: "Водители с безупречным сервисом" },
-    { text: "Трансферы, встречи, индивидуальные маршруты" },
+    { text: t('principles.stats.premium') },
+    { text: t('principles.stats.service') },
+    { text: t('principles.stats.flexibility') },
   ];
 
   return (
@@ -30,7 +32,7 @@ export function Principles() {
               <div className="absolute bottom-0 left-0 w-[65%] h-[65%] md:w-[480px] md:h-[320px] rounded-md shadow-2xl overflow-hidden">
                 <Image
                   src={bottomImage.imageUrl}
-                  alt={bottomImage.description}
+                  alt={t(bottomImage.descriptionKey)}
                   data-ai-hint={bottomImage.imageHint}
                   fill
                   className="object-cover"
@@ -42,7 +44,7 @@ export function Principles() {
               <div className="absolute top-0 right-0 w-[55%] h-[55%] md:w-[360px] md:h-[240px] rounded-md shadow-2xl overflow-hidden border-8 border-background">
                 <Image
                   src={topImage.imageUrl}
-                  alt={topImage.description}
+                  alt={t(topImage.descriptionKey)}
                   data-ai-hint={topImage.imageHint}
                   fill
                   className="object-cover"
@@ -54,17 +56,17 @@ export function Principles() {
 
           <div className={cn("space-y-8", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-5 duration-700 delay-200" : "opacity-0")}>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-              Добро пожаловать в TourEast Transport Group
+              {t('principles.title')}
             </h2>
             <p className="text-lg lg:text-xl text-muted-foreground">
-              Мы создаём комфортные и безопасные поездки по всему Узбекистану — для тех, кто ценит уровень. TourEast Transport Group — ваш надёжный партнёр в мире премиальных перевозок.
+              {t('principles.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
                <Button asChild size="lg" className="font-bold">
-                 <Link href="#booking">Бронировать онлайн</Link>
+                 <Link href="#booking">{t('principles.bookButton')}</Link>
                </Button>
                <Button asChild variant="outline" size="lg" className="font-bold">
-                 <Link href="#booking">Связаться с нами</Link>
+                 <Link href="#booking">{t('principles.contactButton')}</Link>
                </Button>
             </div>
              <div className="border-t pt-8 mt-8">

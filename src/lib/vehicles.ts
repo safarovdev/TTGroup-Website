@@ -1,102 +1,102 @@
 export type Vehicle = {
     id: string;
     name: string;
-    description: string;
+    descriptionKey: string;
     imageUrl: string;
     imageHint: string;
     category: 'premium' | 'comfort' | 'minivan' | 'bus';
-    features?: string[];
-    price?: string;
-  };
+    featureKeys?: string[];
+    priceKey?: string;
+};
   
-  export const vehicleCategoryMap: Record<Vehicle['category'], string> = {
-      premium: '💎 Премиум и VIP-класс',
-      comfort: '🚗 Комфорт и Стандарт',
-      minivan: '🚐 Минивэны',
-      bus: '🚌 Микроавтобусы и Автобусы',
-  };
+export const vehicleCategoryMap: Record<Vehicle['category'], string> = {
+    premium: '💎 Премиум и VIP-класс',
+    comfort: '🚗 Комфорт и Стандарт',
+    minivan: '🚐 Минивэны',
+    bus: '🚌 Микроавтобусы и Автобусы',
+};
   
-  export const Vehicles: Vehicle[] = [
+export const Vehicles: Vehicle[] = [
     // Premium & VIP
     {
       "id": "fleet-lixiang-l7",
       "name": "LiXiang L7",
       "category": "premium",
-      "description": "Премиальный VIP-кроссовер с панорамной крышей.",
+      "descriptionKey": "lixiang_l7_desc",
       "imageUrl": "",
       "imageHint": "white suv",
-      "features": ["до 4 мест", "панорама", "оттоманка", "VIP"],
-      "price": "от 120$ / день"
+      "featureKeys": ["up_to_4_seats", "panorama", "ottoman", "vip"],
+      "priceKey": "from_120_day"
     },
     {
       "id": "fleet-chevrolet-tahoe-rs",
       "name": "Chevrolet Tahoe RS",
       "category": "premium",
-      "description": "Вместительный внедорожник премиум-класса.",
+      "descriptionKey": "tahoe_rs_desc",
       "imageUrl": "",
       "imageHint": "black suv",
-      "features": ["1–4 места", "внедорожник премиум-класса"],
-      "price": "от 140$ / день"
+      "featureKeys": ["from_1_to_4_seats", "premium_suv"],
+      "priceKey": "from_140_day"
     },
     {
       "id": "fleet-mercedes-s500",
       "name": "Mercedes-Benz S500",
       "category": "premium",
-      "description": "Представительский седан с панорамной крышей.",
+      "descriptionKey": "s500_desc",
       "imageUrl": "",
       "imageHint": "black sedan",
-      "features": ["до 3 мест", "кожаный салон", "панорама"],
-      "price": "от 150$ / день"
+      "featureKeys": ["up_to_3_seats", "leather_interior", "panorama"],
+      "priceKey": "from_150_day"
     },
     {
       "id": "fleet-toyota-lc-200",
       "name": "Toyota Land Cruiser 200",
       "category": "premium",
-      "description": "Надежный и комфортный внедорожник.",
+      "descriptionKey": "lc200_desc",
       "imageUrl": "",
       "imageHint": "white suv desert",
-      "features": ["1–4 места", "внедорожник"],
-      "price": "от 130$ / день"
+      "featureKeys": ["from_1_to_4_seats", "suv"],
+      "priceKey": "from_130_day"
     },
     {
       "id": "fleet-haval-h6",
       "name": "Haval H6 Full",
       "category": "premium",
-      "description": "Современный и технологичный кроссовер.",
+      "descriptionKey": "haval_h6_desc",
       "imageUrl": "",
       "imageHint": "grey suv",
-      "features": ["1–4 места", "кроссовер"],
-      "price": "от 90$ / день"
+      "featureKeys": ["from_1_to_4_seats", "crossover"],
+      "priceKey": "from_90_day"
     },
     {
       "id": "fleet-haval-dargo",
       "name": "Haval Dargo",
       "category": "premium",
-      "description": "Брутальный кроссовер для любых дорог.",
+      "descriptionKey": "haval_dargo_desc",
       "imageUrl": "",
       "imageHint": "orange suv",
-      "features": ["до 4 мест"],
-      "price": "от 95$ / день"
+      "featureKeys": ["up_to_4_seats"],
+      "priceKey": "from_95_day"
     },
     {
       "id": "fleet-byd-champion",
       "name": "BYD Champion",
       "category": "premium",
-      "description": "Стильный и динамичный электромобиль.",
+      "descriptionKey": "byd_champion_desc",
       "imageUrl": "",
       "imageHint": "blue sedan",
-      "features": ["1–3 места", "электромобиль"],
-      "price": "от 80$ / день"
+      "featureKeys": ["from_1_to_3_seats", "electric_car"],
+      "priceKey": "from_80_day"
     },
     {
       "id": "fleet-aiqar-eq7",
       "name": "Aiqar EQ7",
       "category": "premium",
-      "description": "Футуристичный электромобиль-кроссовер.",
+      "descriptionKey": "aiqar_eq7_desc",
       "imageUrl": "",
       "imageHint": "green suv",
-      "features": ["1–3 места", "электромобиль"],
-      "price": "от 85$ / день"
+      "featureKeys": ["from_1_to_3_seats", "electric_car"],
+      "priceKey": "from_85_day"
     },
     
     // Comfort & Standard
@@ -104,61 +104,61 @@ export type Vehicle = {
       "id": "fleet-chevrolet-malibu-2",
       "name": "Chevrolet Malibu 2",
       "category": "comfort",
-      "description": "Комфортный седан бизнес-класса.",
+      "descriptionKey": "malibu_2_desc",
       "imageUrl": "",
       "imageHint": "white sedan",
-      "features": ["1–3 места", "кожаный салон"],
-      "price": "от 70$ / день"
+      "featureKeys": ["from_1_to_3_seats", "leather_interior"],
+      "priceKey": "from_70_day"
     },
     {
       "id": "fleet-kia-k5",
       "name": "Kia K5",
       "category": "comfort",
-      "description": "Яркий и современный седан 2024 года.",
+      "descriptionKey": "kia_k5_desc",
       "imageUrl": "",
       "imageHint": "white sedan night",
-      "features": ["1–3 места", "модель 2024 года"],
-      "price": "от 80$ / день"
+      "featureKeys": ["from_1_to_3_seats", "model_2024"],
+      "priceKey": "from_80_day"
     },
     {
       "id": "fleet-kia-sportage",
       "name": "Kia Sportage",
       "category": "comfort",
-      "description": "Универсальный и практичный кроссовер.",
+      "descriptionKey": "kia_sportage_desc",
       "imageUrl": "",
       "imageHint": "blue suv",
-      "features": ["1–4 места", "кроссовер"],
-      "price": "от 75$ / день"
+      "featureKeys": ["from_1_to_4_seats", "crossover"],
+      "priceKey": "from_75_day"
     },
     {
       "id": "fleet-captiva-5",
       "name": "Chevrolet Captiva / Captiva 5 Premier",
       "category": "comfort",
-      "description": "Семиместный семейный кроссовер.",
+      "descriptionKey": "captiva_5_desc",
       "imageUrl": "",
       "imageHint": "red suv",
-      "features": ["от 4 до 7 мест"],
-      "price": "от 80$ / день"
+      "featureKeys": ["from_4_to_7_seats"],
+      "priceKey": "from_80_day"
     },
     {
       "id": "fleet-chevrolet-cobalt",
       "name": "Chevrolet Cobalt",
       "category": "comfort",
-      "description": "Надежный и экономичный седан.",
+      "descriptionKey": "cobalt_desc",
       "imageUrl": "",
       "imageHint": "silver sedan",
-      "features": ["2–3 места"],
-      "price": "от 50$ / день"
+      "featureKeys": ["from_2_to_3_seats"],
+      "priceKey": "from_50_day"
     },
     {
       "id": "fleet-jac-j7",
       "name": "Jac J7",
       "category": "comfort",
-      "description": "Просторный и доступный лифтбэк.",
+      "descriptionKey": "jac_j7_desc",
       "imageUrl": "",
       "imageHint": "red liftback",
-      "features": ["до 3 мест"],
-      "price": "от 60$ / день"
+      "featureKeys": ["up_to_3_seats"],
+      "priceKey": "from_60_day"
     },
   
     // Minivans
@@ -166,71 +166,71 @@ export type Vehicle = {
       "id": "fleet-hyundai-staria",
       "name": "Hyundai Staria",
       "category": "minivan",
-      "description": "Минивэн бизнес-класса с капитанскими креслами.",
+      "descriptionKey": "staria_desc",
       "imageUrl": "",
       "imageHint": "black minivan",
-      "features": ["1–8 мест", "бизнес-класс", "капитанские кресла"],
-      "price": "от 100$ / день"
+      "featureKeys": ["from_1_to_8_seats", "business_class", "captain_chairs"],
+      "priceKey": "from_100_day"
     },
     {
       "id": "fleet-kia-carnival",
       "name": "Kia Carnival",
       "category": "minivan",
-      "description": "Роскошный VIP-минивэн для дальних поездок.",
+      "descriptionKey": "carnival_desc",
       "imageUrl": "",
       "imageHint": "white minivan",
-      "features": ["1–5 мест", "VIP-минивэн"],
-      "price": "от 110$ / день"
+      "featureKeys": ["from_1_to_5_seats", "vip_minivan"],
+      "priceKey": "from_110_day"
     },
     {
       "id": "fleet-hyundai-starex",
       "name": "Hyundai Starex / Grand Starex",
       "category": "minivan",
-      "description": "Надежный и вместительный минивэн.",
+      "descriptionKey": "starex_desc",
       "imageUrl": "",
       "imageHint": "silver minivan",
-      "features": ["до 7 мест"],
-      "price": "от 90$ / день"
+      "featureKeys": ["up_to_7_seats"],
+      "priceKey": "from_90_day"
     },
     {
       "id": "fleet-kia-carens",
       "name": "Kia Carens",
       "category": "minivan",
-      "description": "Компактный и маневренный минивэн.",
+      "descriptionKey": "carens_desc",
       "imageUrl": "",
       "imageHint": "blue minivan",
-      "features": ["5–6 мест"],
-      "price": "от 85$ / день"
+      "featureKeys": ["from_5_to_6_seats"],
+      "priceKey": "from_85_day"
     },
     {
       "id": "fleet-baw-m7",
       "name": "Baw M7",
       "category": "minivan",
-      "description": "Просторный минивэн с капитанскими креслами.",
+      "descriptionKey": "baw_m7_desc",
       "imageUrl": "",
       "imageHint": "white minivan front",
-      "features": ["до 8 мест", "капитанские кресла"],
-      "price": "от 95$ / день"
+      "featureKeys": ["up_to_8_seats", "captain_chairs"],
+      "priceKey": "from_95_day"
     },
     {
       "id": "fleet-jac-refine-m4",
       "name": "Jac Refine M4",
       "category": "minivan",
-      "description": "Вместительный минивэн для групповых поездок.",
+      "descriptionKey": "refine_m4_desc",
       "imageUrl": "",
       "imageHint": "black minivan side",
-      "features": ["до 8 мест"],
-      "price": "от 90$ / день"
+      "featureKeys": ["up_to_8_seats"],
+      "priceKey": "from_90_day"
     },
     {
       "id": "fleet-mercedes-vito",
       "name": "Mercedes-Benz Vito",
       "category": "minivan",
-      "description": "Комфортабельный минивэн от Mercedes.",
+      "descriptionKey": "vito_desc",
       "imageUrl": "",
       "imageHint": "black minivan mercedes",
-      "features": ["до 7 мест"],
-      "price": "от 120$ / день"
+      "featureKeys": ["up_to_7_seats"],
+      "priceKey": "from_120_day"
     },
   
     // Buses
@@ -238,70 +238,70 @@ export type Vehicle = {
       "id": "fleet-mercedes-sprinter",
       "name": "Mercedes-Benz Sprinter",
       "category": "bus",
-      "description": "Надежный микроавтобус для групп.",
+      "descriptionKey": "sprinter_desc",
       "imageUrl": "",
       "imageHint": "white bus",
-      "features": ["16–18 мест"],
-      "price": "от 180$ / день"
+      "featureKeys": ["from_16_to_18_seats"],
+      "priceKey": "from_180_day"
     },
     {
       "id": "fleet-toyota-hiace",
       "name": "Toyota Hiace",
       "category": "bus",
-      "description": "Популярный микроавтобус для туризма.",
+      "descriptionKey": "hiace_desc",
       "imageUrl": "",
       "imageHint": "white bus side",
-      "features": ["до 14 мест"],
-      "price": "от 150$ / день"
+      "featureKeys": ["up_to_14_seats"],
+      "priceKey": "from_150_day"
     },
     {
       "id": "fleet-foton-view-cs2",
       "name": "Foton View CS2",
       "category": "bus",
-      "description": "Современный микроавтобус для пассажиров.",
+      "descriptionKey": "foton_view_desc",
       "imageUrl": "",
       "imageHint": "white bus front",
-      "features": ["до 14 мест"],
-      "price": "от 140$ / день"
+      "featureKeys": ["up_to_14_seats"],
+      "priceKey": "from_140_day"
     },
     {
       "id": "fleet-joylong",
       "name": "Joylong",
       "category": "bus",
-      "description": "Вместительный микроавтобус для больших групп.",
+      "descriptionKey": "joylong_desc",
       "imageUrl": "",
       "imageHint": "white van",
-      "features": ["до 17 мест"],
-      "price": "от 160$ / день"
+      "featureKeys": ["up_to_17_seats"],
+      "priceKey": "from_160_day"
     },
     {
       "id": "fleet-jac-sunray",
       "name": "Jac Sunray",
       "category": "bus",
-      "description": "Просторный микроавтобус на 19 мест.",
+      "descriptionKey": "sunray_desc",
       "imageUrl": "",
       "imageHint": "white van side",
-      "features": ["19 мест"],
-      "price": "от 170$ / день"
+      "featureKeys": ["19_seats"],
+      "priceKey": "from_170_day"
     },
     {
       "id": "fleet-setra-minibus",
       "name": "Setra Minibus",
       "category": "bus",
-      "description": "Комфортабельный автобус для делегаций.",
+      "descriptionKey": "setra_desc",
       "imageUrl": "",
       "imageHint": "white coach bus",
-      "features": ["до 20 мест"],
-      "price": "от 200$ / день"
+      "featureKeys": ["up_to_20_seats"],
+      "priceKey": "from_200_day"
     },
     {
       "id": "fleet-yutong-bus",
       "name": "Yutong",
       "category": "bus",
-      "description": "Большой туристический автобус для дальних поездок.",
+      "descriptionKey": "yutong_desc",
       "imageUrl": "",
       "imageHint": "white tour bus",
-      "features": ["50–55 мест"],
-      "price": "от 250$ / день"
+      "featureKeys": ["from_50_to_55_seats"],
+      "priceKey": "from_250_day"
     }
   ];

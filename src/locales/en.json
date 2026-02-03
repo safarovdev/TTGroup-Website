@@ -1,0 +1,283 @@
+{
+  "header": {
+    "about": "About Us",
+    "fleet": "Fleet",
+    "testimonials": "Reviews",
+    "gallery": "Gallery",
+    "faq": "FAQ",
+    "contacts": "Contacts",
+    "book": "Book Now"
+  },
+  "footer": {
+    "copyright": "TourEast Transport Group. All rights reserved."
+  },
+  "hero": {
+    "title": "TourEast Transport Group",
+    "subtitle": "Professional passenger transport: from individual airport transfers to group tours.",
+    "bookButton": "Book Now",
+    "fleetButton": "Our Fleet"
+  },
+  "principles": {
+    "title": "Welcome to TourEast Transport Group",
+    "description": "We create comfortable and safe trips throughout Uzbekistan — for those who value quality. TourEast Transport Group is your reliable partner in the world of premium transportation.",
+    "bookButton": "Book Online",
+    "contactButton": "Contact Us",
+    "stats": {
+      "premium": "Premium vehicles",
+      "service": "Drivers with impeccable service",
+      "flexibility": "Transfers, meetings, individual routes"
+    }
+  },
+  "stats": {
+    "title": "TTGroup in Numbers",
+    "description1": "Our reliability and quality confirmed by facts. We are proud of our service and offer you the best conditions for comfortable and safe trips.",
+    "description2": "Our vehicle fleet is constantly updated, drivers undergo a strict selection process, and our service geography covers all popular tourist and business destinations in Uzbekistan.",
+    "park": "vehicles in the fleet",
+    "seats": "seating capacity",
+    "clients": "satisfied clients",
+    "year": "average vehicle year",
+    "dispatch": "average dispatch time",
+    "cities": "cities across Uzbekistan"
+  },
+  "fleetIntro": {
+    "title": "More than just transport. <span class=\"text-primary\">Your personal fleet</span> in Uzbekistan.",
+    "description": "From agile sedans for city meetings to premium liners for large delegations. We have assembled the best fleet in the region to make your every trip flawless.",
+    "categories": {
+      "premium": {
+        "name": "Premium & VIP",
+        "description": "For business meetings and guests who value exclusive comfort."
+      },
+      "comfort": {
+        "name": "Comfort & Standard",
+        "description": "The optimal choice for daily trips and city tours."
+      },
+      "minivans": {
+        "name": "Minivans",
+        "description": "Ideal for family travel and small delegations."
+      },
+      "buses": {
+        "name": "Buses",
+        "description": "Solutions for corporate outings, excursions, and large groups."
+      }
+    },
+    "standards": {
+      "fresh": {
+        "title": "Modern Fleet",
+        "description": "90% of our fleet consists of 2023–2024 vehicles in perfect technical and external condition."
+      },
+      "clean": {
+        "title": "Perfect Cleanliness",
+        "description": "We perform a comprehensive wash and interior dry cleaning before every trip. Smoking is not allowed in our cars."
+      },
+      "comfort": {
+        "title": "Comfort in Any Weather",
+        "description": "All vehicles are equipped with functioning climate control systems, ensuring coolness even in +40°C."
+      },
+      "safety": {
+        "title": "Safety First",
+        "description": "Regular technical inspections, full insurance, and only experienced drivers with over 10 years of experience."
+      }
+    },
+    "seo": {
+      "title": "For any tasks and routes",
+      "description": "We understand the difference between a tourist walk around Bukhara and an official delegation visit. That's why at TTGroup we offer flexible solutions: quick sedan booking in 15 minutes, logistics organization for conferences on Yutong buses, or premium support in a LiXiang L7. All transport is equipped for comfortable long-distance trips between cities in Uzbekistan."
+    }
+  },
+  "fleet": {
+    "title": "Hits of Our Fleet",
+    "description": "Discover the vehicles our clients choose most often. These models are the perfect combination of comfort, style, and reliability, tested by hundreds of trips on the roads of Uzbekistan.",
+    "bookButton": "Book Now",
+    "goToSlide": "Go to slide",
+    "notFound": {
+      "title": "Didn't find what you were looking for?",
+      "description": "Our full fleet includes over 50 models. We will find the perfect option for any task — from a business meeting to a large tourist tour.",
+      "allModelsButton": "View All Models",
+      "contactUsButton": "Contact Us"
+    }
+  },
+  "testimonials": {
+    "title": {
+      "line1": "Service that is",
+      "line2": "Trusted"
+    },
+    "description": "We are proud of the high level of our service. Find out what customers who have already used our services say.",
+    "items": {
+      "t1": {
+        "name": "Alexey P.",
+        "role": "Business trip",
+        "quote": "Excellent service, new cars, polite drivers. I ordered a transfer for partners — everyone was very satisfied. Definitely recommend!"
+      },
+      "t2": {
+        "name": "Maria K.",
+        "role": "Conference organizer",
+        "quote": "They helped with organizing a transfer for a large group. Everything was clear, on time, and at the highest level. The cars are clean, the drivers are professionals."
+      },
+      "t3": {
+        "name": "John S.",
+        "role": "Tourist from the USA",
+        "quote": "The best airport transfer I've had. The driver met me with a sign, helped with luggage. The car was perfectly clean. Great start to my trip in Uzbekistan!"
+      }
+    },
+    "feedback": {
+      "title": "Your Opinion Matters",
+      "description": "We value every review. Check out dozens of real ratings on popular platforms.",
+      "google": "Google Maps",
+      "yandex": "Yandex Maps",
+      "gis": "2GIS"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "description": "Answers to the most popular questions about our services.",
+    "items": {
+      "q1": "What cars are in your fleet?",
+      "a1": "Our fleet includes more than 50 vehicles of various classes: from standard sedans (Chevrolet Cobalt, Kia K5) to premium SUVs (LiXiang L7, Chevrolet Tahoe) and spacious minivans and buses (Hyundai Staria, Mercedes-Benz Sprinter, Yutong). We will select transport for any task.",
+      "q2": "How to book a car?",
+      "a2": "You can book a car by filling out the form on our website. Specify your name, phone number, desired date, and car. Our manager will contact you shortly to confirm and clarify the details. You can also contact us directly by phone or via Telegram.",
+      "q3": "Do you provide airport transfer services?",
+      "a3": "Yes, we provide a full range of transfer services from the airports of Tashkent, Samarkand, Bukhara, and other cities in Uzbekistan. Our drivers will meet you with a sign, help with luggage, and ensure a comfortable trip to your hotel or any other destination.",
+      "q4": "Can I order a car with a driver for a trip between cities?",
+      "a4": "Of course. We specialize in intercity transport throughout Uzbekistan. All our cars are equipped for comfortable long trips, and the drivers have extensive long-distance driving experience and know the routes perfectly.",
+      "q5": "What payment methods do you accept?",
+      "a5": "We accept various payment methods, including cash (Uzbek soms, US dollars), payment by bank card via a terminal, as well as bank transfers for legal entities. Please specify your preferred payment method when booking."
+    }
+  },
+  "gallery": {
+    "title": "Uzbekistan from the window of a comfortable car",
+    "description": "These are not just photos — these are real shots from trips. See what your journey could be like: comfortable cars, scenic routes, and stops in the most beautiful places. <span class=\"font-semibold text-foreground\">Get inspired for your next trip.</span>",
+    "instagramButton": "More photos on"
+  },
+  "booking": {
+    "title": "Book a Trip",
+    "description": "Fill out the form, and we will contact you shortly to clarify the details.",
+    "form": {
+      "nameLabel": "Your name",
+      "namePlaceholder": "John",
+      "nameError": "Name must be at least 2 characters.",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "e.g. +1 555 123 4567",
+      "phoneError": "Please enter a valid phone number.",
+      "usernameLabel": "Username",
+      "usernameOptional": "(optional)",
+      "usernamePlaceholder": "@telegram_username",
+      "dateLabel": "Trip date",
+      "datePlaceholder": "Select a date",
+      "dateError": "Please select a date.",
+      "vehicleLabel": "Select a vehicle",
+      "vehiclePlaceholder": "Car model",
+      "vehicleError": "Please select a vehicle.",
+      "vehicleConsultation": "Not sure, need consultation",
+      "contactMethodLabel": "Preferred contact method",
+      "contactMethodError": "Please choose a contact method.",
+      "call": "Phone Call",
+      "submitButton": "Send Request",
+      "toastSuccessTitle": "Request sent!",
+      "toastSuccessDescription": "We will contact you soon to confirm."
+    }
+  },
+  "contacts": {
+    "title": "Contacts",
+    "managerTitle": "Booking Manager",
+    "managerName": "Ilkhom Mamurovich",
+    "addressTitle": "Company Address",
+    "addressLine1": "Uzbekistan, Bukhara,",
+    "addressLine2": "12 Atabaya Eshanova St.",
+    "socialTitle": "Social Networks",
+    "navTitle": "Navigation",
+    "nav": {
+      "home": "Home",
+      "about": "About Us",
+      "fleet": "Fleet",
+      "testimonials": "Reviews",
+      "faq": "FAQ",
+      "contacts": "Contacts"
+    },
+    "docsTitle": "Documents",
+    "docs": {
+      "requisites": "Company Details",
+      "partners": "For Partners"
+    }
+  },
+  "vehicleCategories": {
+    "premium": "💎 Premium & VIP",
+    "comfort": "🚗 Comfort & Standard",
+    "minivan": "🚐 Minivans",
+    "bus": "🚌 Microbuses & Buses"
+  },
+  "vehicleFeatures": {
+    "up_to_4_seats": "up to 4 seats",
+    "panorama": "panorama",
+    "ottoman": "ottoman",
+    "vip": "VIP",
+    "from_1_to_4_seats": "1-4 seats",
+    "premium_suv": "premium SUV",
+    "up_to_3_seats": "up to 3 seats",
+    "leather_interior": "leather interior",
+    "suv": "SUV",
+    "crossover": "crossover",
+    "from_1_to_3_seats": "1-3 seats",
+    "electric_car": "electric car",
+    "model_2024": "2024 model",
+    "from_4_to_7_seats": "4 to 7 seats",
+    "from_2_to_3_seats": "2-3 seats",
+    "from_1_to_8_seats": "1-8 seats",
+    "business_class": "business class",
+    "captain_chairs": "captain chairs",
+    "from_1_to_5_seats": "1-5 seats",
+    "vip_minivan": "VIP minivan",
+    "up_to_7_seats": "up to 7 seats",
+    "from_5_to_6_seats": "5-6 seats",
+    "up_to_8_seats": "up to 8 seats",
+    "from_16_to_18_seats": "16-18 seats",
+    "up_to_14_seats": "up to 14 seats",
+    "up_to_17_seats": "up to 17 seats",
+    "19_seats": "19 seats",
+    "up_to_20_seats": "up to 20 seats",
+    "from_50_to_55_seats": "50-55 seats"
+  },
+  "vehiclePrices": {
+    "from_120_day": "from $120 / day",
+    "from_140_day": "from $140 / day",
+    "from_150_day": "from $150 / day",
+    "from_130_day": "from $130 / day",
+    "from_90_day": "from $90 / day",
+    "from_95_day": "from $95 / day",
+    "from_80_day": "from $80 / day",
+    "from_85_day": "from $85 / day",
+    "from_70_day": "from $70 / day",
+    "from_75_day": "from $75 / day",
+    "from_50_day": "from $50 / day",
+    "from_60_day": "from $60 / day",
+    "from_100_day": "from $100 / day",
+    "from_110_day": "from $110 / day",
+    "from_180_day": "from $180 / day",
+    "from_160_day": "from $160 / day",
+    "from_170_day": "from $170 / day",
+    "from_200_day": "from $200 / day",
+    "from_250_day": "from $250 / day"
+  },
+  "placeholders": {
+    "hero_lixiang_l7_name": "LiXiang L7",
+    "hero_lixiang_l7_desc": "White SUV against a mountain landscape",
+    "location_bukhara_name": "Bukhara",
+    "location_bukhara_desc": "Ark of Bukhara fortress at sunset.",
+    "location_samarkand_name": "Samarkand",
+    "location_samarkand_desc": "Registan square in Samarkand.",
+    "stats_background_name": "Abstract background for stats",
+    "stats_background_desc": "Abstract colorful shapes background",
+    "faq_image_name": "FAQ Section Image",
+    "faq_image_desc": "Architectural detail of a building in Uzbekistan.",
+    "gallery_1_name": "Gallery Image 1",
+    "gallery_1_desc": "Ornate blue tiled entrance to a historic building.",
+    "gallery_2_name": "Gallery Image 2",
+    "gallery_2_desc": "Couple in traditional Uzbek clothing smiling.",
+    "gallery_3_name": "Gallery Image 3",
+    "gallery_3_desc": "Interior of a traditional Uzbek tea house.",
+    "gallery_4_name": "Gallery Image 4",
+    "gallery_4_desc": "Vibrant textiles at a local market.",
+    "gallery_5_name": "Gallery Image 5",
+    "gallery_5_desc": "A plate of traditional plov.",
+    "gallery_6_name": "Gallery Image 6",
+    "gallery_6_desc": "View of the desert from a car window."
+  }
+}

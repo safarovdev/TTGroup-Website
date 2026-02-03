@@ -24,64 +24,86 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import React from "react";
 import { Vehicles, vehicleCategoryMap } from "@/lib/vehicles";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/context/LanguageContext";
+import { ru, enUS } from 'date-fns/locale';
 
-const bookingSchema = z.object({
-  name: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }),
-  phone: z.string().min(9, { message: "Введите корректный номер телефона." }),
-  username: z.string().optional(),
-  date: z.date({ required_error: "Выберите дату." }),
-  vehicle: z.string({ required_error: "Выберите автомобиль." }),
-  contactMethod: z.enum(["telegram", "whatsapp", "call"], {required_error: "Выберите способ связи."}),
-});
-
-type BookingFormValues = z.infer<typeof bookingSchema>;
-
-const groupedVehicles = (Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>).reduce((acc, category) => {
-    const categoryVehicles = Vehicles.filter(v => v.category === category);
-    if (categoryVehicles.length > 0) {
-        acc[category] = categoryVehicles;
-    }
-    return acc;
-}, {} as Record<keyof typeof vehicleCategoryMap, typeof Vehicles>);
-
+const dateLocales = {
+  ru: ru,
+  en: enUS
+}
 
 export function Booking() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.2 });
   const { toast } = useToast();
+  const { t } = useTranslation();
+  const { locale } = useLanguage();
+
+  const bookingSchema = z.object({
+    name: z.string().min(2, { message: t('booking.form.nameError') }),
+    phone: z.string().min(9, { message: t('booking.form.phoneError') }),
+    username: z.string().optional(),
+    date: z.date({ required_error: t('booking.form.dateError') }),
+    vehicle: z.string({ required_error: t('booking.form.vehicleError') }),
+    contactMethod: z.enum(["telegram", "whatsapp", "call"], {required_error: t('booking.form.contactMethodError')}),
+  });
+  
+  type BookingFormValues = z.infer<typeof bookingSchema>;
+
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       name: "",
       phone: "",
       username: "",
-      vehicle: "Не уверен, нужна консультация",
+      vehicle: t('booking.form.vehicleConsultation'),
       contactMethod: "telegram",
     },
   });
 
+  // Re-initialize form with translated default values when language changes
+  React.useEffect(() => {
+    form.reset({
+      name: "",
+      phone: "",
+      username: "",
+      vehicle: t('booking.form.vehicleConsultation'),
+      contactMethod: "telegram",
+    });
+  }, [t, form]);
+
+
+  const groupedVehicles = (Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>).reduce((acc, category) => {
+      const categoryVehicles = Vehicles.filter(v => v.category === category);
+      if (categoryVehicles.length > 0) {
+          acc[category] = categoryVehicles;
+      }
+      return acc;
+  }, {} as Record<keyof typeof vehicleCategoryMap, typeof Vehicles>);
+
+
   function onSubmit(data: BookingFormValues) {
+    const message = `New booking request!\nName: ${data.name}\nPhone: ${data.phone}${data.username ? `\nUsername: ${data.username}`: ''}\nDate: ${format(data.date, 'PPP')}\nVehicle: ${data.vehicle}`;
     if (data.contactMethod === 'telegram') {
-        const message = `Новая заявка на бронирование!\nИмя: ${data.name}\nТелефон: ${data.phone}${data.username ? `\nUsername: ${data.username}`: ''}\nДата: ${format(data.date, 'PPP')}\nАвто: ${data.vehicle}`;
         const telegramUrl = `https://t.me/toureast_transport?text=${encodeURIComponent(message)}`;
         window.open(telegramUrl, '_blank');
     }
     
     toast({
-      title: "Заявка отправлена!",
-      description: "Мы скоро свяжемся с вами для подтверждения.",
+      title: t('booking.form.toastSuccessTitle'),
+      description: t('booking.form.toastSuccessDescription'),
     });
 
     form.reset();
-    // form.clearErrors(); // This might not be needed with reset, but keeping for safety
   }
 
   return (
     <section ref={ref} id="booking" className="py-20 md:py-28 bg-primary text-primary-foreground">
       <div className="container">
         <div className={cn("text-center max-w-3xl mx-auto mb-12", isVisible ? "animate-in fade-in-0 slide-in-from-top-8 duration-700" : "opacity-0")}>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Забронировать поездку</h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('booking.title')}</h2>
           <p className="mt-4 text-lg text-primary-foreground/80">
-            Заполните форму, и мы свяжемся с вами в ближайшее время для уточнения деталей.
+            {t('booking.description')}
           </p>
         </div>
         <div className={cn("max-w-3xl mx-auto", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200" : "opacity-0")}>
@@ -92,9 +114,9 @@ export function Booking() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ваше имя</FormLabel>
+                    <FormLabel>{t('booking.form.nameLabel')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Иван" {...field} className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 border-primary-foreground/20 focus-visible:ring-primary-foreground" />
+                      <Input placeholder={t('booking.form.namePlaceholder')} {...field} className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 border-primary-foreground/20 focus-visible:ring-primary-foreground" />
                     </FormControl>
                     <FormMessage className="text-accent" />
                   </FormItem>
@@ -106,9 +128,9 @@ export function Booking() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Номер телефона</FormLabel>
+                      <FormLabel>{t('booking.form.phoneLabel')}</FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder="+998 XX XXX XX XX" {...field} className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 border-primary-foreground/20 focus-visible:ring-primary-foreground" />
+                        <Input type="tel" placeholder={t('booking.form.phonePlaceholder')} {...field} className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 border-primary-foreground/20 focus-visible:ring-primary-foreground" />
                       </FormControl>
                       <FormMessage className="text-accent" />
                     </FormItem>
@@ -120,10 +142,10 @@ export function Booking() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Username <span className="text-primary-foreground/60">(необязательно)</span>
+                        {t('booking.form.usernameLabel')} <span className="text-primary-foreground/60">({t('booking.form.usernameOptional')})</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="@telegram_username" {...field} className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 border-primary-foreground/20 focus-visible:ring-primary-foreground" />
+                        <Input placeholder={t('booking.form.usernamePlaceholder')} {...field} className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 border-primary-foreground/20 focus-visible:ring-primary-foreground" />
                       </FormControl>
                       <FormMessage className="text-accent" />
                     </FormItem>
@@ -136,7 +158,7 @@ export function Booking() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Дата поездки</FormLabel>
+                      <FormLabel>{t('booking.form.dateLabel')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -148,9 +170,9 @@ export function Booking() {
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP", {})
+                                format(field.value, "PPP", { locale: dateLocales[locale] })
                               ) : (
-                                <span>Выберите дату</span>
+                                <span>{t('booking.form.datePlaceholder')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -165,6 +187,7 @@ export function Booking() {
                               date < new Date(new Date().setHours(0, 0, 0, 0))
                             }
                             initialFocus
+                            locale={dateLocales[locale]}
                           />
                         </PopoverContent>
                       </Popover>
@@ -177,22 +200,22 @@ export function Booking() {
                     name="vehicle"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Выберите автомобиль</FormLabel>
+                        <FormLabel>{t('booking.form.vehicleLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                             <SelectTrigger className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 focus-visible:ring-primary-foreground">
-                                <SelectValue placeholder="Модель авто" />
+                                <SelectValue placeholder={t('booking.form.vehiclePlaceholder')} />
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="Не уверен, нужна консультация">Не уверен, нужна консультация</SelectItem>
+                                <SelectItem value={t('booking.form.vehicleConsultation')}>{t('booking.form.vehicleConsultation')}</SelectItem>
                                 {Object.entries(groupedVehicles).map(([category, vehicles]) => (
                                     <SelectGroup key={category}>
-                                        <SelectLabel>{vehicleCategoryMap[category as keyof typeof vehicleCategoryMap]}</SelectLabel>
+                                        <SelectLabel>{t(`vehicleCategories.${category}`)}</SelectLabel>
                                         {vehicles.map((vehicle) => (
-                                            <SelectItem key={vehicle.id} value={`${vehicle.name} ${vehicle.features ? `(${vehicle.features.join(', ')})` : ''}`.trim()}>
+                                            <SelectItem key={vehicle.id} value={`${vehicle.name} ${vehicle.featureKeys ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim()}>
                                                 {vehicle.name} 
-                                                {vehicle.features && <span className="text-muted-foreground ml-2 text-xs">({vehicle.features.join(', ')})</span>}
+                                                {vehicle.featureKeys && <span className="text-muted-foreground ml-2 text-xs">({vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})</span>}
                                             </SelectItem>
                                         ))}
                                     </SelectGroup>
@@ -209,7 +232,7 @@ export function Booking() {
                 name="contactMethod"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Предпочтительный способ связи</FormLabel>
+                    <FormLabel>{t('booking.form.contactMethodLabel')}</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -238,7 +261,7 @@ export function Booking() {
                              <RadioGroupItem value="call" id="call" className="border-primary-foreground/50 text-primary-foreground"/>
                           </FormControl>
                           <FormLabel htmlFor="call" className="font-normal flex items-center gap-2 cursor-pointer">
-                             <PhoneCall className="h-5 w-5" /> Звонок
+                             <PhoneCall className="h-5 w-5" /> {t('booking.form.call')}
                           </FormLabel>
                         </FormItem>
                       </RadioGroup>
@@ -249,7 +272,7 @@ export function Booking() {
               />
               
               <Button type="submit" size="lg" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-bold text-base !mt-10">
-                Отправить заявку <Send className="ml-2 h-5 w-5" />
+                {t('booking.form.submitButton')} <Send className="ml-2 h-5 w-5" />
               </Button>
             </form>
           </Form>

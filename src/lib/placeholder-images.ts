@@ -1,7 +1,7 @@
 export type ImagePlaceholder = {
   id: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   imageUrl: string;
   imageHint: string;
   features?: string[];
@@ -12,78 +12,78 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
   // Existing hero and about images
   {
     "id": "hero-lixiang-l7",
-    "name": "LiXiang L7",
-    "description": "Белый внедорожник на фоне горного пейзажа",
+    "nameKey": "hero_lixiang_l7_name",
+    "descriptionKey": "hero_lixiang_l7_desc",
     "imageUrl": "/images/h-background.jpg",
     "imageHint": "suv mountains"
   },
   {
     "id": "location-bukhara",
-    "name": "Bukhara",
-    "description": "Ark of Bukhara fortress at sunset.",
+    "nameKey": "location_bukhara_name",
+    "descriptionKey": "location_bukhara_desc",
     "imageUrl": "/images/about-1.jpg",
     "imageHint": "ancient fortress"
   },
   {
     "id": "location-samarkand",
-    "name": "Samarkand",
-    "description": "Registan square in Samarkand.",
+    "nameKey": "location_samarkand_name",
+    "descriptionKey": "location_samarkand_desc",
     "imageUrl": "/images/about-2.jpg",      
     "imageHint": "historic square"
   },
   {
     "id": "stats-background",
-    "name": "Abstract background for stats",
-    "description": "Abstract colorful shapes background",
+    "nameKey": "stats_background_name",
+    "descriptionKey": "stats_background_desc",
     "imageUrl": "/images/stats.jpg",
     "imageHint": "abstract colorful"
   },
   {
     "id": "faq-image",
-    "name": "FAQ Section Image",
-    "description": "Architectural detail of a building in Uzbekistan.",
+    "nameKey": "faq_image_name",
+    "descriptionKey": "faq_image_desc",
     "imageUrl": "/images/faq.jpg",
     "imageHint": "uzbekistan architecture"
   },
   {
     "id": "gallery-1",
-    "name": "Gallery Image 1",
-    "description": "Ornate blue tiled entrance to a historic building.",
+    "nameKey": "gallery_1_name",
+    "descriptionKey": "gallery_1_desc",
     "imageUrl": "/images/gallery-8.jpg",
     "imageHint": "mosque entrance"
   },
   {
     "id": "gallery-2",
-    "name": "Gallery Image 2",
-    "description": "Couple in traditional Uzbek clothing smiling.",
+    "nameKey": "gallery_2_name",
+    "descriptionKey": "gallery_2_desc",
     "imageUrl": "/images/gallery-1.jpg",
     "imageHint": "couple traditional"
   },
   {
     "id": "gallery-3",
-    "name": "Gallery Image 3",
-    "description": "Interior of a traditional Uzbek tea house.",
+    "nameKey": "gallery_3_name",
+    "descriptionKey": "gallery_3_desc",
     "imageUrl": "/images/gallery-3.jpg",
     "imageHint": "tea house"
   },
   {
     "id": "gallery-4",
-    "name": "Gallery Image 4",
-    "description": "Vibrant textiles at a local market.",
+    "nameKey": "gallery_4_name",
+    "descriptionKey": "gallery_4_desc",
     "imageUrl": "/images/gallery-6.jpg",
     "imageHint": "market textiles"
   },
   {
     "id": "gallery-5",
-    "name": "Gallery Image 5",
-    "description": "A plate of traditional plov.",
+    "nameKey": "gallery_5_name",
+    "descriptionKey": "gallery_5_desc",
     "imageUrl": "/images/gallery-4.jpg",
     "imageHint": "uzbek food"
   },
   {
     "id": "gallery-6",
-    "name": "Gallery Image 6",
-    "description": "View of the desert from a car window.",
+    "nameKey": "gallery_6_name",
+    "descriptionKey": "gallery_6_desc",
     "imageUrl": "/images/gallery-2.jpg",
     "imageHint": "desert road"
   }
