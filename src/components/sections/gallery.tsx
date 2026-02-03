@@ -19,12 +19,10 @@ export function Gallery() {
       <div className="container">
         <div className={cn("text-center max-w-4xl mx-auto mb-16", isVisible ? "animate-in fade-in-0 slide-in-from-top-8 duration-700" : "opacity-0")}>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-primary uppercase">
-            Вдохновитесь красотой центральной азии с нами!
+            Узбекистан из окна комфортного авто
           </h2>
           <p className="mt-6 text-lg text-muted-foreground">
-            Увидьте страну такой, какой ее видят наши путешественники: величественная архитектура,
-            колоритные рынки, гостеприимные люди и незабываемые моменты. <span className="font-semibold text-foreground">Это не просто фото — это
-            реальные впечатления.</span>
+            Это не просто фотографии — это реальные кадры из поездок наших клиентов. Посмотрите, каким может быть ваше путешествие: комфортабельные автомобили, живописные маршруты и остановки в самых красивых местах. <span className="font-semibold text-foreground">Вдохновитесь на свою следующую поездку.</span>
           </p>
           <Button asChild size="lg" className="mt-8 bg-[#E1306C] hover:bg-[#c13584] text-white font-bold">
             <Link href="#" target="_blank" rel="noopener noreferrer">

@@ -49,14 +49,14 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     "id": "gallery-1",
     "name": "Gallery Image 1",
     "description": "Ornate blue tiled entrance to a historic building.",
-    "imageUrl": "/images/gallery-1.jpg",
+    "imageUrl": "/images/gallery-8.jpg",
     "imageHint": "mosque entrance"
   },
   {
     "id": "gallery-2",
     "name": "Gallery Image 2",
     "description": "Couple in traditional Uzbek clothing smiling.",
-    "imageUrl": "/images/gallery-2.jpg",
+    "imageUrl": "/images/gallery-1.jpg",
     "imageHint": "couple traditional"
   },
   {
@@ -70,21 +70,21 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     "id": "gallery-4",
     "name": "Gallery Image 4",
     "description": "Vibrant textiles at a local market.",
-    "imageUrl": "/images/gallery-4.jpg",
+    "imageUrl": "/images/gallery-6.jpg",
     "imageHint": "market textiles"
   },
   {
     "id": "gallery-5",
     "name": "Gallery Image 5",
     "description": "A plate of traditional plov.",
-    "imageUrl": "/images/gallery-5.jpg",
+    "imageUrl": "/images/gallery-4.jpg",
     "imageHint": "uzbek food"
   },
   {
     "id": "gallery-6",
     "name": "Gallery Image 6",
     "description": "View of the desert from a car window.",
-    "imageUrl": "/images/gallery-6.jpg",
+    "imageUrl": "/images/gallery-2.jpg",
     "imageHint": "desert road"
   }
 ];
