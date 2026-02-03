@@ -37,5 +37,12 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     "description": "Abstract colorful shapes background",
     "imageUrl": "/images/stats.jpg",
     "imageHint": "abstract colorful"
+  },
+  {
+    "id": "faq-image",
+    "name": "FAQ Section Image",
+    "description": "Architectural detail of a building in Uzbekistan.",
+    "imageUrl": "/images/about-2.jpg",
+    "imageHint": "uzbekistan architecture"
   }
 ];
