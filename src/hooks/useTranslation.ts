@@ -1,5 +1,6 @@
 "use client";
 import { useLanguage } from '@/context/LanguageContext';
+import { useCallback } from 'react';
 
 /**
  * Gets a nested value from an object using a dot-notation path.
@@ -19,10 +20,10 @@ export const useTranslation = () => {
    * @param key The dot-notation key for the translation string (e.g., 'header.title').
    * @returns The translated string, or the key itself if not found.
    */
-  const t = (key: string): string => {
+  const t = useCallback((key: string): string => {
     const value = getNestedValue(translations, key);
     return value || key;
-  };
+  }, [translations]);
 
   return { t };
 };
