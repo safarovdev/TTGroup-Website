@@ -56,7 +56,7 @@ export function Testimonials() {
             {/* Left column: Testimonials */}
             <div className="lg:col-span-2 space-y-8">
                 {testimonialsData.map((testimonial, index) => (
-                    <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-0 bg-muted/30">
+                    <Card key={index} className="shadow-none bg-muted/30">
                         <CardContent className="p-6">
                             <div className="flex items-start gap-6">
                                 <Avatar className="w-12 h-12 border-2 border-primary/20">
