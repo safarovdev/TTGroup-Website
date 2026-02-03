@@ -8,6 +8,7 @@ import { FleetIntro } from '@/components/sections/fleet-intro';
 import { Fleet } from '@/components/sections/fleet';
 import { Testimonials } from '@/components/sections/testimonials';
 import { Faq } from '@/components/sections/faq';
+import { Contacts } from '@/components/sections/contacts';
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <Testimonials />
         <Faq />
         <Booking />
+        <Contacts />
       </main>
       <Footer />
     </div>
