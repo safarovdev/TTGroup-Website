@@ -117,16 +117,7 @@ export function Fleet() {
     setCurrent(api.selectedScrollSnap());
     api.on("select", onSelect);
 
-    const interval = setInterval(() => {
-      if (api.selectedScrollSnap() === api.scrollSnapList().length - 1) {
-        api.scrollTo(0);
-      } else {
-        api.scrollNext();
-      }
-    }, 3000);
-
     return () => {
-      clearInterval(interval);
       api.off("select", onSelect);
     };
   }, [api]);
@@ -167,6 +158,22 @@ export function Fleet() {
                   ))}
               </div>
           </div>
+          
+          <div className="mt-20 text-center border-t pt-16">
+            <h3 className="text-2xl font-bold tracking-tight">Не нашли то, что искали?</h3>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              Наш полный автопарк включает более 50 моделей. Мы подберем идеальный вариант для любой задачи — от деловой встречи до большого туристического тура.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button asChild size="lg" className="font-bold">
+                <Link href="#">Посмотреть все модели</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="font-bold">
+                <Link href="#booking">Связаться с нами</Link>
+              </Button>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
