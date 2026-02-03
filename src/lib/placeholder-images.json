@@ -32,8 +32,50 @@
       "id": "faq-image",
       "name": "FAQ Section Image",
       "description": "Architectural detail of a building in Uzbekistan.",
-      "imageUrl": "/images/about-2.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1654861857754-4a6a5a1de01e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx1emJla2lzdGFuJTIwYXJjaGl0ZWN0dXJlfGVufDB8fHx8MTc3MDE0MzY2M3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "uzbekistan architecture"
+    },
+    {
+      "id": "gallery-1",
+      "name": "Gallery Image 1",
+      "description": "Ornate blue tiled entrance to a historic building.",
+      "imageUrl": "https://images.unsplash.com/photo-1766310147986-accf6386590f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtb3NxdWUlMjBlbnRyYW5jZXxlbnwwfHx8fDE3NzAxNDM2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mosque entrance"
+    },
+    {
+      "id": "gallery-2",
+      "name": "Gallery Image 2",
+      "description": "Couple in traditional Uzbek clothing smiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1767328711312-3485fe8cd78f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3VwbGUlMjB0cmFkaXRpb25hbHxlbnwwfHx8fDE3NzAxNDM2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "couple traditional"
+    },
+    {
+      "id": "gallery-3",
+      "name": "Gallery Image 3",
+      "description": "Interior of a traditional Uzbek tea house.",
+      "imageUrl": "https://images.unsplash.com/photo-1623814877285-846d8f309845?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx0ZWElMjBob3VzZXxlbnwwfHx8fDE3NzAxNDM2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tea house"
+    },
+    {
+      "id": "gallery-4",
+      "name": "Gallery Image 4",
+      "description": "Vibrant textiles at a local market.",
+      "imageUrl": "https://images.unsplash.com/photo-1757009400493-509e7b48c95d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYXJrZXQlMjB0ZXh0aWxlc3xlbnwwfHx8fDE3NzAxNDM2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "market textiles"
+    },
+    {
+      "id": "gallery-5",
+      "name": "Gallery Image 5",
+      "description": "A plate of traditional plov.",
+      "imageUrl": "https://images.unsplash.com/photo-1671048116404-454fefede763?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx1emJlayUyMGZvb2R8ZW58MHx8fHwxNzcwMTQzNjYzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "uzbek food"
+    },
+    {
+      "id": "gallery-6",
+      "name": "Gallery Image 6",
+      "description": "View of the desert from a car window.",
+      "imageUrl": "https://images.unsplash.com/photo-1495292040232-745a10cd202c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkZXNlcnQlMjByb2FkfGVufDB8fHx8MTc3MDExMjcwNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desert road"
     }
   ]
 }
