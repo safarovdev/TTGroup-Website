@@ -29,8 +29,8 @@ export function Contacts() {
   ];
 
   return (
-    <section id="contacts" className="relative bg-muted/50 border-t py-20 md:py-28 overflow-hidden animate-in fade-in-0 duration-500">
-      <div className="container relative z-10">
+    <section id="contacts" className="bg-muted/50 border-t py-20 md:py-28 animate-in fade-in-0 duration-500">
+      <div className="container">
         <div className="mb-12 md:mb-16">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-primary">Контакты</h2>
         </div>
@@ -94,12 +94,6 @@ export function Contacts() {
                  </ul>
             </div>
         </div>
-      </div>
-      
-      <div className="absolute bottom-8 left-0 right-0 z-0 text-center select-none pointer-events-none">
-        <h1 className="text-[12vw] lg:text-[180px] font-extrabold text-foreground/10 uppercase tracking-wider leading-none break-words">
-            TourEast Transport Group
-        </h1>
       </div>
     </section>
   );
