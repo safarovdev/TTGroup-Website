@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Calendar, Snowflake, ShieldCheck, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -56,11 +56,8 @@ const standards = [
 export function FleetIntro() {
     const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
     const [activeVehicleIndex, setActiveVehicleIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
 
     useEffect(() => {
-        if (isPaused) return;
-
         const interval = setInterval(() => {
             const randomCategoryIndex = Math.floor(Math.random() * fleetCategories.length);
             const vehicleIds = fleetCategories[randomCategoryIndex].vehicle_ids;
@@ -71,10 +68,10 @@ export function FleetIntro() {
 
             setActiveCategoryIndex(randomCategoryIndex);
             setActiveVehicleIndex(randomVehicleIndex);
-        }, 1000);
+        }, 2000);
 
         return () => clearInterval(interval);
-    }, [isPaused]);
+    }, []);
 
 
     const activeCategory = useMemo(() => fleetCategories[activeCategoryIndex], [activeCategoryIndex]);
@@ -88,14 +85,11 @@ export function FleetIntro() {
     }, [activeCategory, activeVehicleIndex]);
 
     const activeVehicle = useMemo(() => Vehicles.find(v => v.id === activeVehicleId) || null, [activeVehicleId]);
-
-    const handleMouseEnter = useCallback(() => setIsPaused(true), []);
-    const handleMouseLeave = useCallback(() => setIsPaused(false), []);
     
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
 
     return (
-        <section id="fleet-intro" className="py-20 md:py-28 bg-muted/20 border-b" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <section id="fleet-intro" className="py-20 md:py-28 bg-muted/20 border-b">
             <div className="container">
                 {/* 1. Headline */}
                 <div className="text-center max-w-4xl mx-auto mb-16">
