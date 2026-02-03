@@ -81,8 +81,8 @@ export function Testimonials() {
             </div>
 
             {/* Right column: Links to maps */}
-            <div className="lg:sticky lg:top-24">
-                <Card className="bg-muted/50 p-8 text-center shadow-xl border-0">
+            <div>
+                <Card className="bg-muted/50 p-8 text-center shadow-none">
                      <h3 className="text-2xl font-bold mb-4">Ваше мнение важно</h3>
                      <p className="text-muted-foreground mb-8">
                         Мы ценим каждый отзыв. Ознакомьтесь с десятками реальных оценок на популярных платформах.
