@@ -35,14 +35,13 @@ export function Gallery() {
 
         <div className={cn("columns-2 md:columns-3 gap-4 space-y-4", isVisible ? "animate-in fade-in-0 zoom-in-95 duration-1000 delay-300" : "opacity-0")}>
           {galleryImages.map((image) => {
-            const [seed, width, height] = new URL(image.imageUrl).pathname.split('/').slice(2);
             return (
               <div key={image.id} className="break-inside-avoid rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-background">
                 <Image
                   src={image.imageUrl}
                   alt={image.description}
-                  width={Number(width) || 500}
-                  height={Number(height) || 700}
+                  width={500}
+                  height={700}
                   className="w-full h-auto object-cover"
                   data-ai-hint={image.imageHint}
                 />
