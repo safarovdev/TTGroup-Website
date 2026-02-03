@@ -88,7 +88,7 @@ export function Testimonials() {
                         Мы ценим каждый отзыв. Ознакомьтесь с десятками реальных оценок на популярных платформах.
                      </p>
                      <div className="flex flex-col gap-4">
-                        <Button asChild size="lg" className="justify-between w-full h-14 text-base">
+                        <Button asChild variant="secondary" size="lg" className="justify-between w-full h-14 text-base">
                             <Link href="#" target="_blank" rel="noopener noreferrer">
                                 <span>Google Карты</span>
                                 <span className="flex items-center gap-1 bg-black/10 px-3 py-1 rounded-md">
@@ -96,7 +96,7 @@ export function Testimonials() {
                                 </span>
                             </Link>
                         </Button>
-                        <Button asChild size="lg" className="justify-between w-full h-14 text-base">
+                        <Button asChild variant="secondary" size="lg" className="justify-between w-full h-14 text-base">
                             <Link href="#" target="_blank" rel="noopener noreferrer">
                                 <span>Яндекс Карты</span>
                                  <span className="flex items-center gap-1 bg-black/10 px-3 py-1 rounded-md">
