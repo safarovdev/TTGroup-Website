@@ -38,7 +38,7 @@ export function Hero() {
               </Link>
             </Button>
             <Button asChild variant="secondary" size="lg">
-              <Link href="#fleet">Наш автопарк</Link>
+              <Link href="#fleet-intro">Наш автопарк</Link>
             </Button>
           </div>
         </div>
