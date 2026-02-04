@@ -165,35 +165,33 @@ const ImageUploader = ({ field }: { field: any }) => {
         <FormItem>
             <FormLabel>{t('admin.imagesLabel')}</FormLabel>
             <FormControl>
-                <>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                        {field.value.map((url: string) => (
-                            <div key={url} className="relative group aspect-square">
-                                <Image src={url} alt="Uploaded vehicle" layout="fill" className="object-cover rounded-md" />
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="icon"
-                                    className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleRemoveImage(url)}
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))}
-                        <label className="aspect-square flex flex-col items-center justify-center rounded-md border-2 border-dashed border-muted-foreground/50 cursor-pointer hover:bg-muted transition-colors">
-                            {isUploading ? (
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            ) : (
-                                <>
-                                    <Upload className="h-8 w-8 text-muted-foreground" />
-                                    <span className="mt-2 text-xs text-center text-muted-foreground">{t('admin.imagesButton')}</span>
-                                </>
-                            )}
-                            <input type="file" multiple accept="image/*" className="sr-only" onChange={handleFileUpload} disabled={isUploading} />
-                        </label>
-                    </div>
-                </>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                    {field.value.map((url: string) => (
+                        <div key={url} className="relative group aspect-square">
+                            <Image src={url} alt="Uploaded vehicle" layout="fill" className="object-cover rounded-md" />
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => handleRemoveImage(url)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                    <label className="aspect-square flex flex-col items-center justify-center rounded-md border-2 border-dashed border-muted-foreground/50 cursor-pointer hover:bg-muted transition-colors">
+                        {isUploading ? (
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        ) : (
+                            <>
+                                <Upload className="h-8 w-8 text-muted-foreground" />
+                                <span className="mt-2 text-xs text-center text-muted-foreground">{t('admin.imagesButton')}</span>
+                            </>
+                        )}
+                        <input type="file" multiple accept="image/*" className="sr-only" onChange={handleFileUpload} disabled={isUploading} />
+                    </label>
+                </div>
             </FormControl>
             <FormMessage />
         </FormItem>
