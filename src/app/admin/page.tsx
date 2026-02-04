@@ -4,7 +4,7 @@ import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, delete
 import { useVehicles } from '@/hooks/useVehicles';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle } from 'lucide-react';
+import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle } from 'lucide-react';
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,6 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
 
@@ -160,7 +161,7 @@ const ImageUploader = ({ field }: { field: any }) => {
             }
         }
 
-        field.onChange([...field.value, ...uploadedUrls]);
+        field.onChange([...(field.value || []), ...uploadedUrls]);
         setIsUploading(false);
     };
 
@@ -173,7 +174,7 @@ const ImageUploader = ({ field }: { field: any }) => {
             <FormLabel>{t('admin.imagesLabel')}</FormLabel>
             <FormControl>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                    {field.value.map((url: string) => (
+                    {field.value?.map((url: string) => (
                         <div key={url} className="relative group aspect-square">
                             <Image src={url} alt="Uploaded vehicle" fill className="object-cover rounded-md" />
                             <Button
@@ -211,6 +212,7 @@ function AdminDashboard() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   
   const form = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
@@ -232,6 +234,8 @@ function AdminDashboard() {
             featureKeys: vehicleToEdit.featureKeys
         });
       }
+    } else {
+        form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] });
     }
   }, [editingId, vehicles, form]);
 
@@ -245,7 +249,7 @@ function AdminDashboard() {
         addVehicle(firestore, data);
         toast({ title: "✅ Автомобиль добавлен", description: `Модель "${data.name}" добавлена в автопарк.` });
     }
-    form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] });
+    setIsFormOpen(false);
     setEditingId(null);
   };
 
@@ -256,11 +260,12 @@ function AdminDashboard() {
   
   const handleEdit = (vehicle: Vehicle) => {
     setEditingId(vehicle.id);
+    setIsFormOpen(true);
   };
-  
-  const cancelEdit = () => {
+
+  const handleAddNew = () => {
     setEditingId(null);
-    form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] });
+    setIsFormOpen(true);
   };
 
   const handleDelete = (vehicleId: string) => {
@@ -268,139 +273,152 @@ function AdminDashboard() {
     toast({ variant: 'destructive', title: "🗑️ Автомобиль удален", description: "Запись была удалена из базы данных."});
   };
 
-  return (
-    <div className="container py-12 space-y-12">
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle>{editingId ? t('admin.editTitle') : t('admin.addTitle')}</CardTitle>
-              <CardDescription>{editingId ? t('admin.editDescription') : t('admin.addDescription')}</CardDescription>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              {t('header.logout')} <LogOut className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                 <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('admin.nameLabel')}</FormLabel>
-                      <FormControl><Input placeholder={t('admin.namePlaceholder')} {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="category" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('admin.categoryLabel')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder={t('admin.categoryPlaceholder')} /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {Object.entries(vehicleCategoryMap).map(([key, value]) => (
-                          <SelectItem key={key} value={key}>{value}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                  <FormField control={form.control} name="price" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('admin.priceLabel')}</FormLabel>
-                      <FormControl>
-                        <Input 
-                            type="number" 
-                            placeholder={t('admin.pricePlaceholder')} 
-                            {...field}
-                            value={field.value > 0 ? field.value : ''}
-                            onChange={e => field.onChange(e.target.value)}
-                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="capacity" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('admin.capacityLabel')}</FormLabel>
-                      <FormControl><Input type="number" placeholder={t('admin.capacityPlaceholder')} {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-              </div>
-              
-              <Controller
-                control={form.control}
-                name="imageUrls"
-                render={({ field }) => <ImageUploader field={field} />}
-              />
-              
-               <FormField
-                name="featureKeys"
-                control={form.control}
-                render={() => (
-                  <FormItem>
-                    <FormLabel>{t('admin.featuresLabel')}</FormLabel>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {FEATURES.map((featureId) => (
-                        <FormField
-                          key={featureId}
-                          control={form.control}
-                          name="featureKeys"
-                          render={({ field }) => {
-                            return (
-                              <FormItem key={featureId} className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(featureId)}
-                                    onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...(field.value || []), featureId])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== featureId
-                                            )
-                                          )
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {t(`vehicleFeatures.${featureId}`)}
-                                </FormLabel>
-                              </FormItem>
-                            )
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </FormItem>
-                )}
-              />
+  const onFormOpenChange = (open: boolean) => {
+    setIsFormOpen(open);
+    if (!open) {
+        setEditingId(null);
+    }
+  };
 
-              <div className="flex gap-4">
-                 <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (editingId ? <CheckCircle className="mr-2 h-4 w-4" /> : null)}
-                    {editingId ? t('admin.updateButton') : t('admin.addButton')}
-                  </Button>
-                  {editingId && (
-                    <Button type="button" variant="ghost" onClick={cancelEdit}>
-                        <Ban className="mr-2 h-4 w-4" /> {t('admin.cancelEditButton')}
-                    </Button>
-                  )}
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+  return (
+    <div className="container py-12">
+        <Dialog open={isFormOpen} onOpenChange={onFormOpenChange}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>{editingId ? t('admin.editTitle') : t('admin.addTitle')}</DialogTitle>
+                    <DialogDescription>{editingId ? t('admin.editDescription') : t('admin.addDescription')}</DialogDescription>
+                </DialogHeader>
+                <div className="py-4 max-h-[80vh] overflow-y-auto px-1">
+                 <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <FormField control={form.control} name="name" render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>{t('admin.nameLabel')}</FormLabel>
+                            <FormControl><Input placeholder={t('admin.namePlaceholder')} {...field} /></FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="category" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t('admin.categoryLabel')}</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl><SelectTrigger><SelectValue placeholder={t('admin.categoryPlaceholder')} /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                {Object.entries(vehicleCategoryMap).map(([key, value]) => (
+                                <SelectItem key={key} value={key}>{value}</SelectItem>
+                                ))}
+                            </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                        )} />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <FormField control={form.control} name="price" render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>{t('admin.priceLabel')}</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    type="number" 
+                                    placeholder={t('admin.pricePlaceholder')} 
+                                    {...field}
+                                    value={field.value > 0 ? field.value : ''}
+                                    onChange={e => field.onChange(e.target.value)}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="capacity" render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>{t('admin.capacityLabel')}</FormLabel>
+                            <FormControl><Input type="number" placeholder={t('admin.capacityPlaceholder')} {...field} /></FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
+                    
+                    <Controller
+                        control={form.control}
+                        name="imageUrls"
+                        render={({ field }) => <ImageUploader field={field} />}
+                    />
+                    
+                    <FormField
+                        name="featureKeys"
+                        control={form.control}
+                        render={() => (
+                        <FormItem>
+                            <FormLabel>{t('admin.featuresLabel')}</FormLabel>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {FEATURES.map((featureId) => (
+                                <FormField
+                                key={featureId}
+                                control={form.control}
+                                name="featureKeys"
+                                render={({ field }) => {
+                                    return (
+                                    <FormItem key={featureId} className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                        <FormControl>
+                                        <Checkbox
+                                            checked={field.value?.includes(featureId)}
+                                            onCheckedChange={(checked) => {
+                                            return checked
+                                                ? field.onChange([...(field.value || []), featureId])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                    (value) => value !== featureId
+                                                    )
+                                                )
+                                            }}
+                                        />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">
+                                        {t(`vehicleFeatures.${featureId}`)}
+                                        </FormLabel>
+                                    </FormItem>
+                                    )
+                                }}
+                                />
+                            ))}
+                            </div>
+                        </FormItem>
+                        )}
+                    />
+
+                    <div className="flex gap-4 pt-4">
+                        <Button type="submit" disabled={form.formState.isSubmitting}>
+                            {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (editingId ? <CheckCircle className="mr-2 h-4 w-4" /> : null)}
+                            {editingId ? t('admin.updateButton') : t('admin.addButton')}
+                        </Button>
+                        <Button type="button" variant="ghost" onClick={() => onFormOpenChange(false)}>
+                            <Ban className="mr-2 h-4 w-4" /> {t('admin.deleteConfirmCancel')}
+                        </Button>
+                    </div>
+                    </form>
+                </Form>
+                </div>
+            </DialogContent>
+        </Dialog>
       
       <Card className="max-w-6xl mx-auto">
         <CardHeader>
-            <CardTitle>{t('admin.vehicleListTitle')}</CardTitle>
-            <CardDescription>{t('admin.vehicleListDescription')}</CardDescription>
+            <div className="flex justify-between items-start">
+                <div>
+                    <CardTitle>{t('admin.vehicleListTitle')}</CardTitle>
+                    <CardDescription>{t('admin.vehicleListDescription')}</CardDescription>
+                </div>
+                <div className='flex items-center gap-4'>
+                    <Button onClick={handleAddNew}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        {t('admin.addButton')}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleLogout}>
+                        {t('header.logout')} <LogOut className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
         </CardHeader>
         <CardContent>
             {vehiclesLoading ? (
@@ -495,3 +513,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
