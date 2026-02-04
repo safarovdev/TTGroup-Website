@@ -1,6 +1,6 @@
 'use client';
 
-import { doc, setDoc, collection, type Firestore } from 'firebase/firestore';
+import { doc, setDoc, type Firestore } from 'firebase/firestore';
 import type { Vehicle } from '@/lib/vehicles';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
@@ -18,12 +18,12 @@ function createSlug(text: string): string {
  * The document ID is automatically generated from the vehicle name.
  * @param firestore - The Firestore instance.
  * @param vehicleData - The vehicle data, excluding the 'id'.
- * @returns The generated ID of the new vehicle document.
  */
-export function addVehicle(firestore: Firestore, vehicleData: Omit<Vehicle, 'id'>): string {
+export function addVehicle(firestore: Firestore, vehicleData: Omit<Vehicle, 'id'>) {
     const slug = createSlug(vehicleData.name);
     if (!slug) {
-        throw new Error('Vehicle name is invalid for generating an ID.');
+        console.error("Vehicle name is invalid for generating an ID.");
+        return;
     }
     const id = `fleet-${slug}`;
     
@@ -36,7 +36,6 @@ export function addVehicle(firestore: Firestore, vehicleData: Omit<Vehicle, 'id'
     // We don't await this promise on the client to allow for optimistic updates.
     setDoc(vehicleRef, dataToSet)
         .catch(async (serverError) => {
-            console.error("Firestore write error:", serverError);
             const permissionError = new FirestorePermissionError({
                 path: vehicleRef.path,
                 operation: 'create',
@@ -45,6 +44,4 @@ export function addVehicle(firestore: Firestore, vehicleData: Omit<Vehicle, 'id'
             // Emit a centralized error for debugging, e.g., in development.
             errorEmitter.emit('permission-error', permissionError);
         });
-    
-    return id;
 }

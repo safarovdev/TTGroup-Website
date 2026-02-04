@@ -41,16 +41,11 @@ export function Header() {
   };
 
   const UserMenu = () => {
+    // Only show menu if user is logged in
     if (!user) {
-      return (
-        <Button variant="ghost" asChild>
-          <Link href="/login" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            <span>Войти</span>
-          </Link>
-        </Button>
-      );
+      return null;
     }
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -98,24 +93,26 @@ export function Header() {
           ))}
         </nav>
         <div className="flex items-center justify-end gap-4">
-          {isMounted && <UserMenu />}
+          <div className="flex items-center gap-2">
+            {isMounted && <UserMenu />}
 
-          {isMounted ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1 text-sm">
-                  {locale.toUpperCase()} <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setLocale('ru')}>RU</DropdownMenuItem>
-                <DropdownMenuItem disabled>UZ</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocale('en')}>EN</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="h-10 w-[58px]" /> // Placeholder to prevent layout shift
-          )}
+            {isMounted ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-1 text-sm">
+                    {locale.toUpperCase()} <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setLocale('ru')}>RU</DropdownMenuItem>
+                  <DropdownMenuItem disabled>UZ</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLocale('en')}>EN</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="h-10 w-[58px]" /> // Placeholder to prevent layout shift
+            )}
+          </div>
 
           <Button asChild className="hidden sm:inline-flex">
             <Link href="/#booking">{t('header.book')}</Link>
