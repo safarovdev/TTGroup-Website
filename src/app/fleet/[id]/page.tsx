@@ -14,6 +14,7 @@ import { Check, Users, Armchair, Sun, Car, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 const featureIcons: { [key: string]: React.ReactElement } = {
     'meet_and_greet': <Star />,
@@ -107,9 +108,24 @@ const VehicleDetailPage = () => {
                     <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
                         {/* Image Gallery */}
                         <div>
-                            <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted shadow-lg mb-4">
-                                {mainImage && <Image src={mainImage} alt={vehicle.name} fill className="object-cover" />}
-                            </div>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted shadow-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity">
+                                        {mainImage && <Image src={mainImage} alt={vehicle.name} fill className="object-cover" />}
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-none w-auto h-auto bg-transparent border-none shadow-none p-0 flex items-center justify-center">
+                                    {mainImage && (
+                                        <Image 
+                                            src={mainImage} 
+                                            alt={vehicle.name} 
+                                            width={1800} 
+                                            height={1200} 
+                                            className="max-w-[95vw] max-h-[95vh] h-auto w-auto object-contain rounded-lg"
+                                        />
+                                    )}
+                                </DialogContent>
+                            </Dialog>
                             <div className="grid grid-cols-5 gap-2">
                                 {vehicle.imageUrls.map(url => (
                                     <div

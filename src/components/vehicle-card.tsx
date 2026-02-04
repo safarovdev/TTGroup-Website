@@ -20,7 +20,7 @@ export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
   const finalImageUrl = vehicle.imageUrls?.[0] || "/images/placeholder.jpg";
   
   return (
-    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col bg-card h-full group">
+    <Card className="overflow-hidden border transition-colors duration-300 flex flex-col bg-card h-full group hover:border-primary shadow-none">
         <Link href={`/fleet/${vehicle.id}`} className="flex flex-col h-full">
             <CardHeader className="p-0">
                 <div className="relative aspect-[4/3] w-full">
