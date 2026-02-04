@@ -161,7 +161,7 @@ const VehicleDetailPage = () => {
                             <div className="flex-grow" />
 
                             <Button asChild size="lg" className="w-full mt-10 font-bold text-lg h-14">
-                                <Link href="/#booking">{t('header.book')}</Link>
+                                <Link href={`/#booking?vehicle=${vehicle.id}`}>{t('header.book')}</Link>
                             </Button>
                         </div>
                     </div>

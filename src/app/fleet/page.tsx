@@ -70,7 +70,7 @@ const FleetPage = () => {
     );
 
     const VehicleGridSkeleton = () => (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
                 <div key={i} className="flex flex-col space-y-3 bg-card p-4 rounded-xl">
                     <Skeleton className="h-[225px] w-full rounded-lg" />
@@ -131,7 +131,7 @@ const FleetPage = () => {
                             {loading ? (
                                 <VehicleGridSkeleton />
                             ) : filteredVehicles && filteredVehicles.length > 0 ? (
-                                <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {filteredVehicles.map((vehicle) => (
                                         <VehicleCard key={vehicle.id} vehicle={vehicle} />
                                     ))}

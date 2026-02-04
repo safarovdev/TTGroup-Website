@@ -22,12 +22,13 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useOnScreen } from "@/hooks/use-on-screen";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 import { ru, enUS } from 'date-fns/locale';
 import { useVehicles } from "@/hooks/useVehicles";
+import { useSearchParams } from "next/navigation";
 
 const dateLocales = {
   ru: ru,
@@ -40,6 +41,7 @@ export function Booking() {
   const { t } = useTranslation();
   const { locale } = useLanguage();
   const { data: vehicles } = useVehicles();
+  const searchParams = useSearchParams();
 
   const bookingSchema = z.object({
     name: z.string().min(2, { message: t('booking.form.nameError') }),
@@ -63,15 +65,6 @@ export function Booking() {
     },
   });
 
-  // Re-initialize form with translated default values when language changes
-  React.useEffect(() => {
-    form.reset({
-      ...form.getValues(),
-      vehicle: t('booking.form.vehicleConsultation'),
-    });
-  }, [t, form]);
-
-
   const groupedVehicles = useMemo(() => {
     if (!vehicles) return {};
     return (Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>).reduce((acc, category) => {
@@ -82,6 +75,18 @@ export function Booking() {
         return acc;
     }, {} as Record<keyof typeof vehicleCategoryMap, Vehicle[]>);
   }, [vehicles]);
+
+
+  useEffect(() => {
+    const vehicleId = searchParams.get('vehicle');
+    if (vehicleId && vehicles) {
+        const vehicle = vehicles.find(v => v.id === vehicleId);
+        if (vehicle) {
+            const vehicleValue = `${vehicle.name} ${vehicle.featureKeys && vehicle.featureKeys.length > 0 ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim();
+            form.setValue('vehicle', vehicleValue);
+        }
+    }
+  }, [searchParams, vehicles, form, t]);
 
 
   function onSubmit(data: BookingFormValues) {
@@ -203,7 +208,7 @@ export function Booking() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>{t('booking.form.vehicleLabel')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl>
                             <SelectTrigger className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 focus-visible:ring-primary-foreground">
                                 <SelectValue placeholder={t('booking.form.vehiclePlaceholder')} />
@@ -215,9 +220,9 @@ export function Booking() {
                                     <SelectGroup key={category}>
                                         <SelectLabel>{t(`vehicleCategories.${category}`)}</SelectLabel>
                                         {vehicles.map((vehicle) => (
-                                            <SelectItem key={vehicle.id} value={`${vehicle.name} ${vehicle.featureKeys ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim()}>
+                                            <SelectItem key={vehicle.id} value={`${vehicle.name} ${vehicle.featureKeys && vehicle.featureKeys.length > 0 ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim()}>
                                                 {vehicle.name} 
-                                                {vehicle.featureKeys && <span className="text-muted-foreground ml-2 text-xs">({vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})</span>}
+                                                {vehicle.featureKeys && vehicle.featureKeys.length > 0 && <span className="text-muted-foreground ml-2 text-xs">({vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})</span>}
                                             </SelectItem>
                                         ))}
                                     </SelectGroup>
