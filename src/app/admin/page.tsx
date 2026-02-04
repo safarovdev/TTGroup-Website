@@ -116,7 +116,7 @@ const vehicleSchema = z.object({
     }).min(0, "Цена не может быть отрицательной").default(0)
   ),
   capacity: z.preprocess(
-    (a) => parseInt(z.string().parse(a), 10),
+    (a) => parseInt(String(a), 10),
     z.number().int().positive("Вместимость должна быть целым положительным числом")
   ),
   imageUrls: z.string().url().array().min(1, "Загрузите хотя бы одно изображение"),
