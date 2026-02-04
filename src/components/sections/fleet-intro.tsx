@@ -4,39 +4,64 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Calendar, Snowflake, ShieldCheck, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Vehicles } from '@/lib/vehicles';
 import { Card, CardContent } from '@/components/ui/card';
 import { useOnScreen } from '@/hooks/use-on-screen';
 import { useTranslation } from '@/hooks/useTranslation';
-
-const fleetCategories = [
-    { 
-        nameKey: 'fleetIntro.categories.premium.name', 
-        descriptionKey: 'fleetIntro.categories.premium.description',
-        vehicle_ids: ["fleet-lixiang-l7", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500", "fleet-toyota-lc-200", "fleet-haval-h6", "fleet-haval-dargo", "fleet-byd-champion", "fleet-aiqar-eq7"]
-    },
-    { 
-        nameKey: 'fleetIntro.categories.comfort.name', 
-        descriptionKey: 'fleetIntro.categories.comfort.description',
-        vehicle_ids: ["fleet-chevrolet-malibu-2", "fleet-kia-k5", "fleet-kia-sportage", "fleet-chevrolet-captiva-5", "fleet-chevrolet-cobalt", "fleet-jac-j7"]
-    },
-    { 
-        nameKey: 'fleetIntro.categories.minivans.name', 
-        descriptionKey: 'fleetIntro.categories.minivans.description',
-        vehicle_ids: ["fleet-hyundai-staria", "fleet-kia-carnival", "fleet-hyundai-starex", "fleet-kia-carens", "fleet-baw-m7", "fleet-jac-refine-m4", "fleet-mercedes-vito"]
-    },
-    { 
-        nameKey: 'fleetIntro.categories.buses.name', 
-        descriptionKey: 'fleetIntro.categories.buses.description',
-        vehicle_ids: ["fleet-mercedes-sprinter", "fleet-toyota-hiace", "fleet-foton-view-cs2", "fleet-joylong", "fleet-jac-sunray", "fleet-setra-minibus", "fleet-yutong-bus"]
-    },
-];
+import { useVehicles } from '@/hooks/useVehicles';
+import { Skeleton } from '@/components/ui/skeleton';
+import { type Vehicle } from '@/lib/vehicles';
 
 export function FleetIntro() {
     const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.1 });
     const { t } = useTranslation();
+    const { data: vehicles, loading } = useVehicles();
     const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
     const [activeVehicleIndex, setActiveVehicleIndex] = useState(0);
+
+    const fleetCategories = useMemo(() => {
+        if (!vehicles) return [];
+        const categoryOrder: Vehicle['category'][] = ['premium', 'comfort', 'minivan', 'bus'];
+        const categoryInfo: Record<Vehicle['category'], { nameKey: string; descriptionKey: string }> = {
+            premium: { nameKey: 'fleetIntro.categories.premium.name', descriptionKey: 'fleetIntro.categories.premium.description' },
+            comfort: { nameKey: 'fleetIntro.categories.comfort.name', descriptionKey: 'fleetIntro.categories.comfort.description' },
+            minivan: { nameKey: 'fleetIntro.categories.minivans.name', descriptionKey: 'fleetIntro.categories.minivans.description' },
+            bus: { nameKey: 'fleetIntro.categories.buses.name', descriptionKey: 'fleetIntro.categories.buses.description' },
+        };
+
+        const grouped = vehicles.reduce((acc, vehicle) => {
+            (acc[vehicle.category] = acc[vehicle.category] || []).push(vehicle.id);
+            return acc;
+        }, {} as Record<string, string[]>);
+        
+        return categoryOrder
+            .map(catId => ({
+                id: catId,
+                nameKey: categoryInfo[catId].nameKey,
+                descriptionKey: categoryInfo[catId].descriptionKey,
+                vehicle_ids: grouped[catId] || [],
+            }))
+            .filter(cat => cat.vehicle_ids.length > 0);
+
+    }, [vehicles]);
+
+
+    useEffect(() => {
+        if (loading || fleetCategories.length === 0) return;
+
+        const interval = setInterval(() => {
+            const randomCategoryIndex = Math.floor(Math.random() * fleetCategories.length);
+            const vehicleIds = fleetCategories[randomCategoryIndex].vehicle_ids;
+            
+            if (!vehicleIds || vehicleIds.length === 0) return;
+
+            const randomVehicleIndex = Math.floor(Math.random() * vehicleIds.length);
+
+            setActiveCategoryIndex(randomCategoryIndex);
+            setActiveVehicleIndex(randomVehicleIndex);
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [loading, fleetCategories]);
 
     const standards = [
       { 
@@ -61,34 +86,22 @@ export function FleetIntro() {
       },
     ];
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const randomCategoryIndex = Math.floor(Math.random() * fleetCategories.length);
-            const vehicleIds = fleetCategories[randomCategoryIndex].vehicle_ids;
-            
-            if (!vehicleIds || vehicleIds.length === 0) return;
-
-            const randomVehicleIndex = Math.floor(Math.random() * vehicleIds.length);
-
-            setActiveCategoryIndex(randomCategoryIndex);
-            setActiveVehicleIndex(randomVehicleIndex);
-        }, 2000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-
-    const activeCategory = useMemo(() => fleetCategories[activeCategoryIndex], [activeCategoryIndex]);
+    const activeCategory = useMemo(() => {
+        return fleetCategories[activeCategoryIndex];
+    }, [fleetCategories, activeCategoryIndex]);
     
     const activeVehicleId = useMemo(() => {
+        if (!activeCategory) return null;
         const vehicleIds = activeCategory.vehicle_ids;
-        if (!vehicleIds || !vehicleIds[activeVehicleIndex]) {
-            return vehicleIds[0];
-        }
-        return vehicleIds[activeVehicleIndex];
+        if (!vehicleIds || vehicleIds.length === 0) return null;
+        const index = activeVehicleIndex % vehicleIds.length;
+        return vehicleIds[index];
     }, [activeCategory, activeVehicleIndex]);
 
-    const activeVehicle = useMemo(() => Vehicles.find(v => v.id === activeVehicleId) || null, [activeVehicleId]);
+    const activeVehicle = useMemo(() => {
+        if (!vehicles || !activeVehicleId) return null;
+        return vehicles.find(v => v.id === activeVehicleId) || null;
+    }, [activeVehicleId, vehicles]);
     
     const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
 
@@ -108,7 +121,9 @@ export function FleetIntro() {
                     {/* Left: Categories */}
                     <div className="lg:col-span-4">
                         <div className="flex flex-col gap-4">
-                            {fleetCategories.map((category, index) => (
+                            {loading ? (
+                                [...Array(4)].map((_, i) => <Skeleton key={i} className="h-[98px] w-full rounded-2xl" />)
+                            ) : fleetCategories.map((category, index) => (
                                 <div
                                     key={category.nameKey}
                                     className={cn(
@@ -126,24 +141,30 @@ export function FleetIntro() {
                     </div>
 
                     {/* Right: Image */}
-                    <div className="lg:col-span-8 relative aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group">
-                        <Image
-                            key={activeVehicleId}
-                            src={imageUrl}
-                            alt={activeVehicle?.name || 'Flagship vehicle'}
-                            fill
-                            className="object-cover transition-all duration-500 ease-in-out transform group-hover:scale-105 animate-in fade-in duration-1000"
-                            sizes="(max-width: 1024px) 100vw, 66vw"
-                            data-ai-hint={activeVehicle?.imageHint}
-                        />
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                         <div
-                            key={activeVehicleId + '-text'} 
-                            className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white animate-in fade-in-0 slide-in-from-bottom-5 duration-700"
-                         >
-                            <p className="text-sm uppercase tracking-widest text-white/80">{t(activeCategory.nameKey)}</p>
-                            <h4 className="text-2xl md:text-4xl font-bold drop-shadow-md mt-1">{activeVehicle?.name}</h4>
-                         </div>
+                    <div className="lg:col-span-8 relative aspect-video md:aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group bg-muted">
+                         {loading ? <Skeleton className="h-full w-full" /> : (
+                            <>
+                                <Image
+                                    key={activeVehicleId}
+                                    src={imageUrl}
+                                    alt={activeVehicle?.name || 'Flagship vehicle'}
+                                    fill
+                                    className="object-cover transition-all duration-500 ease-in-out transform group-hover:scale-105 animate-in fade-in duration-1000"
+                                    sizes="(max-width: 1024px) 100vw, 66vw"
+                                    data-ai-hint={activeVehicle?.imageHint}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                                {activeVehicle && activeCategory && (
+                                <div
+                                    key={activeVehicleId + '-text'} 
+                                    className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white animate-in fade-in-0 slide-in-from-bottom-5 duration-700"
+                                >
+                                    <p className="text-sm uppercase tracking-widest text-white/80">{t(activeCategory.nameKey)}</p>
+                                    <h4 className="text-2xl md:text-4xl font-bold drop-shadow-md mt-1">{activeVehicle?.name}</h4>
+                                </div>
+                                )}
+                            </>
+                         )}
                     </div>
                 </div>
 

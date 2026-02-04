@@ -3,17 +3,15 @@
 import Link from "next/link";
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Vehicles } from "@/lib/vehicles";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import { useTranslation } from "@/hooks/useTranslation";
 import { VehicleCard } from "@/components/vehicle-card";
+import { useVehicles } from "@/hooks/useVehicles";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
-const popularVehicles = popular_ids
-  .map(id => Vehicles.find(v => v.id === id))
-  .filter((v): v is NonNullable<typeof v> => v !== undefined);
 
 export function Fleet() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.1 });
@@ -21,6 +19,7 @@ export function Fleet() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
+  const { data: popularVehicles, loading } = useVehicles({ ids: popular_ids });
 
   React.useEffect(() => {
     if (!api) {
@@ -53,32 +52,50 @@ export function Fleet() {
             </p>
           </div>
           <div className={cn("w-full max-w-6xl mx-auto mt-12", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-200" : "opacity-0")}>
-              <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
-                  <CarouselContent>
-                      {popularVehicles.map(vehicle => (
-                          <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
-                              <div className="p-2 h-full">
-                                  <VehicleCard vehicle={vehicle} />
-                              </div>
-                          </CarouselItem>
-                      ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="-left-4 md:-left-12 hidden md:inline-flex" />
-                  <CarouselNext className="-right-4 md:-right-12 hidden md:inline-flex" />
-              </Carousel>
-              <div className="flex justify-center gap-2 mt-4">
-                  {Array.from({ length: count }).map((_, index) => (
-                      <button
-                          key={index}
-                          onClick={() => api?.scrollTo(index)}
-                          aria-label={`${t('fleet.goToSlide')} ${index + 1}`}
-                          className={cn(
-                              "h-2 w-2 rounded-full transition-all duration-300",
-                              current === index ? 'w-4 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
-                          )}
-                      />
-                  ))}
-              </div>
+              {loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="flex flex-col space-y-3 bg-card p-4 rounded-xl">
+                            <Skeleton className="h-[225px] w-full rounded-lg" />
+                            <div className="space-y-3 pt-2">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                                <Skeleton className="h-4 w-1/2" />
+                                <Skeleton className="h-10 w-full mt-4" />
+                            </div>
+                        </div>
+                    ))}
+                  </div>
+              ) : popularVehicles && popularVehicles.length > 0 ? (
+                <>
+                <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+                    <CarouselContent>
+                        {popularVehicles.map(vehicle => (
+                            <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
+                                <div className="p-2 h-full">
+                                    <VehicleCard vehicle={vehicle} />
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="-left-4 md:-left-12 hidden md:inline-flex" />
+                    <CarouselNext className="-right-4 md:-right-12 hidden md:inline-flex" />
+                </Carousel>
+                <div className="flex justify-center gap-2 mt-4">
+                    {Array.from({ length: count }).map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => api?.scrollTo(index)}
+                            aria-label={`${t('fleet.goToSlide')} ${index + 1}`}
+                            className={cn(
+                                "h-2 w-2 rounded-full transition-all duration-300",
+                                current === index ? 'w-4 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
+                            )}
+                        />
+                    ))}
+                </div>
+                </>
+              ) : null}
           </div>
           
           <div className={cn("mt-20 text-center border-t pt-16", isVisible ? "animate-in fade-in-0 slide-in-from-bottom-8 duration-700 delay-300" : "opacity-0")}>

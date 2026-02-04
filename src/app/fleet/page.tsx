@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { Vehicles, vehicleCategoryMap } from '@/lib/vehicles';
+import { vehicleCategoryMap, type Vehicle } from '@/lib/vehicles';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -11,11 +11,14 @@ import { Label } from '@/components/ui/label';
 import { VehicleCard } from '@/components/vehicle-card';
 import { ListFilter, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useVehicles } from '@/hooks/useVehicles';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 const FleetPage = () => {
     const { t } = useTranslation();
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const { data: vehicles, loading } = useVehicles();
     
     const categories = Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>;
 
@@ -31,9 +34,11 @@ const FleetPage = () => {
         setSelectedCategories([]);
     };
 
-    const filteredVehicles = selectedCategories.length > 0
-        ? Vehicles.filter(vehicle => selectedCategories.includes(vehicle.category))
-        : Vehicles;
+    const filteredVehicles = useMemo(() => {
+        if (!vehicles) return [];
+        if (selectedCategories.length === 0) return vehicles;
+        return vehicles.filter(vehicle => selectedCategories.includes(vehicle.category));
+    }, [vehicles, selectedCategories]);
 
     const FilterControls = () => (
          <aside className="space-y-6">
@@ -62,6 +67,22 @@ const FleetPage = () => {
                 ))}
             </div>
         </aside>
+    );
+
+    const VehicleGridSkeleton = () => (
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex flex-col space-y-3 bg-card p-4 rounded-xl">
+                    <Skeleton className="h-[225px] w-full rounded-lg" />
+                    <div className="space-y-3 pt-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-10 w-full mt-4" />
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 
     return (
@@ -107,7 +128,9 @@ const FleetPage = () => {
 
                         {/* Vehicle Grid */}
                         <div className="md:col-span-9">
-                            {filteredVehicles.length > 0 ? (
+                            {loading ? (
+                                <VehicleGridSkeleton />
+                            ) : filteredVehicles && filteredVehicles.length > 0 ? (
                                 <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
                                     {filteredVehicles.map((vehicle) => (
                                         <VehicleCard key={vehicle.id} vehicle={vehicle} />

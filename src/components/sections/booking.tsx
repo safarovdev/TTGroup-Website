@@ -22,11 +22,12 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useOnScreen } from "@/hooks/use-on-screen";
-import React from "react";
-import { Vehicles, vehicleCategoryMap } from "@/lib/vehicles";
+import React, { useMemo } from "react";
+import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 import { ru, enUS } from 'date-fns/locale';
+import { useVehicles } from "@/hooks/useVehicles";
 
 const dateLocales = {
   ru: ru,
@@ -38,6 +39,7 @@ export function Booking() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const { locale } = useLanguage();
+  const { data: vehicles } = useVehicles();
 
   const bookingSchema = z.object({
     name: z.string().min(2, { message: t('booking.form.nameError') }),
@@ -64,22 +66,22 @@ export function Booking() {
   // Re-initialize form with translated default values when language changes
   React.useEffect(() => {
     form.reset({
-      name: "",
-      phone: "",
-      username: "",
+      ...form.getValues(),
       vehicle: t('booking.form.vehicleConsultation'),
-      contactMethod: "telegram",
     });
   }, [t, form]);
 
 
-  const groupedVehicles = (Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>).reduce((acc, category) => {
-      const categoryVehicles = Vehicles.filter(v => v.category === category);
-      if (categoryVehicles.length > 0) {
-          acc[category] = categoryVehicles;
-      }
-      return acc;
-  }, {} as Record<keyof typeof vehicleCategoryMap, typeof Vehicles>);
+  const groupedVehicles = useMemo(() => {
+    if (!vehicles) return {};
+    return (Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>).reduce((acc, category) => {
+        const categoryVehicles = vehicles.filter(v => v.category === category);
+        if (categoryVehicles.length > 0) {
+            acc[category] = categoryVehicles;
+        }
+        return acc;
+    }, {} as Record<keyof typeof vehicleCategoryMap, Vehicle[]>);
+  }, [vehicles]);
 
 
   function onSubmit(data: BookingFormValues) {
