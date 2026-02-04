@@ -90,6 +90,7 @@
     "description": "Discover the vehicles our clients choose most often. These models are the perfect combination of comfort, style, and reliability, tested by hundreds of trips on the roads of Uzbekistan.",
     "bookButton": "Book Now",
     "goToSlide": "Go to slide",
+    "viewDetailsButton": "View Details",
     "notFound": {
       "title": "Didn't find what you were looking for?",
       "description": "Our full fleet includes over 50 models. We will find the perfect option for any task — from a business meeting to a large tourist tour.",
@@ -278,7 +279,8 @@
   "vehicleDetail": {
     "priceLabel": "from ${{price}} / day",
     "capacity": "{{count}} passengers",
-    "features": "Features"
+    "features": "Features",
+    "negotiablePrice": "Negotiable Price"
   },
   "placeholders": {
     "hero_lixiang_l7_name": "LiXiang L7",

@@ -10,7 +10,7 @@ import { type Vehicle } from '@/lib/vehicles';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Check, Users, Armchair, Sun, Zap, Car, Star, Briefcase } from 'lucide-react';
+import { Check, Users, Armchair, Sun, Car, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -108,7 +108,7 @@ const VehicleDetailPage = () => {
                         {/* Image Gallery */}
                         <div>
                             <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted shadow-lg mb-4">
-                                {mainImage && <Image src={mainImage} alt={vehicle.name} layout="fill" className="object-cover" />}
+                                {mainImage && <Image src={mainImage} alt={vehicle.name} fill className="object-cover" />}
                             </div>
                             <div className="grid grid-cols-5 gap-2">
                                 {vehicle.imageUrls.map(url => (
@@ -120,7 +120,7 @@ const VehicleDetailPage = () => {
                                             mainImage === url ? "border-primary" : "border-transparent hover:border-primary/50"
                                         )}
                                     >
-                                        <Image src={url} alt="Vehicle thumbnail" layout="fill" className="object-cover" />
+                                        <Image src={url} alt="Vehicle thumbnail" fill className="object-cover" />
                                     </div>
                                 ))}
                             </div>
@@ -129,7 +129,14 @@ const VehicleDetailPage = () => {
                         {/* Details */}
                         <div className="flex flex-col">
                             <p className="text-sm uppercase tracking-widest text-muted-foreground">{t(`vehicleCategories.${vehicle.category}`)}</p>
-                            <p className="text-4xl font-bold text-primary mt-4">{t('vehicleDetail.priceLabel', { price: vehicle.price })}</p>
+                            
+                            <div className="mt-4">
+                                {vehicle.price && vehicle.price > 0 ? (
+                                    <p className="text-4xl font-bold text-primary">{t('vehicleDetail.priceLabel', { price: vehicle.price })}</p>
+                                ) : (
+                                    <p className="text-2xl font-bold text-primary">{t('vehicleDetail.negotiablePrice')}</p>
+                                )}
+                            </div>
 
                             <div className="mt-8 space-y-4">
                                 <div className="flex items-center gap-3 text-lg">

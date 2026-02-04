@@ -37,14 +37,14 @@
         },
         "price": {
           "type": "number",
-          "description": "The base price per day for the vehicle, in USD."
+          "description": "The base price per day for the vehicle, in USD. If 0 or omitted, the price is considered negotiable."
         },
         "capacity": {
           "type": "number",
           "description": "The maximum passenger capacity of the vehicle."
         }
       },
-      "required": [ "id", "name", "imageUrls", "category", "price", "capacity" ]
+      "required": [ "id", "name", "imageUrls", "category", "capacity" ]
     },
     "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",

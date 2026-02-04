@@ -42,7 +42,8 @@ export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
                 </div>
             </CardHeader>
             <CardContent className="p-6 flex-grow flex flex-col">
-                <CardTitle className="text-xl font-bold">{vehicle.name}</CardTitle>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">{t(`vehicleCategories.${vehicle.category}`)}</p>
+                <CardTitle className="text-xl font-bold mt-1">{vehicle.name}</CardTitle>
                 
                 <div className="flex items-center gap-4 text-muted-foreground text-sm pt-4">
                     <div className="flex items-center gap-2">
@@ -53,7 +54,7 @@ export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
 
                 {vehicle.featureKeys && vehicle.featureKeys.length > 0 && (
                 <ul className="space-y-2 text-muted-foreground text-sm pt-4">
-                    {vehicle.featureKeys.slice(0, 2).map((featureKey) => (
+                    {vehicle.featureKeys.map((featureKey) => (
                     <li key={featureKey} className="flex items-center gap-3">
                         <Check className="w-5 h-5 text-primary" />
                         <span>{t(`vehicleFeatures.${featureKey}`)}</span>
@@ -64,10 +65,16 @@ export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
 
                 <div className="flex-grow" />
 
-                <p className="text-2xl font-bold text-foreground mt-4">{t('vehicleDetail.priceLabel', { price: vehicle.price })}</p>
+                <div className="mt-4">
+                    {vehicle.price && vehicle.price > 0 ? (
+                        <p className="text-2xl font-bold text-foreground">{t('vehicleDetail.priceLabel', { price: vehicle.price })}</p>
+                    ) : (
+                        <p className="text-lg font-bold text-foreground">{t('vehicleDetail.negotiablePrice')}</p>
+                    )}
+                </div>
                 
                 <Button size="lg" className="w-full mt-4 font-semibold">
-                    {t('fleet.bookButton')}
+                    {t('fleet.viewDetailsButton')}
                 </Button>
             </CardContent>
         </Link>

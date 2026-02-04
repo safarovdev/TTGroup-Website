@@ -104,8 +104,15 @@ const vehicleSchema = z.object({
   name: z.string().min(3, "Название должно быть длиннее 3 символов"),
   category: z.enum(["premium", "comfort", "minivan", "bus"], { required_error: "Выберите категорию" }),
   price: z.preprocess(
-    (a) => parseFloat(z.string().parse(a)),
-    z.number().positive("Цена должна быть положительным числом")
+    (val) => {
+      const sVal = String(val).trim();
+      if (sVal === "") return 0;
+      const num = parseFloat(sVal);
+      return isNaN(num) ? val : num; // Let non-numbers fail validation
+    },
+    z.number({
+      invalid_type_error: "Цена должна быть числом",
+    }).min(0, "Цена не может быть отрицательной").default(0)
   ),
   capacity: z.preprocess(
     (a) => parseInt(z.string().parse(a), 10),
@@ -168,7 +175,7 @@ const ImageUploader = ({ field }: { field: any }) => {
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                     {field.value.map((url: string) => (
                         <div key={url} className="relative group aspect-square">
-                            <Image src={url} alt="Uploaded vehicle" layout="fill" className="object-cover rounded-md" />
+                            <Image src={url} alt="Uploaded vehicle" fill className="object-cover rounded-md" />
                             <Button
                                 type="button"
                                 variant="destructive"
@@ -305,7 +312,15 @@ function AdminDashboard() {
                   <FormField control={form.control} name="price" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('admin.priceLabel')}</FormLabel>
-                      <FormControl><Input type="number" placeholder={t('admin.pricePlaceholder')} {...field} /></FormControl>
+                      <FormControl>
+                        <Input 
+                            type="number" 
+                            placeholder={t('admin.pricePlaceholder')} 
+                            {...field}
+                            value={field.value > 0 ? field.value : ''}
+                            onChange={e => field.onChange(e.target.value)}
+                         />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -408,7 +423,9 @@ function AdminDashboard() {
                      <TableRow key={vehicle.id}>
                         <TableCell className="font-medium">{vehicle.name}</TableCell>
                         <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
-                        <TableCell className="text-right">${vehicle.price}</TableCell>
+                        <TableCell className="text-right">
+                          {vehicle.price > 0 ? `$${vehicle.price}`: t('vehicleDetail.negotiablePrice')}
+                        </TableCell>
                         <TableCell className="text-right">{vehicle.capacity}</TableCell>
                         <TableCell className="text-right">
                            <div className="flex gap-2 justify-end">
