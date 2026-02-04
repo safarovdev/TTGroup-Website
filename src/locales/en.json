@@ -180,11 +180,9 @@
   },
   "contacts": {
     "title": "Contacts",
-    "managerTitle": "Booking Manager",
-    "managerName": "Ilkhom Mamurovich",
+    "generalContactTitle": "General Contacts",
     "addressTitle": "Company Address",
-    "addressLine1": "Uzbekistan, Bukhara,",
-    "addressLine2": "12 Atabaya Eshanova St.",
+    "addressFull": "Uzbekistan, Bukhara",
     "socialTitle": "Social Networks",
     "navTitle": "Navigation",
     "nav": {
@@ -194,11 +192,6 @@
       "testimonials": "Reviews",
       "faq": "FAQ",
       "contacts": "Contacts"
-    },
-    "docsTitle": "Documents",
-    "docs": {
-      "requisites": "Company Details",
-      "partners": "For Partners"
     }
   },
   "admin": {

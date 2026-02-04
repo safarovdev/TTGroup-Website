@@ -180,11 +180,9 @@
   },
   "contacts": {
     "title": "Контакты",
-    "managerTitle": "Менеджер по бронированию",
-    "managerName": "Ильхом Мамурович",
+    "generalContactTitle": "Общие контакты",
     "addressTitle": "Адрес компании",
-    "addressLine1": "Узбекистан, г. Бухара,",
-    "addressLine2": "ул. Атабая Эшанова, 12",
+    "addressFull": "Узбекистан, г. Бухара",
     "socialTitle": "Социальные сети",
     "navTitle": "Навигация",
     "nav": {
@@ -194,11 +192,6 @@
       "testimonials": "Отзывы",
       "faq": "FAQ",
       "contacts": "Контакты"
-    },
-    "docsTitle": "Документы",
-    "docs": {
-      "requisites": "Реквизиты компании",
-      "partners": "Партнерам"
     }
   },
   "admin": {
