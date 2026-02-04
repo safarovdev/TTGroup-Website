@@ -7,21 +7,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Menu, User, LogOut, Shield } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useUser, signOutUser } from "@/firebase";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { locale, setLocale } = useLanguage();
   const { t } = useTranslation();
-  const { user } = useUser();
 
   useEffect(() => {
     setIsMounted(true);
@@ -35,44 +32,6 @@ export function Header() {
     { href: "/#faq", label: t('header.faq') },
     { href: "/#contacts", label: t('header.contacts') },
   ];
-
-  const handleLogout = async () => {
-    await signOutUser();
-  };
-
-  const UserMenu = () => {
-    // Only show menu if user is logged in
-    if (!user) {
-      return null;
-    }
-
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            <span className="hidden md:inline">{user.email}</span>
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {user.isAdmin && (
-            <DropdownMenuItem asChild>
-              <Link href="/admin">
-                <Shield className="mr-2 h-4 w-4" />
-                <span>Админ-панель</span>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {user.isAdmin && <DropdownMenuSeparator />}
-          <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Выйти</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  };
   
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur-sm animate-in fade-in-0 duration-500 sticky top-0 z-50">
@@ -94,8 +53,6 @@ export function Header() {
         </nav>
         <div className="flex items-center justify-end gap-4">
           <div className="flex items-center gap-2">
-            {isMounted && <UserMenu />}
-
             {isMounted ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

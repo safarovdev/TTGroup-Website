@@ -1,9 +1,9 @@
 'use client';
 
-import { useUser, signInWithEmail, addVehicle, useFirestore } from '@/firebase';
+import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, LogOut } from 'lucide-react';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -124,12 +124,27 @@ function AdminDashboard() {
     form.reset();
   };
 
+  const handleLogout = async () => {
+    await signOutUser();
+    toast({
+        title: "Вы вышли из системы.",
+    });
+  };
+
   return (
     <div className="container py-12">
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
-          <CardTitle>Добавить новый автомобиль</CardTitle>
-          <CardDescription>Заполните форму, чтобы добавить новую машину в автопарк.</CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>Добавить новый автомобиль</CardTitle>
+              <CardDescription>Заполните форму, чтобы добавить новую машину в автопарк.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              Выйти
+              <LogOut className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
