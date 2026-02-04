@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
   title: 'TourEast Transport Group | Premium Transport in Uzbekistan',
@@ -22,10 +23,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className={cn("font-body antialiased", "bg-background")}>
-        <LanguageProvider>
-          {children}
-          <Toaster />
-        </LanguageProvider>
+        <FirebaseClientProvider>
+          <LanguageProvider>
+            {children}
+            <Toaster />
+          </LanguageProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );

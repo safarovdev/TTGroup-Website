@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "Represents a vehicle in the transport fleet.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier for the vehicle."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the vehicle model."
+        },
+        "descriptionKey": {
+          "type": "string",
+          "description": "The key for the vehicle's description in the locale files."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "The URL of the vehicle's image."
+        },
+        "imageHint": {
+          "type": "string",
+          "description": "A hint for AI image generation."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the vehicle.",
+          "enum": ["premium", "comfort", "minivan", "bus"]
+        },
+        "featureKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "An array of keys for vehicle features in the locale files."
+        },
+        "priceKey": {
+          "type": "string",
+          "description": "The key for the vehicle's price in the locale files."
+        }
+      },
+      "required": ["id", "name", "category", "imageUrl"]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "/vehicles/{vehicleId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Vehicle"
+      },
+      "description": "Stores all vehicle documents, where the document ID is the vehicle's unique `id` string."
+    }
+  }
+}
