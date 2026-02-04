@@ -78,6 +78,15 @@ export function Booking() {
 
 
   useEffect(() => {
+    // If the 'vehicle' param exists, it means we likely navigated from the detail page.
+    // The browser's native hash scrolling can fail with Suspense.
+    // This ensures we scroll to the booking form.
+    if (searchParams.has('vehicle')) {
+      document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [searchParams]);
+  
+  useEffect(() => {
     const vehicleId = searchParams.get('vehicle');
     if (vehicleId && vehicles) {
         const vehicle = vehicles.find(v => v.id === vehicleId);
