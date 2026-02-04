@@ -10,8 +10,6 @@ import { Testimonials } from '@/components/sections/testimonials';
 import { Faq } from '@/components/sections/faq';
 import { Contacts } from '@/components/sections/contacts';
 import { Gallery } from '@/components/sections/gallery';
-import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -26,15 +24,7 @@ export default function Home() {
         <Testimonials />
         <Faq />
         <Gallery />
-        <Suspense fallback={
-          <section id="booking-loading" className="py-20 md:py-28 bg-primary">
-            <div className="container flex items-center justify-center" style={{minHeight: '600px'}}>
-              <Loader2 className="h-12 w-12 animate-spin text-primary-foreground" />
-            </div>
-          </section>
-        }>
-          <Booking />
-        </Suspense>
+        <Booking />
         <Contacts />
       </main>
       <Footer />

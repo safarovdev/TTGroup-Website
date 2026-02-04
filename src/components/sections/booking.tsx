@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useOnScreen } from "@/hooks/use-on-screen";
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, Suspense } from "react";
 import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
@@ -31,8 +31,6 @@ import { useVehicles } from "@/hooks/useVehicles";
 import { useSearchParams } from "next/navigation";
 
 const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
-// ⚠️ ВАЖНО: Замените 'YOUR_TELEGRAM_CHAT_ID' на ID вашего группового чата.
-// Он должен быть строкой и обычно начинается с дефиса (например, '-1001234567890').
 const TELEGRAM_CHAT_ID = '-1003780724209';
 
 const dateLocales = {
@@ -40,7 +38,7 @@ const dateLocales = {
   en: enUS
 }
 
-export function Booking() {
+function BookingForm() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.2 });
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -88,16 +86,14 @@ export function Booking() {
     if (vehicleId && vehicles && vehicles.length > 0) {
       const vehicle = vehicles.find(v => v.id === vehicleId);
       if (vehicle) {
-        const vehicleValue = `${vehicle.name} ${vehicle.featureKeys && vehicle.featureKeys.length > 0 ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim();
-        form.setValue('vehicle', vehicleValue);
+        form.setValue('vehicle', vehicle.name);
         
-        // Scroll to form only after setting the value
         setTimeout(() => {
           document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 150); // Small delay to ensure DOM is ready
+        }, 300);
       }
     }
-  }, [searchParams, vehicles, form, t]);
+  }, [searchParams, vehicles, form]);
 
 
   async function onSubmit(data: BookingFormValues) {
@@ -285,7 +281,7 @@ export function Booking() {
                                     <SelectGroup key={category}>
                                         <SelectLabel>{t(`vehicleCategories.${category}`)}</SelectLabel>
                                         {vehicles.map((vehicle) => (
-                                            <SelectItem key={vehicle.id} value={`${vehicle.name} ${vehicle.featureKeys && vehicle.featureKeys.length > 0 ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim()}>
+                                            <SelectItem key={vehicle.id} value={vehicle.name}>
                                                 {vehicle.name} 
                                                 {vehicle.featureKeys && vehicle.featureKeys.length > 0 && <span className="text-muted-foreground ml-2 text-xs">({vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})</span>}
                                             </SelectItem>
@@ -355,4 +351,16 @@ export function Booking() {
   );
 }
 
-    
+export function Booking() {
+  return (
+    <Suspense fallback={
+      <section id="booking" className="py-20 md:py-28 bg-primary">
+        <div className="container flex items-center justify-center" style={{minHeight: '600px'}}>
+          <Loader2 className="h-12 w-12 animate-spin text-primary-foreground" />
+        </div>
+      </section>
+    }>
+      <BookingForm />
+    </Suspense>
+  );
+}
