@@ -103,7 +103,7 @@ export function FleetIntro() {
         return vehicles.find(v => v.id === activeVehicleId) || null;
     }, [activeVehicleId, vehicles]);
     
-    const imageUrl = activeVehicle?.imageUrl || "/images/placeholder.jpg";
+    const imageUrl = activeVehicle?.imageUrls?.[0] || "/images/placeholder.jpg";
 
     return (
         <section ref={ref} id="fleet-intro" className="py-20 md:py-28 bg-muted/20 border-b">
@@ -151,7 +151,6 @@ export function FleetIntro() {
                                     fill
                                     className="object-cover transition-all duration-500 ease-in-out transform group-hover:scale-105 animate-in fade-in duration-1000"
                                     sizes="(max-width: 1024px) 100vw, 66vw"
-                                    data-ai-hint={activeVehicle?.imageHint}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                                 {activeVehicle && activeCategory && (

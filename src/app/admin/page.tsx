@@ -1,20 +1,26 @@
 'use client';
 
-import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser } from '@/firebase';
+import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, useVehicles, deleteVehicle, updateVehicle } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, LogOut } from 'lucide-react';
+import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle } from 'lucide-react';
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { vehicleCategoryMap } from "@/lib/vehicles";
+import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
+import { useTranslation } from '@/hooks/useTranslation';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import Image from 'next/image';
+
+const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
 
 // Login Form Component
 const loginSchema = z.object({
@@ -90,78 +96,202 @@ function AdminLogin() {
   );
 }
 
-// Admin Dashboard Component
+// Admin Dashboard Components
+const FEATURES = ["meet_and_greet", "air_conditioner", "panoramic_view", "ottoman", "tinted_windows", "city_tours"];
+
 const vehicleSchema = z.object({
   name: z.string().min(3, "Название должно быть длиннее 3 символов"),
   category: z.enum(["premium", "comfort", "minivan", "bus"], { required_error: "Выберите категорию" }),
-  imageUrl: z.string().url("Введите корректный URL изображения"),
-  imageHint: z.string().optional(),
-  featureKeys: z.string().min(1, "Добавьте хотя бы одну характеристику"),
-  priceKey: z.string().min(3, "Введите ключ для цены (например, from_120_day)"),
-  descriptionKey: z.string().optional(),
+  price: z.preprocess(
+    (a) => parseFloat(z.string().parse(a)),
+    z.number().positive("Цена должна быть положительным числом")
+  ),
+  capacity: z.preprocess(
+    (a) => parseInt(z.string().parse(a), 10),
+    z.number().int().positive("Вместимость должна быть целым положительным числом")
+  ),
+  imageUrls: z.string().url().array().min(1, "Загрузите хотя бы одно изображение"),
+  featureKeys: z.string().array().optional().default([]),
 });
 type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
+// ImageUploader Component
+const ImageUploader = ({ field }: { field: any }) => {
+    const { t } = useTranslation();
+    const [isUploading, setIsUploading] = useState(false);
+    const { toast } = useToast();
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files) return;
+
+        setIsUploading(true);
+        const uploadedUrls: string[] = [];
+
+        for (const file of Array.from(files)) {
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMG_BB_API_KEY}`, {
+                    method: "POST",
+                    body: formData,
+                });
+                const result = await response.json();
+                if (result.success) {
+                    uploadedUrls.push(result.data.url);
+                } else {
+                    throw new Error(result.error?.message || "Image upload failed");
+                }
+            } catch (error: any) {
+                toast({
+                    variant: "destructive",
+                    title: "Ошибка загрузки изображения",
+                    description: error.message,
+                });
+            }
+        }
+
+        field.onChange([...field.value, ...uploadedUrls]);
+        setIsUploading(false);
+    };
+
+    const handleRemoveImage = (urlToRemove: string) => {
+        field.onChange(field.value.filter((url: string) => url !== urlToRemove));
+    };
+
+    return (
+        <FormItem>
+            <FormLabel>{t('admin.imagesLabel')}</FormLabel>
+            <FormControl>
+                <>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                        {field.value.map((url: string) => (
+                            <div key={url} className="relative group aspect-square">
+                                <Image src={url} alt="Uploaded vehicle" layout="fill" className="object-cover rounded-md" />
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => handleRemoveImage(url)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                        <label className="aspect-square flex flex-col items-center justify-center rounded-md border-2 border-dashed border-muted-foreground/50 cursor-pointer hover:bg-muted transition-colors">
+                            {isUploading ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            ) : (
+                                <>
+                                    <Upload className="h-8 w-8 text-muted-foreground" />
+                                    <span className="mt-2 text-xs text-center text-muted-foreground">{t('admin.imagesButton')}</span>
+                                </>
+                            )}
+                            <input type="file" multiple accept="image/*" className="sr-only" onChange={handleFileUpload} disabled={isUploading} />
+                        </label>
+                    </div>
+                </>
+            </FormControl>
+            <FormMessage />
+        </FormItem>
+    );
+};
+
+// Admin Dashboard Component
 function AdminDashboard() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { t } = useTranslation();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  
   const form = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
-    defaultValues: { name: "", imageUrl: "", imageHint: "", featureKeys: "", priceKey: "", descriptionKey: "" },
+    defaultValues: { name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] },
   });
 
+  const {data: vehicles, loading: vehiclesLoading} = useVehicles();
+
+  useEffect(() => {
+    if (editingId && vehicles) {
+      const vehicleToEdit = vehicles.find(v => v.id === editingId);
+      if (vehicleToEdit) {
+        form.reset({
+            name: vehicleToEdit.name,
+            category: vehicleToEdit.category,
+            price: vehicleToEdit.price,
+            capacity: vehicleToEdit.capacity,
+            imageUrls: vehicleToEdit.imageUrls,
+            featureKeys: vehicleToEdit.featureKeys
+        });
+      }
+    }
+  }, [editingId, vehicles, form]);
+
   const onSubmit = (data: VehicleFormValues) => {
-    const vehicleData = {
-        ...data,
-        featureKeys: data.featureKeys.split(',').map(s => s.trim()).filter(Boolean),
-        descriptionKey: data.descriptionKey || `desc_${data.name.toLowerCase().replace(/ /g, '_')}`
-    };
-    addVehicle(firestore, vehicleData);
-    toast({
-      title: "✅ Запрос на добавление отправлен!",
-      description: `Модель "${data.name}" будет добавлена в базу данных.`,
-    });
-    form.reset();
+    if (editingId) {
+        // Update existing vehicle
+        updateVehicle(firestore, editingId, data);
+        toast({ title: "✅ Автомобиль обновлен", description: `Данные для "${data.name}" сохранены.` });
+    } else {
+        // Add new vehicle
+        addVehicle(firestore, data);
+        toast({ title: "✅ Автомобиль добавлен", description: `Модель "${data.name}" добавлена в автопарк.` });
+    }
+    form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] });
+    setEditingId(null);
   };
 
   const handleLogout = async () => {
     await signOutUser();
-    toast({
-        title: "Вы вышли из системы.",
-    });
+    toast({ title: "Вы вышли из системы." });
+  };
+  
+  const handleEdit = (vehicle: Vehicle) => {
+    setEditingId(vehicle.id);
+  };
+  
+  const cancelEdit = () => {
+    setEditingId(null);
+    form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] });
+  };
+
+  const handleDelete = (vehicleId: string) => {
+    deleteVehicle(firestore, vehicleId);
+    toast({ variant: 'destructive', title: "🗑️ Автомобиль удален", description: "Запись была удалена из базы данных."});
   };
 
   return (
-    <div className="container py-12">
-      <Card className="max-w-3xl mx-auto">
+    <div className="container py-12 space-y-12">
+      <Card className="max-w-4xl mx-auto">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle>Добавить новый автомобиль</CardTitle>
-              <CardDescription>Заполните форму, чтобы добавить новую машину в автопарк.</CardDescription>
+              <CardTitle>{editingId ? t('admin.editTitle') : t('admin.addTitle')}</CardTitle>
+              <CardDescription>{editingId ? t('admin.editDescription') : t('admin.addDescription')}</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              Выйти
-              <LogOut className="ml-2 h-4 w-4" />
+              {t('header.logout')} <LogOut className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField control={form.control} name="name" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Название модели</FormLabel>
-                  <FormControl><Input placeholder="Например, LiXiang L7" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
               <div className="grid md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="category" render={({ field }) => (
+                 <FormField control={form.control} name="name" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('admin.nameLabel')}</FormLabel>
+                      <FormControl><Input placeholder={t('admin.namePlaceholder')} {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="category" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Категория</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Выберите категорию" /></SelectTrigger></FormControl>
+                    <FormLabel>{t('admin.categoryLabel')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl><SelectTrigger><SelectValue placeholder={t('admin.categoryPlaceholder')} /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(vehicleCategoryMap).map(([key, value]) => (
                           <SelectItem key={key} value={key}>{value}</SelectItem>
@@ -171,35 +301,145 @@ function AdminDashboard() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="priceKey" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ключ цены</FormLabel>
-                    <FormControl><Input placeholder="from_120_day" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
               </div>
-              <FormField control={form.control} name="imageUrl" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>URL изображения</FormLabel>
-                  <FormControl><Input placeholder="https://..." {...field} /></FormControl>
-                  <FormDescription>Вставьте прямую ссылку на изображение.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="featureKeys" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ключи характеристик</FormLabel>
-                  <FormControl><Textarea placeholder="vip, panorama, up_to_4_seats" {...field} /></FormControl>
-                  <FormDescription>Введите ключи из locale-файлов через запятую.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Добавление..." : "Добавить автомобиль"}
-              </Button>
+              <div className="grid md:grid-cols-2 gap-6">
+                  <FormField control={form.control} name="price" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('admin.priceLabel')}</FormLabel>
+                      <FormControl><Input type="number" placeholder={t('admin.pricePlaceholder')} {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="capacity" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('admin.capacityLabel')}</FormLabel>
+                      <FormControl><Input type="number" placeholder={t('admin.capacityPlaceholder')} {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+              </div>
+              
+              <Controller
+                control={form.control}
+                name="imageUrls"
+                render={({ field }) => <ImageUploader field={field} />}
+              />
+              
+               <FormField
+                name="featureKeys"
+                control={form.control}
+                render={() => (
+                  <FormItem>
+                    <FormLabel>{t('admin.featuresLabel')}</FormLabel>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {FEATURES.map((featureId) => (
+                        <FormField
+                          key={featureId}
+                          control={form.control}
+                          name="featureKeys"
+                          render={({ field }) => {
+                            return (
+                              <FormItem key={featureId} className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(featureId)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), featureId])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== featureId
+                                            )
+                                          )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {t(`vehicleFeatures.${featureId}`)}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex gap-4">
+                 <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (editingId ? <CheckCircle className="mr-2 h-4 w-4" /> : null)}
+                    {editingId ? t('admin.updateButton') : t('admin.addButton')}
+                  </Button>
+                  {editingId && (
+                    <Button type="button" variant="ghost" onClick={cancelEdit}>
+                        <Ban className="mr-2 h-4 w-4" /> {t('admin.cancelEditButton')}
+                    </Button>
+                  )}
+              </div>
             </form>
           </Form>
+        </CardContent>
+      </Card>
+      
+      <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+            <CardTitle>{t('admin.vehicleListTitle')}</CardTitle>
+            <CardDescription>{t('admin.vehicleListDescription')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+            {vehiclesLoading ? (
+                 <div className="flex items-center justify-center p-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                 </div>
+            ) : (
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>{t('admin.table.name')}</TableHead>
+                        <TableHead>{t('admin.table.category')}</TableHead>
+                        <TableHead className="text-right">{t('admin.table.price')}</TableHead>
+                        <TableHead className="text-right">{t('admin.table.capacity')}</TableHead>
+                        <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                   {vehicles?.map(vehicle => (
+                     <TableRow key={vehicle.id}>
+                        <TableCell className="font-medium">{vehicle.name}</TableCell>
+                        <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
+                        <TableCell className="text-right">${vehicle.price}</TableCell>
+                        <TableCell className="text-right">{vehicle.capacity}</TableCell>
+                        <TableCell className="text-right">
+                           <div className="flex gap-2 justify-end">
+                             <Button variant="outline" size="icon" onClick={() => handleEdit(vehicle)}>
+                                <FilePenLine className="h-4 w-4" />
+                             </Button>
+                             <AlertDialog>
+                               <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button>
+                               </AlertDialogTrigger>
+                               <AlertDialogContent>
+                                 <AlertDialogHeader>
+                                   <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
+                                   <AlertDialogDescription>
+                                     {t('admin.deleteConfirmDescription', { name: vehicle.name })}
+                                   </AlertDialogDescription>
+                                 </AlertDialogHeader>
+                                 <AlertDialogFooter>
+                                   <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
+                                   <AlertDialogAction onClick={() => handleDelete(vehicle.id)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
+                                 </AlertDialogFooter>
+                               </AlertDialogContent>
+                             </AlertDialog>
+                           </div>
+                        </TableCell>
+                     </TableRow>
+                   ))}
+                </TableBody>
+            </Table>
+            )}
         </CardContent>
       </Card>
     </div>
@@ -212,7 +452,6 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // If the user is loaded, and they are logged in but NOT an admin, redirect them.
     if (!loading && user && !user.isAdmin) {
       router.replace('/');
     }
@@ -226,17 +465,14 @@ export default function AdminPage() {
     );
   }
 
-  // If user is logged in and is an admin, show the dashboard.
   if (user && user.isAdmin) {
     return <AdminDashboard />;
   }
   
-  // If user is not logged in, show login form.
   if (!user) {
     return <AdminLogin />;
   }
 
-  // Fallback for non-admin user while redirecting.
   return (
     <div className="flex min-h-[calc(100vh-16rem)] items-center justify-center">
       <Loader2 className="h-8 w-8 animate-spin text-primary" />

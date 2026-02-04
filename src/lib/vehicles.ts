@@ -1,13 +1,11 @@
 export type Vehicle = {
-    // This `id` property should match the document ID in Firestore
     id: string;
     name: string;
-    descriptionKey: string;
-    imageUrl: string;
-    imageHint: string;
+    imageUrls: string[];
     category: 'premium' | 'comfort' | 'minivan' | 'bus';
-    featureKeys?: string[];
-    priceKey?: string;
+    featureKeys: string[];
+    price: number;
+    capacity: number;
 };
   
 export const vehicleCategoryMap: Record<Vehicle['category'], string> = {

@@ -6,7 +6,9 @@
     "gallery": "Gallery",
     "faq": "FAQ",
     "contacts": "Contacts",
-    "book": "Book Now"
+    "book": "Book Now",
+    "login": "Login",
+    "logout": "Logout"
   },
   "footer": {
     "copyright": "TourEast Transport Group. All rights reserved."
@@ -198,6 +200,39 @@
       "partners": "For Partners"
     }
   },
+  "admin": {
+    "addTitle": "Add New Vehicle",
+    "addDescription": "Fill out the form to add a new car to the fleet.",
+    "editTitle": "Edit Vehicle",
+    "editDescription": "Update the details for the selected vehicle.",
+    "nameLabel": "Model Name",
+    "namePlaceholder": "e.g., LiXiang L7",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select a category",
+    "priceLabel": "Price (USD per day)",
+    "pricePlaceholder": "e.g., 120",
+    "capacityLabel": "Maximum Capacity",
+    "capacityPlaceholder": "e.g., 4",
+    "imagesLabel": "Images",
+    "imagesButton": "Upload",
+    "featuresLabel": "Features",
+    "addButton": "Add Vehicle",
+    "updateButton": "Update Vehicle",
+    "cancelEditButton": "Cancel Edit",
+    "vehicleListTitle": "Vehicle Fleet",
+    "vehicleListDescription": "List of all vehicles currently in the database.",
+    "table": {
+      "name": "Name",
+      "category": "Category",
+      "price": "Price",
+      "capacity": "Capacity",
+      "actions": "Actions"
+    },
+    "deleteConfirmTitle": "Are you absolutely sure?",
+    "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the vehicle \"{{name}}\".",
+    "deleteConfirmCancel": "Cancel",
+    "deleteConfirmAction": "Delete"
+  },
   "vehicleCategories": {
     "premium": "💎 Premium & VIP",
     "comfort": "🚗 Comfort & Standard",
@@ -205,9 +240,14 @@
     "bus": "🚌 Microbuses & Buses"
   },
   "vehicleFeatures": {
+    "meet_and_greet": "Meet and Greet",
+    "air_conditioner": "Air Conditioner",
+    "panoramic_view": "Panoramic View",
+    "ottoman": "Ottoman",
+    "tinted_windows": "Tinted Windows",
+    "city_tours": "City Trips & Excursions",
     "up_to_4_seats": "up to 4 seats",
     "panorama": "panorama",
-    "ottoman": "ottoman",
     "vip": "VIP",
     "from_1_to_4_seats": "1-4 seats",
     "premium_suv": "premium SUV",
@@ -235,26 +275,10 @@
     "up_to_20_seats": "up to 20 seats",
     "from_50_to_55_seats": "50-55 seats"
   },
-  "vehiclePrices": {
-    "from_120_day": "from $120 / day",
-    "from_140_day": "from $140 / day",
-    "from_150_day": "from $150 / day",
-    "from_130_day": "from $130 / day",
-    "from_90_day": "from $90 / day",
-    "from_95_day": "from $95 / day",
-    "from_80_day": "from $80 / day",
-    "from_85_day": "from $85 / day",
-    "from_70_day": "from $70 / day",
-    "from_75_day": "from $75 / day",
-    "from_50_day": "from $50 / day",
-    "from_60_day": "from $60 / day",
-    "from_100_day": "from $100 / day",
-    "from_110_day": "from $110 / day",
-    "from_180_day": "from $180 / day",
-    "from_160_day": "from $160 / day",
-    "from_170_day": "from $170 / day",
-    "from_200_day": "from $200 / day",
-    "from_250_day": "from $250 / day"
+  "vehicleDetail": {
+    "priceLabel": "from ${{price}} / day",
+    "capacity": "{{count}} passengers",
+    "features": "Features"
   },
   "placeholders": {
     "hero_lixiang_l7_name": "LiXiang L7",
