@@ -10,38 +10,46 @@
           "type": "string",
           "description": "Unique identifier for the vehicle."
         },
-        "model": {
+        "name": {
           "type": "string",
           "description": "The model name of the vehicle (e.g., LiXiang L7)."
         },
-        "description": {
+        "descriptionKey": {
           "type": "string",
-          "description": "A detailed description of the vehicle."
+          "description": "A i18n key for a detailed description of the vehicle."
         },
         "imageUrl": {
           "type": "string",
           "description": "URL of the vehicle's image.",
           "format": "uri"
         },
-        "capacity": {
-          "type": "number",
-          "description": "The passenger capacity of the vehicle."
+        "imageHint": {
+          "type": "string",
+          "description": "A hint for AI image generation services."
         },
-        "features": {
+        "category": {
+            "type": "string",
+            "description": "The category of the vehicle.",
+            "enum": ["premium", "comfort", "minivan", "bus"]
+        },
+        "featureKeys": {
           "type": "array",
-          "description": "A list of features offered by the vehicle (e.g., 'Airport transfer', 'Excursions', 'Air conditioning').",
+          "description": "A list of i18n keys for features offered by the vehicle.",
           "items": {
             "type": "string"
           }
+        },
+        "priceKey": {
+          "type": "string",
+          "description": "A i18n key for the pricing information."
         }
       },
       "required": [
         "id",
-        "model",
-        "description",
+        "name",
+        "descriptionKey",
         "imageUrl",
-        "capacity",
-        "features"
+        "category"
       ]
     },
     "Booking": {
@@ -54,13 +62,13 @@
           "type": "string",
           "description": "Unique identifier for the booking."
         },
-        "customerId": {
+        "userId": {
           "type": "string",
-          "description": "Reference to Customer. (Relationship: Customer 1:N Booking)"
+          "description": "Reference to the UserProfile who made the booking."
         },
         "vehicleId": {
           "type": "string",
-          "description": "Reference to Vehicle. (Relationship: Vehicle 1:N Booking)"
+          "description": "Reference to Vehicle."
         },
         "bookingDate": {
           "type": "string",
@@ -78,42 +86,47 @@
       },
       "required": [
         "id",
-        "customerId",
+        "userId",
         "vehicleId",
         "bookingDate",
         "contactMethod"
       ]
     },
-    "Customer": {
+    "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Customer",
+      "title": "User Profile",
       "type": "object",
-      "description": "Represents a customer who makes bookings.",
+      "description": "Represents a user's public profile and roles.",
       "properties": {
-        "id": {
+        "uid": {
           "type": "string",
-          "description": "Unique identifier for the customer."
+          "description": "The user's unique ID, matching their Firebase Auth UID."
+        },
+        "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address."
         },
         "name": {
           "type": "string",
-          "description": "The name of the customer."
+          "description": "The user's display name."
         },
         "phone": {
           "type": "string",
-          "description": "The customer's phone number."
+          "description": "The user's phone number."
+        },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Whether the user has administrative privileges.",
+          "default": false
         }
       },
-      "required": [
-        "id",
-        "name",
-        "phone"
-      ]
+      "required": ["uid", "email", "isAdmin"]
     }
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
@@ -125,7 +138,7 @@
           "schema": {
             "$ref": "#/backend/entities/Vehicle"
           },
-          "description": "Stores vehicle information.",
+          "description": "Stores vehicle information. Writable only by admins.",
           "params": [
             {
               "name": "vehicleId",
@@ -135,33 +148,33 @@
         }
       },
       {
-        "path": "/customers/{customerId}",
+        "path": "/users/{userId}",
         "definition": {
-          "entityName": "Customer",
+          "entityName": "UserProfile",
           "schema": {
-            "$ref": "#/backend/entities/Customer"
+            "$ref": "#/backend/entities/UserProfile"
           },
-          "description": "Stores customer information.",
+          "description": "Stores user profile information and roles. The document ID must match the user's auth UID.",
           "params": [
             {
-              "name": "customerId",
-              "description": "The unique identifier of the customer.  This ID is also used as the document ID to associate users to customer data."
+              "name": "userId",
+              "description": "The unique identifier of the user."
             }
           ]
         }
       },
       {
-        "path": "/customers/{customerId}/bookings/{bookingId}",
+        "path": "/users/{userId}/bookings/{bookingId}",
         "definition": {
           "entityName": "Booking",
           "schema": {
             "$ref": "#/backend/entities/Booking"
           },
-          "description": "Stores booking information for each customer. Includes 'customerId' to ensure authorization independence and simplify security rules.",
+          "description": "Stores booking information for each user.",
           "params": [
             {
-              "name": "customerId",
-              "description": "The unique identifier of the customer making the booking."
+              "name": "userId",
+              "description": "The unique identifier of the user making the booking."
             },
             {
               "name": "bookingId",
@@ -171,6 +184,6 @@
         }
       }
     ],
-    "reasoning": "This Firestore structure is designed to manage vehicle bookings for a transportation company. It prioritizes authorization independence and simplifies security rules.  The structure includes collections for `vehicles`, and `customers`, as well as a subcollection for `bookings` under each customer. \n\nAuthorization Independence: Authorization Independence is achieved by storing bookings under the customer document and requiring the `customerId` inside of the booking document. This allows us to confirm the current authenticated user owns the booking. This structure eliminates the need for `get()` calls in security rules.\n\nQAPs Support: QAPs is achieved by storing each booking document under the `customers/{customerId}/bookings/{bookingId}` path, allowing only authenticated users to list booking documents under their path. The structure implements path-based ownership for customer data and their respective bookings."
+    "reasoning": "This Firestore structure is designed for a vehicle booking application with an admin role. It separates public data (vehicles) from user-specific data (profiles and bookings). User roles (isAdmin) are stored within the user's profile document, allowing security rules to perform role-based access control. Bookings are a subcollection under each user, enforcing ownership and simplifying security rules."
   }
 }

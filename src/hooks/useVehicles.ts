@@ -1,15 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
 import { collection, query, where, orderBy, documentId, type Query } from 'firebase/firestore';
-import { useFirestore, useCollection } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import type { Vehicle } from '@/lib/vehicles';
 
 export function useVehicles(options?: { ids?: string[] }) {
     const firestore = useFirestore();
     const ids = options?.ids;
 
-    const vehiclesQuery = useMemo(() => {
+    const vehiclesQuery = useMemoFirebase(() => {
         if (!firestore) {
             return null;
         }

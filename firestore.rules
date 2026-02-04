@@ -1,147 +1,54 @@
-/**
- * This ruleset enforces a strict user-ownership model for a vehicle booking application.
- *
- * Core Philosophy:
- * The security model ensures that users (Customers) can only access and manage their own
- * data. All sensitive information, such as customer profiles and their bookings, is
- * protected from access by other users. Publicly available information, like the
- * vehicle catalog, is readable by anyone but is not writable by clients.
- *
- * Data Structure:
- * - /vehicles/{vehicleId}: A public, read-only collection of available vehicles.
- * - /customers/{customerId}: A collection where each document represents a user's
- *   profile. The document ID `{customerId}` must match the user's authentication UID.
- * - /customers/{customerId}/bookings/{bookingId}: A subcollection containing bookings
- *   owned by the parent customer. This nested structure ensures that a user's bookings
- *   can only be accessed within the context of their own data tree.
- *
- * Key Security Decisions:
- * - Customer Data Privacy: A user can only read, create, update, or delete their
- *   own customer document. Listing all customers is explicitly disallowed to prevent
- *   user enumeration.
- * - Booking Ownership: Bookings are stored in a subcollection under the customer
- *   who created them, enforcing ownership via the document path.
- * - Read-Only Vehicle Catalog: The `/vehicles` collection is publicly readable so
- *   that any visitor can browse the fleet, but all write operations are denied.
- *   This data is expected to be managed by server-side processes or an admin panel.
- * - Relational Integrity: On creation, documents must contain an ID field that
- *   matches the corresponding ID in the path (e.g., a booking document must have a
- *   `customerId` field that matches the `{customerId}` in its path). This field is
- *   enforced as immutable on update to prevent re-associating data.
- */
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --------------------------------------------------------------------
-    // Helper Functions
-    // --------------------------------------------------------------------
-
-    /**
-     * Checks if the user is authenticated.
-     */
+    // Helper functions
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the currently authenticated user's UID matches the provided userId.
-     * This is the foundation of the user-ownership model.
-     * @param userId The UID of the document owner.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * Checks for ownership and ensures the document already exists.
-     * Used for safe update and delete operations.
-     * @param userId The UID of the document owner.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+    // Function to check if the user is an admin by reading their profile.
+    function isAdmin() {
+      // Access the user's document in the 'users' collection using their UID.
+      // This is a server-side read and does not incur extra client costs.
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    /**
-     * Validates the integrity of a new Customer document upon creation.
-     * Ensures the document's internal ID matches the user's auth UID.
-     * @param customerId The document ID, which must match the user's auth UID.
-     */
-    function isCustomerDataValidOnCreate(customerId) {
-      return request.resource.data.id == customerId;
-    }
-
-    /**
-     * Enforces immutability of the customer's unique ID during an update.
-     */
-    function isImmutableCustomerDataValidOnUpdate() {
-      return request.resource.data.id == resource.data.id;
-    }
-    
-    /**
-     * Validates the integrity of a new Booking document upon creation.
-     * Ensures the booking is correctly associated with the parent customer.
-     * @param customerId The ID of the parent customer from the path.
-     */
-    function isBookingDataValidOnCreate(customerId) {
-      return request.resource.data.customerId == customerId;
-    }
-
-    /**
-     * Enforces immutability of the booking's customerId during an update.
-     * This prevents a booking from being reassigned to a different customer.
-     */
-    function isBookingDataValidOnUpdate() {
-      return request.resource.data.customerId == resource.data.customerId;
-    }
-
-    // --------------------------------------------------------------------
-    // Collection Rules
-    // --------------------------------------------------------------------
-
-    /**
-     * @description Publicly readable catalog of vehicles. Writes are disabled.
-     * @path /vehicles/{vehicleId}
-     * @allow (get) Any user, signed in or not, can view a specific vehicle.
-     * @deny (create) A signed-in user cannot create a new vehicle document.
-     * @principle Manages public data with server-side write control.
-     */
+    // VEHICLES: Publicly readable, admin writable.
+    // This allows anyone to see the vehicle catalog, but only admins can manage it.
     match /vehicles/{vehicleId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Manages customer profile data. Each user owns their document.
-     * @path /customers/{customerId}
-     * @allow (create) A new user (auth.uid: 'user_abc') can create their own profile at `/customers/user_abc`.
-     * @deny (get) A user (auth.uid: 'user_xyz') cannot read the profile at `/customers/user_abc`.
-     * @deny (list) No user can list all documents in the `/customers` collection.
-     * @principle Restricts access to a user's own data tree and prevents user enumeration.
-     */
-    match /customers/{customerId} {
-      allow get: if isOwner(customerId);
-      allow list: if false;
-      allow create: if isOwner(customerId) && isCustomerDataValidOnCreate(customerId);
-      allow update: if isExistingOwner(customerId) && isImmutableCustomerDataValidOnUpdate();
-      allow delete: if isExistingOwner(customerId);
+    // USERS: User-owned profiles.
+    // Each user can manage their own profile information but cannot grant themselves admin rights.
+    match /users/{userId} {
+      // Allow a user to get their own document.
+      allow get: if isOwner(userId);
 
-      /**
-       * @description Manages a customer's bookings. Access is inherited from the parent customer.
-       * @path /customers/{customerId}/bookings/{bookingId}
-       * @allow (create) The owner (auth.uid: 'user_abc') can create a new booking in their own subcollection.
-       * @deny (update) Another user (auth.uid: 'user_xyz') cannot update a booking owned by 'user_abc'.
-       * @principle Enforces document ownership for all operations via path-based security.
-       */
+      // Allow a user to create their own profile document.
+      // On creation, `isAdmin` must be set to false. This prevents self-promotion.
+      allow create: if isOwner(userId) && request.resource.data.isAdmin == false;
+      
+      // Allow a user to update their own profile, but they cannot change their `isAdmin` status.
+      // This field must be changed directly in the Firebase Console or by a server-side function.
+      allow update: if isOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin;
+
+      // Disallow listing all users to prevent user enumeration.
+      // Disallow client-side deletion of user profiles for data integrity.
+      allow list, delete: if false;
+
+      // BOOKINGS: Subcollection owned by the user.
+      // All booking operations are only allowed for the owner of the parent user document.
       match /bookings/{bookingId} {
-        allow get: if isOwner(customerId);
-        allow list: if isOwner(customerId);
-        allow create: if isOwner(customerId) && isBookingDataValidOnCreate(customerId);
-        allow update: if isExistingOwner(customerId) && isBookingDataValidOnUpdate();
-        allow delete: if isExistingOwner(customerId);
+        allow read, write: if isOwner(userId);
       }
     }
   }
