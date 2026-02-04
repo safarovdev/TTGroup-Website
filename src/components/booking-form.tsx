@@ -13,28 +13,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Loader2, CalendarIcon, Send, MessageSquare, PhoneCall } from "lucide-react";
+import { Loader2, Send, MessageSquare, PhoneCall } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useMemo, useEffect, useState } from "react";
 import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useLanguage } from "@/context/LanguageContext";
-import { ru, enUS } from 'date-fns/locale';
 import { useVehicles } from "@/hooks/useVehicles";
 
 const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
 const TELEGRAM_CHAT_ID = '-1003780724209';
-
-const dateLocales = {
-  ru: ru,
-  en: enUS
-};
 
 export function BookingForm({ 
     defaultVehicleName,
@@ -45,7 +35,6 @@ export function BookingForm({
 }) {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const { locale } = useLanguage();
   const { data: vehicles } = useVehicles();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -55,7 +44,7 @@ export function BookingForm({
     name: z.string().min(2, { message: t('booking.form.nameError') }),
     phone: z.string().min(9, { message: t('booking.form.phoneError') }),
     username: z.string().optional(),
-    date: z.date({ required_error: t('booking.form.dateError') }),
+    date: z.string().optional(),
     vehicle: z.string({ required_error: t('booking.form.vehicleError') }),
     contactMethod: z.enum(["telegram", "whatsapp", "call"], {required_error: t('booking.form.contactMethodError')}),
   });
@@ -68,6 +57,7 @@ export function BookingForm({
       name: "",
       phone: "",
       username: "",
+      date: "",
       vehicle: defaultVehicleName || t('booking.form.vehicleConsultation'),
       contactMethod: "telegram",
     },
@@ -104,13 +94,17 @@ export function BookingForm({
     
     setIsSubmitting(true);
 
+    const dateText = data.date
+        ? `*Дата поездки:* ${data.date}`
+        : `*Дата поездки:* ${t('booking.form.dateDiscussLater')}`;
+
     const messageLines = [
         `🔔 *Новая заявка на бронирование!*`,
         `-----------------------------------`,
         `*Имя:* ${data.name}`,
         `*Телефон:* \`${data.phone}\``,
         data.username ? `*Username:* @${data.username.replace('@', '')}` : null,
-        `*Дата поездки:* ${format(data.date, 'PPP', { locale: dateLocales[locale] })}`,
+        dateText,
         `*Автомобиль:* ${data.vehicle}`,
         `*Способ связи:* ${data.contactMethod}`,
     ];
@@ -143,6 +137,7 @@ export function BookingForm({
               name: "",
               phone: "",
               username: "",
+              date: "",
               vehicle: defaultVehicleName || t('booking.form.vehicleConsultation'),
               contactMethod: "telegram",
             });
@@ -210,46 +205,16 @@ export function BookingForm({
           />
         </div>
         <div className="grid sm:grid-cols-2 gap-6">
-          <FormField
+           <FormField
             control={form.control}
             name="date"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem>
                 <FormLabel>{t('booking.form.dateLabel')}</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          is_inverted && "bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground border-primary-foreground/20",
-                          !field.value && (is_inverted ? "text-primary-foreground/60" : "text-muted-foreground")
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP", { locale: dateLocales[locale] })
-                        ) : (
-                          <span>{t('booking.form.datePlaceholder')}</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date(new Date().setHours(0, 0, 0, 0))
-                      }
-                      initialFocus
-                      locale={dateLocales[locale]}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage className="text-accent" />
+                <FormControl>
+                    <Input placeholder={t('booking.form.datePlaceholderOptional')} {...field} className={cn(is_inverted && invertedClasses)}/>
+                </FormControl>
+                <FormMessage className="text-accent"/>
               </FormItem>
             )}
           />
