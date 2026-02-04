@@ -214,10 +214,12 @@
     "featuresLabel": "Features",
     "addButton": "Add Vehicle",
     "updateButton": "Update Vehicle",
+    "idCopied": "ID copied to clipboard",
     "cancelEditButton": "Cancel Edit",
     "vehicleListTitle": "Vehicle Fleet",
     "vehicleListDescription": "List of all vehicles currently in the database.",
     "table": {
+      "id": "ID",
       "name": "Name",
       "category": "Category",
       "price": "Price",

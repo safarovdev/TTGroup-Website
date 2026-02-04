@@ -214,10 +214,12 @@
     "featuresLabel": "Характеристики",
     "addButton": "Добавить автомобиль",
     "updateButton": "Обновить автомобиль",
+    "idCopied": "ID скопирован в буфер обмена",
     "cancelEditButton": "Отменить редактирование",
     "vehicleListTitle": "Автопарк",
     "vehicleListDescription": "Список всех автомобилей в базе данных.",
     "table": {
+      "id": "ID",
       "name": "Название",
       "category": "Категория",
       "price": "Цена",

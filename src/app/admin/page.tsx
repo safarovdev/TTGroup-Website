@@ -4,7 +4,7 @@ import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, delete
 import { useVehicles } from '@/hooks/useVehicles';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle } from 'lucide-react';
+import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Copy } from 'lucide-react';
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -402,7 +402,7 @@ function AdminDashboard() {
             </DialogContent>
         </Dialog>
       
-      <Card className="max-w-6xl mx-auto">
+      <Card className="max-w-7xl mx-auto">
         <CardHeader>
             <div className="flex justify-between items-start">
                 <div>
@@ -429,6 +429,7 @@ function AdminDashboard() {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>{t('admin.table.id')}</TableHead>
                         <TableHead>{t('admin.table.name')}</TableHead>
                         <TableHead>{t('admin.table.category')}</TableHead>
                         <TableHead className="text-right">{t('admin.table.price')}</TableHead>
@@ -439,6 +440,17 @@ function AdminDashboard() {
                 <TableBody>
                    {vehicles?.map(vehicle => (
                      <TableRow key={vehicle.id}>
+                        <TableCell>
+                            <div className="flex items-center gap-1 group">
+                                <span className="font-mono text-xs text-muted-foreground truncate max-w-[80px] group-hover:max-w-none transition-all duration-300">{vehicle.id}</span>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => {
+                                    navigator.clipboard.writeText(vehicle.id);
+                                    toast({ title: t('admin.idCopied') });
+                                }}>
+                                    <Copy className="h-3 w-3" />
+                                </Button>
+                            </div>
+                        </TableCell>
                         <TableCell className="font-medium">{vehicle.name}</TableCell>
                         <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
                         <TableCell className="text-right">
