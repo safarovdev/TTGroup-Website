@@ -1,6 +1,7 @@
 'use client';
 
-import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, useVehicles, deleteVehicle, updateVehicle } from '@/firebase';
+import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle } from '@/firebase';
+import { useVehicles } from '@/hooks/useVehicles';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle } from 'lucide-react';
