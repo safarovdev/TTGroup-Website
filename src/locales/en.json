@@ -145,7 +145,7 @@
   "gallery": {
     "title": "Uzbekistan from the window of a comfortable car",
     "description": "These are not just photos — these are real shots from trips. See what your journey could be like: comfortable cars, scenic routes, and stops in the most beautiful places. <span class=\"font-semibold text-foreground\">Get inspired for your next trip.</span>",
-    "instagramButton": "More photos on"
+    "telegramButton": "More photos in Telegram"
   },
   "booking": {
     "title": "Book a Trip",

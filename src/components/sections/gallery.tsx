@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Instagram } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import React from "react";
@@ -26,9 +26,9 @@ export function Gallery() {
           <p className="mt-6 text-lg text-muted-foreground">
             <span dangerouslySetInnerHTML={{ __html: t('gallery.description') }} />
           </p>
-          <Button asChild size="lg" className="mt-8 bg-[#E1306C] hover:bg-[#c13584] text-white font-bold">
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              {t('gallery.instagramButton')} <Instagram className="ml-2 h-5 w-5" />
+          <Button asChild size="lg" className="mt-8 font-bold">
+            <Link href="https://t.me/transport_uzbekistann" target="_blank" rel="noopener noreferrer">
+              {t('gallery.telegramButton')} <MessageSquare className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
