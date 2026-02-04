@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -88,19 +88,21 @@ export function Header() {
                 </Link>
                 <nav className="flex flex-col gap-6 text-lg font-medium">
                   {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="transition-colors hover:text-foreground"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
+                    <SheetClose asChild key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </Link>
+                    </SheetClose>
                   ))}
                 </nav>
-                 <Button asChild className="mt-8 w-full">
-                  <Link href="/#booking" onClick={() => setIsMobileMenuOpen(false)}>{t('header.book')}</Link>
-                </Button>
+                 <SheetClose asChild>
+                  <Button asChild className="mt-8 w-full">
+                    <Link href="/#booking">{t('header.book')}</Link>
+                  </Button>
+                </SheetClose>
               </SheetContent>
             </Sheet>
           ) : (
