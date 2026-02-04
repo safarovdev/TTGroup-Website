@@ -1,90 +1,176 @@
 {
   "entities": {
     "Vehicle": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Vehicle",
-      "description": "Represents a vehicle in the transport fleet.",
       "type": "object",
+      "description": "Represents a vehicle available for booking in the transportation company's fleet.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "The unique identifier for the vehicle."
+          "description": "Unique identifier for the vehicle."
         },
-        "name": {
+        "model": {
           "type": "string",
-          "description": "The name of the vehicle model."
+          "description": "The model name of the vehicle (e.g., LiXiang L7)."
         },
-        "descriptionKey": {
+        "description": {
           "type": "string",
-          "description": "The key for the vehicle's description in the locale files."
+          "description": "A detailed description of the vehicle."
         },
         "imageUrl": {
           "type": "string",
-          "description": "The URL of the vehicle's image."
+          "description": "URL of the vehicle's image.",
+          "format": "uri"
         },
-        "imageHint": {
-          "type": "string",
-          "description": "A hint for AI image generation."
+        "capacity": {
+          "type": "number",
+          "description": "The passenger capacity of the vehicle."
         },
-        "category": {
-          "type": "string",
-          "description": "The category of the vehicle.",
-          "enum": ["premium", "comfort", "minivan", "bus"]
-        },
-        "featureKeys": {
+        "features": {
           "type": "array",
+          "description": "A list of features offered by the vehicle (e.g., 'Airport transfer', 'Excursions', 'Air conditioning').",
           "items": {
             "type": "string"
-          },
-          "description": "An array of keys for vehicle features in the locale files."
-        },
-        "priceKey": {
-          "type": "string",
-          "description": "The key for the vehicle's price in the locale files."
+          }
         }
       },
-      "required": ["id", "name", "category", "imageUrl"]
+      "required": [
+        "id",
+        "model",
+        "description",
+        "imageUrl",
+        "capacity",
+        "features"
+      ]
     },
-    "UserProfile": {
-      "title": "User Profile",
-      "description": "Represents a user's profile information.",
+    "Booking": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Booking",
       "type": "object",
+      "description": "Represents a booking made by a customer for a vehicle.",
       "properties": {
-        "uid": {
+        "id": {
           "type": "string",
-          "description": "The user's unique ID from Firebase Authentication."
+          "description": "Unique identifier for the booking."
         },
-        "email": {
+        "customerId": {
           "type": "string",
-          "format": "email",
-          "description": "The user's email address."
+          "description": "Reference to Customer. (Relationship: Customer 1:N Booking)"
         },
-        "displayName": {
+        "vehicleId": {
           "type": "string",
-          "description": "The user's display name."
+          "description": "Reference to Vehicle. (Relationship: Vehicle 1:N Booking)"
         },
-        "isAdmin": {
-          "type": "boolean",
-          "description": "Flag to indicate if the user is an administrator."
+        "bookingDate": {
+          "type": "string",
+          "description": "The date and time for which the booking is made.",
+          "format": "date-time"
+        },
+        "contactMethod": {
+          "type": "string",
+          "description": "The preferred contact method chosen by the customer (Telegram, WhatsApp, Call)."
+        },
+        "message": {
+          "type": "string",
+          "description": "Any optional message the customer may provide regarding the booking"
         }
       },
-      "required": ["uid", "email"]
+      "required": [
+        "id",
+        "customerId",
+        "vehicleId",
+        "bookingDate",
+        "contactMethod"
+      ]
+    },
+    "Customer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Customer",
+      "type": "object",
+      "description": "Represents a customer who makes bookings.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the customer."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the customer."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The customer's phone number."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "phone"
+      ]
     }
   },
   "auth": {
-    "providers": ["password"]
+    "providers": [
+      "password",
+      "anonymous"
+    ]
   },
   "firestore": {
-    "/vehicles/{vehicleId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Vehicle"
+    "structure": [
+      {
+        "path": "/vehicles/{vehicleId}",
+        "definition": {
+          "entityName": "Vehicle",
+          "schema": {
+            "$ref": "#/backend/entities/Vehicle"
+          },
+          "description": "Stores vehicle information.",
+          "params": [
+            {
+              "name": "vehicleId",
+              "description": "The unique identifier of the vehicle."
+            }
+          ]
+        }
       },
-      "description": "Stores all vehicle documents, where the document ID is the vehicle's unique `id` string."
-    },
-    "/users/{userId}": {
-      "schema": {
-        "$ref": "#/backend/entities/UserProfile"
+      {
+        "path": "/customers/{customerId}",
+        "definition": {
+          "entityName": "Customer",
+          "schema": {
+            "$ref": "#/backend/entities/Customer"
+          },
+          "description": "Stores customer information.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique identifier of the customer.  This ID is also used as the document ID to associate users to customer data."
+            }
+          ]
+        }
       },
-      "description": "Stores public user profile data, keyed by user UID."
-    }
+      {
+        "path": "/customers/{customerId}/bookings/{bookingId}",
+        "definition": {
+          "entityName": "Booking",
+          "schema": {
+            "$ref": "#/backend/entities/Booking"
+          },
+          "description": "Stores booking information for each customer. Includes 'customerId' to ensure authorization independence and simplify security rules.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique identifier of the customer making the booking."
+            },
+            {
+              "name": "bookingId",
+              "description": "The unique identifier of the booking."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed to manage vehicle bookings for a transportation company. It prioritizes authorization independence and simplifies security rules.  The structure includes collections for `vehicles`, and `customers`, as well as a subcollection for `bookings` under each customer. \n\nAuthorization Independence: Authorization Independence is achieved by storing bookings under the customer document and requiring the `customerId` inside of the booking document. This allows us to confirm the current authenticated user owns the booking. This structure eliminates the need for `get()` calls in security rules.\n\nQAPs Support: QAPs is achieved by storing each booking document under the `customers/{customerId}/bookings/{bookingId}` path, allowing only authenticated users to list booking documents under their path. The structure implements path-based ownership for customer data and their respective bookings."
   }
 }
