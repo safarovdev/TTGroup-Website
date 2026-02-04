@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+    function isAdmin() {
+      // Check if the user is signed in and if their user document has isAdmin set to true.
+      return isSignedIn() && getUserData(request.auth.uid).isAdmin == true;
+    }
+
+    // VEHICLES: Publicly readable, only writable by admins.
+    match /vehicles/{vehicleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // USERS: Users can read their own profile. Admins can read any profile.
+    // A user's profile can be created on signup. Only the user or an admin can update/delete it.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isOwner(userId) || isAdmin();
+    }
+  }
+}

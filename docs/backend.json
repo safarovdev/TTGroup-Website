@@ -43,10 +43,35 @@
         }
       },
       "required": ["id", "name", "category", "imageUrl"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID from Firebase Authentication."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Flag to indicate if the user is an administrator."
+        }
+      },
+      "required": ["uid", "email"]
     }
   },
   "auth": {
-    "providers": []
+    "providers": ["password"]
   },
   "firestore": {
     "/vehicles/{vehicleId}": {
@@ -54,6 +79,12 @@
         "$ref": "#/backend/entities/Vehicle"
       },
       "description": "Stores all vehicle documents, where the document ID is the vehicle's unique `id` string."
+    },
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/backend/entities/UserProfile"
+      },
+      "description": "Stores public user profile data, keyed by user UID."
     }
   }
 }
