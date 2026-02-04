@@ -68,10 +68,10 @@ export function Fleet() {
                 <>
                 <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                     <CarouselContent>
-                        {popularVehicles.map(vehicle => (
+                        {popularVehicles.map((vehicle, index) => (
                             <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
                                 <div className="p-2 h-full">
-                                    <VehicleCard vehicle={vehicle} />
+                                    <VehicleCard vehicle={vehicle} priority={index < 3} />
                                 </div>
                             </CarouselItem>
                         ))}

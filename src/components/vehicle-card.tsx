@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/hooks/useTranslation";
 import { type Vehicle } from "@/lib/vehicles";
 
-export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
+export const VehicleCard = ({ vehicle, priority = false }: { vehicle: Vehicle; priority?: boolean }) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
   
@@ -38,6 +38,7 @@ export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
                         onLoad={() => setIsLoading(false)}
                         onError={() => setIsLoading(false)}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={priority}
                     />
                 </div>
             </CardHeader>

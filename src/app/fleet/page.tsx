@@ -132,8 +132,8 @@ const FleetPage = () => {
                                 <VehicleGridSkeleton />
                             ) : filteredVehicles && filteredVehicles.length > 0 ? (
                                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredVehicles.map((vehicle) => (
-                                        <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                                    {filteredVehicles.map((vehicle, index) => (
+                                        <VehicleCard key={vehicle.id} vehicle={vehicle} priority={index < 3} />
                                     ))}
                                 </div>
                             ) : (
