@@ -33,7 +33,7 @@ import { useSearchParams } from "next/navigation";
 const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
 // ⚠️ ВАЖНО: Замените 'YOUR_TELEGRAM_CHAT_ID' на ID вашего группового чата.
 // Он должен быть строкой и обычно начинается с дефиса (например, '-1001234567890').
-const TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
+const TELEGRAM_CHAT_ID = '-1003780724209';
 
 const dateLocales = {
   ru: ru,
