@@ -279,5 +279,16 @@
     "gallery_5_desc": "A plate of traditional plov.",
     "gallery_6_name": "Gallery Image 6",
     "gallery_6_desc": "View of the desert from a car window."
+  },
+  "fleetPage": {
+    "title": "Our Fleet",
+    "description": "Choose the perfect vehicle for your trip. We offer a wide range of transport for any purpose, from business meetings to large sightseeing tours.",
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear",
+      "found": "Found: {{count}}",
+      "noResultsTitle": "No vehicles found",
+      "noResultsDescription": "Try changing your filter settings or reset them to see all available vehicles."
+    }
   }
 }

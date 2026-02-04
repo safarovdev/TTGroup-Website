@@ -34,12 +34,12 @@ export function Hero() {
           </p>
           <div className="mt-8 flex gap-4 flex-wrap justify-start w-full">
             <Button asChild size="lg">
-              <Link href="#booking">
+              <Link href="/#booking">
                 {t('hero.bookButton')} <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button asChild variant="secondary" size="lg">
-              <Link href="#fleet-intro">{t('hero.fleetButton')}</Link>
+              <Link href="/fleet">{t('hero.fleetButton')}</Link>
             </Button>
           </div>
         </div>

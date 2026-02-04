@@ -1,113 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import React from 'react';
-import { Briefcase, Users, Star, Sun, Zap, Armchair, Car, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Vehicles } from "@/lib/vehicles";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import { useTranslation } from "@/hooks/useTranslation";
+import { VehicleCard } from "@/components/vehicle-card";
 
 const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
 const popularVehicles = popular_ids
   .map(id => Vehicles.find(v => v.id === id))
   .filter((v): v is NonNullable<typeof v> => v !== undefined);
-
-const VehicleCard = ({ vehicleId }: { vehicleId: string }) => {
-  const { t } = useTranslation();
-  const vehicle = Vehicles.find(v => v.id === vehicleId);
-  const [isLoading, setIsLoading] = React.useState(!!vehicle?.imageUrl);
-  
-  if (!vehicle) return null;
-
-  const finalImageUrl = vehicle.imageUrl || "/images/placeholder.jpg";
-  
-  const featureIcons: { [key: string]: React.ReactElement } = {
-    'мест': <Users />,
-    'seats': <Users />,
-    'пассажир': <Users />,
-    'passenger': <Users />,
-    'салон': <Armchair />,
-    'leather': <Armchair />,
-    'панорама': <Sun />,
-    'panorama': <Sun />,
-    'электро': <Zap />,
-    'electric': <Zap />,
-    'внедорожник': <Car />,
-    'suv': <Car />,
-    'кроссовер': <Car />,
-    'crossover': <Car />,
-    'vip': <Star />,
-    'бизнес': <Briefcase />,
-    'business': <Briefcase />,
-    'кресла': <Armchair />,
-    'captain': <Armchair />,
-  };
-
-  const getFeatureIcon = (feature: string) => {
-    const lowerFeature = feature.toLowerCase();
-    for (const key in featureIcons) {
-      if (lowerFeature.includes(key)) {
-        return React.cloneElement(featureIcons[key], { className: 'w-5 h-5 text-primary' });
-      }
-    }
-    return <Check className="w-5 h-5 text-primary" />;
-  };
-  
-  return (
-    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col bg-card h-full">
-      <CardHeader className="p-0">
-        <div className="relative aspect-[4/3] w-full">
-            {isLoading && (
-                <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
-            )}
-            <Image
-                src={finalImageUrl}
-                alt={vehicle.name}
-                fill
-                className={cn(
-                    "object-cover transition-opacity duration-300",
-                    isLoading ? "opacity-0" : "opacity-100"
-                )}
-                onLoad={() => setIsLoading(false)}
-                onError={() => setIsLoading(false)}
-                data-ai-hint={vehicle.imageHint}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-        </div>
-      </CardHeader>
-      <CardContent className="p-6 flex-grow flex flex-col">
-        <CardTitle className="text-xl font-bold">{vehicle.name}</CardTitle>
-        
-        {vehicle.featureKeys && (
-          <ul className="space-y-2 text-muted-foreground text-sm pt-4">
-            {vehicle.featureKeys.map((featureKey, index) => (
-              <li key={index} className="flex items-center gap-3">
-                {getFeatureIcon(t(`vehicleFeatures.${featureKey}`))}
-                <span>{t(`vehicleFeatures.${featureKey}`)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="flex-grow" />
-
-        {vehicle.priceKey && (
-            <p className="text-2xl font-bold text-foreground mt-4">{t(`vehiclePrices.${vehicle.priceKey}`)}</p>
-        )}
-        
-        <Button asChild size="lg" className="w-full mt-4 font-semibold">
-            <Link href="#booking">{t('fleet.bookButton')}</Link>
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
 
 export function Fleet() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.1 });
@@ -152,7 +58,7 @@ export function Fleet() {
                       {popularVehicles.map(vehicle => (
                           <CarouselItem key={vehicle.id} className="md:basis-1/2 lg:basis-1/3">
                               <div className="p-2 h-full">
-                                  <VehicleCard vehicleId={vehicle.id} />
+                                  <VehicleCard vehicle={vehicle} />
                               </div>
                           </CarouselItem>
                       ))}
@@ -182,10 +88,10 @@ export function Fleet() {
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="font-bold">
-                <Link href="#">{t('fleet.notFound.allModelsButton')}</Link>
+                <Link href="/fleet">{t('fleet.notFound.allModelsButton')}</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="font-bold">
-                <Link href="#booking">{t('fleet.notFound.contactUsButton')}</Link>
+                <Link href="/#booking">{t('fleet.notFound.contactUsButton')}</Link>
               </Button>
             </div>
           </div>

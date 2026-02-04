@@ -21,11 +21,11 @@ export function Contacts() {
 
   const navLinks = [
     { href: "/", label: t('contacts.nav.home') },
-    { href: "#about", label: t('contacts.nav.about') },
-    { href: "#fleet-intro", label: t('contacts.nav.fleet') },
-    { href: "#testimonials", label: t('contacts.nav.testimonials') },
-    { href: "#faq", label: t('contacts.nav.faq') },
-    { href: "#contacts", label: t('contacts.nav.contacts') },
+    { href: "/#about", label: t('contacts.nav.about') },
+    { href: "/fleet", label: t('contacts.nav.fleet') },
+    { href: "/#testimonials", label: t('contacts.nav.testimonials') },
+    { href: "/#faq", label: t('contacts.nav.faq') },
+    { href: "/#contacts", label: t('contacts.nav.contacts') },
   ];
 
   const docLinks = [

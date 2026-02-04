@@ -25,12 +25,12 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { href: "#about", label: t('header.about') },
-    { href: "#fleet-intro", label: t('header.fleet') },
-    { href: "#testimonials", label: t('header.testimonials') },
-    { href: "#gallery", label: t('header.gallery') },
-    { href: "#faq", label: t('header.faq') },
-    { href: "#contacts", label: t('header.contacts') },
+    { href: "/#about", label: t('header.about') },
+    { href: "/fleet", label: t('header.fleet') },
+    { href: "/#testimonials", label: t('header.testimonials') },
+    { href: "/#gallery", label: t('header.gallery') },
+    { href: "/#faq", label: t('header.faq') },
+    { href: "/#contacts", label: t('header.contacts') },
   ];
 
   return (
@@ -70,7 +70,7 @@ export function Header() {
           )}
 
           <Button asChild className="hidden sm:inline-flex">
-            <Link href="#booking">{t('header.book')}</Link>
+            <Link href="/#booking">{t('header.book')}</Link>
           </Button>
 
           {isMounted ? (
@@ -98,7 +98,7 @@ export function Header() {
                   ))}
                 </nav>
                  <Button asChild className="mt-8 w-full">
-                  <Link href="#booking" onClick={() => setIsMobileMenuOpen(false)}>{t('header.book')}</Link>
+                  <Link href="/#booking" onClick={() => setIsMobileMenuOpen(false)}>{t('header.book')}</Link>
                 </Button>
               </SheetContent>
             </Sheet>
