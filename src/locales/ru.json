@@ -252,7 +252,8 @@
     "priceLabel": "от ${{price}} / день",
     "capacity": "до {{count}} пассажиров",
     "features": "Характеристики",
-    "negotiablePrice": "Цена договорная"
+    "negotiablePrice": "Цена договорная",
+    "imagePopupDescription": "Увеличенное изображение автомобиля {{name}}"
   },
   "placeholders": {
     "hero_lixiang_l7_name": "LiXiang L7",

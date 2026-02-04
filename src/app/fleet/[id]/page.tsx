@@ -14,7 +14,7 @@ import { Check, Users, Armchair, Sun, Car, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const featureIcons: { [key: string]: React.ReactElement } = {
     'meet_and_greet': <Star />,
@@ -110,11 +110,15 @@ const VehicleDetailPage = () => {
                         <div>
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted shadow-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity">
+                                    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted mb-4 cursor-pointer hover:opacity-90 transition-opacity">
                                         {mainImage && <Image src={mainImage} alt={vehicle.name} fill className="object-cover" />}
                                     </div>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-none w-auto h-auto bg-transparent border-none shadow-none p-0 flex items-center justify-center">
+                                     <DialogHeader className="sr-only">
+                                        <DialogTitle>{vehicle.name}</DialogTitle>
+                                        <DialogDescription>{t('vehicleDetail.imagePopupDescription', { name: vehicle.name })}</DialogDescription>
+                                     </DialogHeader>
                                     {mainImage && (
                                         <Image 
                                             src={mainImage} 

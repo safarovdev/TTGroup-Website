@@ -280,7 +280,8 @@
     "priceLabel": "from ${{price}} / day",
     "capacity": "{{count}} passengers",
     "features": "Features",
-    "negotiablePrice": "Negotiable Price"
+    "negotiablePrice": "Negotiable Price",
+    "imagePopupDescription": "Enlarged image of the {{name}} vehicle"
   },
   "placeholders": {
     "hero_lixiang_l7_name": "LiXiang L7",
