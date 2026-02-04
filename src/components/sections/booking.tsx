@@ -15,20 +15,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Send, MessageSquare, PhoneCall } from "lucide-react";
+import { Loader2, CalendarIcon, Send, MessageSquare, PhoneCall } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useOnScreen } from "@/hooks/use-on-screen";
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 import { ru, enUS } from 'date-fns/locale';
 import { useVehicles } from "@/hooks/useVehicles";
 import { useSearchParams } from "next/navigation";
+
+const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
+// ⚠️ ВАЖНО: Замените 'YOUR_TELEGRAM_CHAT_ID' на ID вашего группового чата.
+// Он должен быть строкой и обычно начинается с дефиса (например, '-1001234567890').
+const TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
 
 const dateLocales = {
   ru: ru,
@@ -42,6 +47,7 @@ export function Booking() {
   const { locale } = useLanguage();
   const { data: vehicles } = useVehicles();
   const searchParams = useSearchParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const bookingSchema = z.object({
     name: z.string().min(2, { message: t('booking.form.nameError') }),
@@ -78,39 +84,89 @@ export function Booking() {
 
 
   useEffect(() => {
-    // If the 'vehicle' param exists, it means we likely navigated from the detail page.
-    // The browser's native hash scrolling can fail with Suspense.
-    // This ensures we scroll to the booking form.
-    if (searchParams.has('vehicle')) {
-      document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [searchParams]);
-  
-  useEffect(() => {
     const vehicleId = searchParams.get('vehicle');
-    if (vehicleId && vehicles) {
-        const vehicle = vehicles.find(v => v.id === vehicleId);
-        if (vehicle) {
-            const vehicleValue = `${vehicle.name} ${vehicle.featureKeys && vehicle.featureKeys.length > 0 ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim();
-            form.setValue('vehicle', vehicleValue);
-        }
+    if (vehicleId && vehicles && vehicles.length > 0) {
+      const vehicle = vehicles.find(v => v.id === vehicleId);
+      if (vehicle) {
+        const vehicleValue = `${vehicle.name} ${vehicle.featureKeys && vehicle.featureKeys.length > 0 ? `(${vehicle.featureKeys.map(f => t(`vehicleFeatures.${f}`)).join(', ')})` : ''}`.trim();
+        form.setValue('vehicle', vehicleValue);
+        
+        // Scroll to form only after setting the value
+        setTimeout(() => {
+          document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150); // Small delay to ensure DOM is ready
+      }
     }
   }, [searchParams, vehicles, form, t]);
 
 
-  function onSubmit(data: BookingFormValues) {
-    const message = `New booking request!\nName: ${data.name}\nPhone: ${data.phone}${data.username ? `\nUsername: ${data.username}`: ''}\nDate: ${format(data.date, 'PPP')}\nVehicle: ${data.vehicle}`;
-    if (data.contactMethod === 'telegram') {
-        const telegramUrl = `https://t.me/toureast_transport?text=${encodeURIComponent(message)}`;
-        window.open(telegramUrl, '_blank');
+  async function onSubmit(data: BookingFormValues) {
+    if (!TELEGRAM_CHAT_ID || TELEGRAM_CHAT_ID === 'YOUR_TELEGRAM_CHAT_ID') {
+        toast({
+            variant: "destructive",
+            title: "Ошибка конфигурации Telegram",
+            description: "Пожалуйста, укажите ID чата в файле `src/components/sections/booking.tsx`.",
+        });
+        return;
     }
     
-    toast({
-      title: t('booking.form.toastSuccessTitle'),
-      description: t('booking.form.toastSuccessDescription'),
-    });
+    setIsSubmitting(true);
 
-    form.reset();
+    const messageLines = [
+        `🔔 *Новая заявка на бронирование!*`,
+        `-----------------------------------`,
+        `*Имя:* ${data.name}`,
+        `*Телефон:* \`${data.phone}\``,
+        data.username ? `*Username:* @${data.username.replace('@', '')}` : null,
+        `*Дата поездки:* ${format(data.date, 'PPP', { locale: dateLocales[locale] })}`,
+        `*Автомобиль:* ${data.vehicle}`,
+        `*Способ связи:* ${data.contactMethod}`,
+    ];
+
+    const message = messageLines.filter(Boolean).join('\n');
+
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            }),
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+            toast({
+                title: t('booking.form.toastSuccessTitle'),
+                description: t('booking.form.toastSuccessDescription'),
+            });
+            form.reset({
+              name: "",
+              phone: "",
+              username: "",
+              vehicle: t('booking.form.vehicleConsultation'),
+              contactMethod: "telegram",
+            });
+        } else {
+            throw new Error(result.description || 'Failed to send message.');
+        }
+    } catch (error) {
+        console.error("Telegram submission error:", error);
+        toast({
+            variant: "destructive",
+            title: "Ошибка отправки",
+            description: "Не удалось отправить заявку. Попробуйте снова или свяжитесь с нами напрямую.",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   }
 
   return (
@@ -287,8 +343,9 @@ export function Booking() {
                 )}
               />
               
-              <Button type="submit" size="lg" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-bold text-base !mt-10">
-                {t('booking.form.submitButton')} <Send className="ml-2 h-5 w-5" />
+              <Button type="submit" size="lg" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-bold text-base !mt-10" disabled={isSubmitting}>
+                 {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
+                 {isSubmitting ? 'Отправка...' : t('booking.form.submitButton')}
               </Button>
             </form>
           </Form>
@@ -297,3 +354,5 @@ export function Booking() {
     </section>
   );
 }
+
+    
