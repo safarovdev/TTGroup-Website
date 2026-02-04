@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { BookingForm } from '@/components/booking-form';
 
 const featureIcons: { [key: string]: React.ReactElement } = {
     'meet_and_greet': <Star />,
@@ -180,9 +181,20 @@ const VehicleDetailPage = () => {
                             
                             <div className="flex-grow" />
 
-                            <Button asChild size="lg" className="w-full mt-10 font-bold text-lg h-14">
-                                <Link href={`/#booking?vehicle=${vehicle.id}`}>{t('header.book')}</Link>
-                            </Button>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                     <Button size="lg" className="w-full mt-10 font-bold text-lg h-14">{t('header.book')}</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[625px]">
+                                    <DialogHeader>
+                                        <DialogTitle>{t('booking.title')}</DialogTitle>
+                                        <DialogDescription>{t('booking.description')}</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="pt-4">
+                                       <BookingForm defaultVehicleName={vehicle.name} />
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
                 </div>
