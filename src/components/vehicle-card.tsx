@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from 'react';
-import { Users, Check } from "lucide-react";
+import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -51,17 +51,6 @@ export const VehicleCard = ({ vehicle }: { vehicle: Vehicle }) => {
                         <span>{t('vehicleDetail.capacity', { count: vehicle.capacity })}</span>
                     </div>
                 </div>
-
-                {vehicle.featureKeys && vehicle.featureKeys.length > 0 && (
-                <ul className="space-y-2 text-muted-foreground text-sm pt-4">
-                    {vehicle.featureKeys.map((featureKey) => (
-                    <li key={featureKey} className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-primary" />
-                        <span>{t(`vehicleFeatures.${featureKey}`)}</span>
-                    </li>
-                    ))}
-                </ul>
-                )}
 
                 <div className="flex-grow" />
 
