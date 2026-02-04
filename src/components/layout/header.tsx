@@ -62,7 +62,6 @@ export function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem onClick={() => setLocale('ru')}>RU</DropdownMenuItem>
-                  <DropdownMenuItem disabled>UZ</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setLocale('en')}>EN</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
