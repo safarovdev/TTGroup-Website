@@ -4,12 +4,12 @@ import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, delete
 import { useVehicles } from '@/hooks/useVehicles';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Copy } from 'lucide-react';
+import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Star } from 'lucide-react';
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
 
@@ -121,6 +123,7 @@ const vehicleSchema = z.object({
   ),
   imageUrls: z.string().url().array().min(1, "Загрузите хотя бы одно изображение"),
   featureKeys: z.string().array().optional().default([]),
+  isFeatured: z.boolean().optional().default(false),
 });
 type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
@@ -216,7 +219,7 @@ function AdminDashboard() {
   
   const form = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
-    defaultValues: { name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] },
+    defaultValues: { name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false },
   });
 
   const {data: vehicles, loading: vehiclesLoading} = useVehicles();
@@ -231,11 +234,12 @@ function AdminDashboard() {
             price: vehicleToEdit.price,
             capacity: vehicleToEdit.capacity,
             imageUrls: vehicleToEdit.imageUrls,
-            featureKeys: vehicleToEdit.featureKeys
+            featureKeys: vehicleToEdit.featureKeys,
+            isFeatured: vehicleToEdit.isFeatured || false,
         });
       }
     } else {
-        form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [] });
+        form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false });
     }
   }, [editingId, vehicles, form]);
 
@@ -286,7 +290,7 @@ function AdminDashboard() {
             <DialogContent className="max-w-4xl">
                 <DialogHeader>
                     <DialogTitle>{editingId ? t('admin.editTitle') : t('admin.addTitle')}</DialogTitle>
-                    <DialogDescription>{editingId ? t('admin.editDescription') : t('admin.addDescription')}</DialogDescription>
+                    <DialogDescriptionComponent>{editingId ? t('admin.editDescription') : t('admin.addDescription')}</DialogDescriptionComponent>
                 </DialogHeader>
                 <div className="py-4 max-h-[80vh] overflow-y-auto px-1">
                  <Form {...form}>
@@ -387,6 +391,30 @@ function AdminDashboard() {
                         )}
                     />
 
+                    <FormField
+                        control={form.control}
+                        name="isFeatured"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                    <FormLabel className="text-base">
+                                        {t('admin.isFeaturedLabel')}
+                                    </FormLabel>
+                                    <FormDescription>
+                                        {t('admin.isFeaturedDescription')}
+                                    </FormDescription>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
+
                     <div className="flex gap-4 pt-4">
                         <Button type="submit" disabled={form.formState.isSubmitting}>
                             {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (editingId ? <CheckCircle className="mr-2 h-4 w-4" /> : null)}
@@ -429,7 +457,7 @@ function AdminDashboard() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>{t('admin.table.id')}</TableHead>
+                        <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                         <TableHead>{t('admin.table.name')}</TableHead>
                         <TableHead>{t('admin.table.category')}</TableHead>
                         <TableHead className="text-right">{t('admin.table.price')}</TableHead>
@@ -441,15 +469,7 @@ function AdminDashboard() {
                    {vehicles?.map(vehicle => (
                      <TableRow key={vehicle.id}>
                         <TableCell>
-                            <div className="flex items-center gap-1 group">
-                                <span className="font-mono text-xs text-muted-foreground truncate max-w-[80px] group-hover:max-w-none transition-all duration-300">{vehicle.id}</span>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => {
-                                    navigator.clipboard.writeText(vehicle.id);
-                                    toast({ title: t('admin.idCopied') });
-                                }}>
-                                    <Copy className="h-3 w-3" />
-                                </Button>
-                            </div>
+                            {vehicle.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}
                         </TableCell>
                         <TableCell className="font-medium">{vehicle.name}</TableCell>
                         <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
@@ -525,5 +545,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    

@@ -212,6 +212,8 @@
     "imagesLabel": "Фотографии",
     "imagesButton": "Загрузить",
     "featuresLabel": "Характеристики",
+    "isFeaturedLabel": "Хит автопарка",
+    "isFeaturedDescription": "Отметьте, чтобы показать этот автомобиль на главной странице.",
     "addButton": "Добавить автомобиль",
     "updateButton": "Обновить автомобиль",
     "idCopied": "ID скопирован в буфер обмена",
@@ -220,6 +222,7 @@
     "vehicleListDescription": "Список всех автомобилей в базе данных.",
     "table": {
       "id": "ID",
+      "isFeatured": "Хит",
       "name": "Название",
       "category": "Категория",
       "price": "Цена",

@@ -11,15 +11,13 @@ import { VehicleCard } from "@/components/vehicle-card";
 import { useVehicles } from "@/hooks/useVehicles";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const popular_ids = ["fleet-lixiang-l7", "fleet-kia-k5", "fleet-hyundai-staria", "fleet-chevrolet-tahoe-rs", "fleet-mercedes-s500"];
-
 export function Fleet() {
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.1 });
   const { t } = useTranslation();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
-  const { data: popularVehicles, loading } = useVehicles({ ids: popular_ids });
+  const { data: popularVehicles, loading } = useVehicles({ isFeatured: true });
 
   React.useEffect(() => {
     if (!api) {

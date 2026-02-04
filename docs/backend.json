@@ -42,6 +42,11 @@
         "capacity": {
           "type": "number",
           "description": "The maximum passenger capacity of the vehicle."
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "Whether the vehicle is a featured 'hit' to be shown on the homepage.",
+          "default": false
         }
       },
       "required": [ "id", "name", "imageUrls", "category", "capacity" ]
