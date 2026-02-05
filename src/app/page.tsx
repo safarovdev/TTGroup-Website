@@ -10,6 +10,7 @@ import { Testimonials } from '@/components/sections/testimonials';
 import { Faq } from '@/components/sections/faq';
 import { Contacts } from '@/components/sections/contacts';
 import { Gallery } from '@/components/sections/gallery';
+import { PrivateTransfers } from '@/components/sections/private-transfers';
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <Header />
       <main className="flex-grow">
         <Hero />
+        <PrivateTransfers />
         <Principles />
         <Stats />
         <FleetIntro />

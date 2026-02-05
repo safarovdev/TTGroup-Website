@@ -289,5 +289,39 @@
       "noResultsTitle": "Машины не найдены",
       "noResultsDescription": "Попробуйте изменить параметры фильтрации или сбросить их, чтобы увидеть все доступные автомобили."
     }
+  },
+  "privateTransfers": {
+    "title": "Частные Трансферы",
+    "description": "Фиксированные цены на популярные маршруты. Выберите направление и путешествуйте с комфортом.",
+    "drivingTime": "Время в пути",
+    "drivingDistance": "Расстояние",
+    "vehicles": {
+      "sedan": {
+        "name": "Седан",
+        "capacity": "1-3 чел."
+      },
+      "suv": {
+        "name": "Внедорожник",
+        "capacity": "1-4 чел."
+      },
+      "minivan": {
+        "name": "Минивэн",
+        "capacity": "1-6 чел."
+      }
+    },
+    "routes": {
+      "khiva-urgench-airport": { "title": "Трансфер из Хивы в аэропорт или на вокзал Ургенча", "drivingTime": "50 мин.", "drivingDistance": "34 км" },
+      "urgench-airport-khiva": { "title": "Встреча в аэропорту или на вокзале Ургенча и трансфер в отель в Хиве", "drivingTime": "50 мин.", "drivingDistance": "34 км" },
+      "khiva-shawat-border": { "title": "Встреча или трансфер на границу Шават - Туркменистан из Хивы", "drivingTime": "90 мин.", "drivingDistance": "60 км" },
+      "bukhara-farap-border": { "title": "Встреча на границе Шават или трансфер на границу Фарап - Туркменистан из Бухары", "drivingTime": "2 часа", "drivingDistance": "110 км" },
+      "khiva-ayazkala": { "title": "Трансфер из Хивы в Аяз-Кала или из Аяз-Кала в Хиву (в одну сторону)", "drivingTime": "2 часа", "drivingDistance": "120 км" },
+      "bukhara-ayazkala": { "title": "Трансфер из Бухары в Аяз-Кала или из Аяз-Кала в Бухару (в одну сторону)", "drivingTime": "6 часов", "drivingDistance": "440 км" },
+      "khiva-nukus": { "title": "Трансфер из Хивы в Нукус или из Нукуса в Хиву (от двери до двери)", "drivingTime": "3 часа", "drivingDistance": "180 км" },
+      "nukus-muynak": { "title": "Трансфер из Нукуса в Муйнак или из Муйнака в Нукус (от двери до двери)", "drivingTime": "3 часа", "drivingDistance": "205 км" },
+      "khiva-muynak": { "title": "Трансфер из Хивы в Муйнак или из Муйнака в Хиву (от двери до двери)", "drivingTime": "5-6 часов", "drivingDistance": "385 км" },
+      "khiva-bukhara": { "title": "Трансфер из Хивы в Бухару или из Бухары в Хиву (от двери до двери)", "drivingTime": "5-6 часов", "drivingDistance": "430 км" },
+      "nukus-bukhara": { "title": "Трансфер из Нукуса в Бухару или из Бухары в Нукус (от двери до двери)", "drivingTime": "7-8 часов", "drivingDistance": "560 км" },
+      "khiva-samarkand": { "title": "Трансфер из Хивы в Самарканд или из Самарканда в Хиву", "drivingTime": "9-10 часов", "drivingDistance": "715 км" }
+    }
   }
 }
