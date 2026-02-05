@@ -18,8 +18,8 @@ export default function Home() {
       <Header />
       <main className="flex-grow">
         <Hero />
-        <PrivateTransfers />
         <Principles />
+        <PrivateTransfers />
         <Stats />
         <FleetIntro />
         <Fleet />
