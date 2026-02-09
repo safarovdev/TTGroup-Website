@@ -20,12 +20,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTransfers } from '@/hooks/useTransfers';
 import { type Transfer, type TransferPriceInfo } from '@/lib/transfers';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { locations, serviceTypesMap, ServiceType } from '@/lib/locations';
 import { useLanguage } from '@/context/LanguageContext';
@@ -272,6 +271,10 @@ function AdminDashboard() {
   const [editingTransferId, setEditingTransferId] = useState<string | null>(null);
   const [isTransferFormOpen, setIsTransferFormOpen] = useState(false);
   const {data: transfers, loading: transfersLoading} = useTransfers();
+
+  // State for vehicle selector dialog
+  const [isVehicleSelectorOpen, setIsVehicleSelectorOpen] = useState(false);
+  const [editingVehicleCategory, setEditingVehicleCategory] = useState<{key: string; label: string} | null>(null);
   
   const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
@@ -656,61 +659,17 @@ function AdminDashboard() {
                                                             }}
                                                             className='max-w-[150px]'
                                                         />
-                                                        <Popover>
-                                                            <PopoverTrigger asChild>
-                                                                <Button variant="outline" className="shrink-0 font-normal">
-                                                                    Машины ({currentPrice.vehicleIds?.length || 0})
-                                                                </Button>
-                                                            </PopoverTrigger>
-                                                            <PopoverContent className="w-80">
-                                                                <div className="grid gap-4">
-                                                                    <div className="space-y-2">
-                                                                        <h4 className="font-medium leading-none">Автомобили для тарифа</h4>
-                                                                        <p className="text-sm text-muted-foreground">
-                                                                            Выберите машины для категории "{categoryLabel}".
-                                                                        </p>
-                                                                    </div>
-                                                                    <FormField
-                                                                        control={transferForm.control}
-                                                                        name={`prices.${priceInfoIndex}.vehicleIds`}
-                                                                        render={({ field }) => {
-                                                                            const selectedVehicleIds = field.value || [];
-                                                                            return (
-                                                                            <div className="grid gap-2 max-h-60 overflow-y-auto">
-                                                                                {(vehiclesByCategory[categoryKey] || []).length > 0 ? (
-                                                                                    (vehiclesByCategory[categoryKey] || []).map((vehicle) => (
-                                                                                        <div
-                                                                                            key={vehicle.id}
-                                                                                            className="flex items-center space-x-2"
-                                                                                        >
-                                                                                            <Checkbox
-                                                                                                id={`vehicle-${categoryKey}-${vehicle.id}`}
-                                                                                                checked={selectedVehicleIds.includes(vehicle.id)}
-                                                                                                onCheckedChange={(checked) => {
-                                                                                                    const newIds = checked
-                                                                                                        ? [...selectedVehicleIds, vehicle.id]
-                                                                                                        : selectedVehicleIds.filter(id => id !== vehicle.id);
-                                                                                                    field.onChange(newIds);
-                                                                                                }}
-                                                                                            />
-                                                                                            <label
-                                                                                                htmlFor={`vehicle-${categoryKey}-${vehicle.id}`}
-                                                                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                                                            >
-                                                                                                {vehicle.name}
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    ))
-                                                                                ) : (
-                                                                                    <p className='text-sm text-muted-foreground'>Нет машин в этой категории.</p>
-                                                                                )}
-                                                                            </div>
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </PopoverContent>
-                                                        </Popover>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            className="shrink-0 font-normal"
+                                                            onClick={() => {
+                                                                setEditingVehicleCategory({ key: categoryKey, label: categoryLabel });
+                                                                setIsVehicleSelectorOpen(true);
+                                                            }}
+                                                        >
+                                                            Машины ({currentPrice.vehicleIds?.length || 0})
+                                                        </Button>
                                                     </div>
                                                 )}
                                             </div>
@@ -743,6 +702,76 @@ function AdminDashboard() {
             </DialogContent>
         </Dialog>
       
+        {/* Vehicle Selector Dialog */}
+        <Dialog open={isVehicleSelectorOpen} onOpenChange={setIsVehicleSelectorOpen}>
+            <DialogContent className="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>Выберите автомобили</DialogTitle>
+                    <DialogDescription>
+                        Для тарифа "{editingVehicleCategory?.label}"
+                    </DialogDescription>
+                </DialogHeader>
+                {editingVehicleCategory && (
+                    <div className="pt-4">
+                        {(() => {
+                            const prices = transferForm.getValues('prices');
+                            const priceInfoIndex = prices.findIndex(p => p.category === editingVehicleCategory.key);
+
+                            if (priceInfoIndex === -1) {
+                                return <p className="text-sm text-muted-foreground">Сначала активируйте этот тариф и сохраните, чтобы выбрать машины.</p>;
+                            }
+
+                            return (
+                                <FormField
+                                    control={transferForm.control}
+                                    name={`prices.${priceInfoIndex}.vehicleIds`}
+                                    render={({ field }) => {
+                                        const selectedVehicleIds = field.value || [];
+                                        const availableVehicles = vehiclesByCategory[editingVehicleCategory.key] || [];
+                                        
+                                        return (
+                                            <div className="grid gap-3 max-h-80 overflow-y-auto pr-4">
+                                                {availableVehicles.length > 0 ? (
+                                                    availableVehicles.map((vehicle) => (
+                                                        <div
+                                                            key={vehicle.id}
+                                                            className="flex items-center space-x-3 p-3 rounded-md hover:bg-muted"
+                                                        >
+                                                            <Checkbox
+                                                                id={`selector-${vehicle.id}`}
+                                                                checked={selectedVehicleIds.includes(vehicle.id)}
+                                                                onCheckedChange={(checked) => {
+                                                                    const newIds = checked
+                                                                        ? [...selectedVehicleIds, vehicle.id]
+                                                                        : selectedVehicleIds.filter(id => id !== vehicle.id);
+                                                                    field.onChange(newIds);
+                                                                }}
+                                                            />
+                                                            <label
+                                                                htmlFor={`selector-${vehicle.id}`}
+                                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-grow"
+                                                            >
+                                                                {vehicle.name}
+                                                            </label>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className='text-sm text-muted-foreground'>Нет машин в этой категории.</p>
+                                                )}
+                                            </div>
+                                        );
+                                    }}
+                                />
+                            );
+                        })()}
+                    </div>
+                )}
+                <DialogFooter>
+                    <Button onClick={() => setIsVehicleSelectorOpen(false)}>Готово</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
       <div className="flex justify-between items-start mb-8">
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Панель управления</h1>
