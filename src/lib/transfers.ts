@@ -1,5 +1,5 @@
 export interface TransferPriceInfo {
-    vehicleId: string;
+    category: 'premium' | 'comfort' | 'minivan' | 'bus';
     price: number;
 }
 

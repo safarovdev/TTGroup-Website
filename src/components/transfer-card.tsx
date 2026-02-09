@@ -4,51 +4,41 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Card } from '@/components/ui/card';
 import { type Transfer } from '@/lib/transfers';
 import { useMemo } from 'react';
-import type { Vehicle } from '@/lib/vehicles';
-import { Users } from 'lucide-react';
-import { Skeleton } from './ui/skeleton';
+import { vehicleCategoryMap } from '@/lib/vehicles';
 
-export function TransferCard({ transfer, vehicles, vehiclesLoading }: { transfer: Transfer, vehicles: Vehicle[] | null, vehiclesLoading: boolean }) {
+export function TransferCard({ transfer }: { transfer: Transfer }) {
   const { t } = useTranslation();
 
-  const pricedVehicles = useMemo(() => {
-    if (!vehicles) return [];
-    return transfer.prices.map(priceInfo => {
-      const vehicle = vehicles.find(v => v.id === priceInfo.vehicleId);
-      return {
-        ...priceInfo,
-        vehicle,
-      };
-    }).filter(item => !!item.vehicle)
-      .sort((a, b) => a.price - b.price);
-  }, [transfer.prices, vehicles]);
+  const sortedPrices = useMemo(() => {
+    if (!transfer.prices) return [];
+    
+    const categoryOrder: (keyof typeof vehicleCategoryMap)[] = ['comfort', 'premium', 'minivan', 'bus'];
+    
+    return [...transfer.prices].sort((a, b) => {
+        const indexA = categoryOrder.indexOf(a.category);
+        const indexB = categoryOrder.indexOf(b.category);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+    });
+  }, [transfer.prices]);
 
   return (
-    <Card key={transfer.id} className="flex flex-col p-6 text-center hover:shadow-xl transition-shadow duration-300">
+    <Card key={transfer.id} className="flex flex-col p-6 text-center hover:shadow-xl transition-shadow duration-300 bg-card">
         <div className="text-sm text-muted-foreground mb-3">
             <p>{t('transfers.drivingTime')}: {transfer.drivingTime}</p>
             <p>{t('transfers.drivingDistance')}: {transfer.drivingDistance}</p>
         </div>
         <h3 className="text-xl font-bold flex-grow flex items-center justify-center my-4">{transfer.title}</h3>
-        <ul className="space-y-3 text-left mt-auto pt-4">
-            {vehiclesLoading ? (
-                [...Array(2)].map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)
-            ) : (
-                pricedVehicles.length > 0 ? pricedVehicles.map((p) => (
-                    <li key={p.vehicleId} className="flex justify-between items-center border-t border-dashed pt-3 first:border-none first:pt-0">
-                        <div className='text-left'>
-                            <span className="text-base text-foreground font-medium">
-                                {p.vehicle?.name}
-                            </span>
-                            <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                                <Users className="w-3 h-3" />
-                                <span>{t('vehicleDetail.capacity', { count: p.vehicle!.capacity })}</span>
-                            </div>
-                        </div>
-                        <span className="font-bold text-lg text-primary">${p.price}</span>
-                    </li>
-                )) : <p className="text-sm text-muted-foreground">{t('transfers.noPrices')}</p>
-            )}
+        <ul className="space-y-3 text-left mt-auto pt-4 border-t">
+            {sortedPrices.length > 0 ? sortedPrices.map((p) => (
+                <li key={p.category} className="flex justify-between items-center">
+                    <span className="text-base text-muted-foreground font-medium">
+                        {t(`vehicleCategories.${p.category}`)}
+                    </span>
+                    <span className="font-bold text-lg text-primary">${p.price}</span>
+                </li>
+            )) : <p className="text-sm text-muted-foreground text-center">{t('transfers.noPrices')}</p>}
         </ul>
     </Card>
   );

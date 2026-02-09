@@ -131,7 +131,7 @@ const vehicleSchema = z.object({
 type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
 const transferPriceSchema = z.object({
-  vehicleId: z.string(),
+  category: z.enum(["premium", "comfort", "minivan", "bus"]),
   price: z.preprocess(
     (val) => {
       const sVal = String(val).trim();
@@ -491,7 +491,7 @@ function AdminDashboard() {
         
         {/* Transfer Form Dialog */}
         <Dialog open={isTransferFormOpen} onOpenChange={onTransferFormOpenChange}>
-            <DialogContent className="max-w-4xl">
+            <DialogContent className="max-w-xl">
                 <DialogHeader>
                     <DialogTitle>{editingTransferId ? t('admin.transferEditTitle') : t('admin.transferAddTitle')}</DialogTitle>
                     <DialogDescriptionComponent>{editingTransferId ? t('admin.transferEditDescription') : t('admin.transferAddDescription')}</DialogDescriptionComponent>
@@ -521,33 +521,32 @@ function AdminDashboard() {
                             <FormItem>
                                 <FormLabel>{t('admin.pricesLabel')}</FormLabel>
                                 <div className='space-y-4 rounded-lg border p-4 max-h-60 overflow-y-auto'>
-                                    {vehiclesLoading ? (
-                                        <div className="flex items-center justify-center p-4"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
-                                    ) : vehicles?.map(vehicle => {
-                                        const currentPrice = watchedPrices.find(p => p.vehicleId === vehicle.id);
+                                    {Object.entries(vehicleCategoryMap).map(([categoryKey, categoryLabel]) => {
+                                        const currentPrice = watchedPrices.find(p => p.category === categoryKey);
+                                        const category = categoryKey as keyof typeof vehicleCategoryMap;
                                         return (
-                                            <div key={vehicle.id} className='flex items-center gap-4'>
+                                            <div key={category} className='flex items-center gap-4'>
                                                 <Checkbox
-                                                    id={`price-enabled-${vehicle.id}`}
+                                                    id={`price-enabled-${category}`}
                                                     checked={!!currentPrice}
                                                     onCheckedChange={checked => {
                                                         const currentPrices = transferForm.getValues('prices');
                                                         if (checked) {
-                                                            transferForm.setValue('prices', [...currentPrices, { vehicleId: vehicle.id, price: 0 }]);
+                                                            transferForm.setValue('prices', [...currentPrices, { category: category, price: 0 }]);
                                                         } else {
-                                                            transferForm.setValue('prices', currentPrices.filter(p => p.vehicleId !== vehicle.id));
+                                                            transferForm.setValue('prices', currentPrices.filter(p => p.category !== category));
                                                         }
                                                     }}
                                                 />
-                                                <label htmlFor={`price-enabled-${vehicle.id}`} className='font-medium min-w-[200px]'>{vehicle.name}</label>
+                                                <label htmlFor={`price-enabled-${category}`} className='font-medium min-w-[200px]'>{categoryLabel}</label>
                                                 {!!currentPrice && (
                                                     <Input
                                                         type="number"
-                                                        placeholder={t('admin.pricePlaceholder')}
+                                                        placeholder="Цена"
                                                         defaultValue={currentPrice.price > 0 ? currentPrice.price : ''}
                                                         onChange={e => {
                                                             const newPrice = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                                                            const newPrices = transferForm.getValues('prices').map(p => p.vehicleId === vehicle.id ? { ...p, price: newPrice } : p);
+                                                            const newPrices = transferForm.getValues('prices').map(p => p.category === category ? { ...p, price: newPrice } : p);
                                                             transferForm.setValue('prices', newPrices, { shouldValidate: true });
                                                         }}
                                                         className='max-w-[150px]'
@@ -557,7 +556,7 @@ function AdminDashboard() {
                                         )
                                     })}
                                 </div>
-                                <FormMessage>{transferForm.formState.errors.prices?.message}</FormMessage>
+                                <FormMessage>{transferForm.formState.errors.prices?.message || transferForm.formState.errors.prices?.root?.message}</FormMessage>
                             </FormItem>
                             <FormField control={transferForm.control} name="isFeatured" render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">

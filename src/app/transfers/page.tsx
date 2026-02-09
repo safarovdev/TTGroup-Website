@@ -7,12 +7,10 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useTransfers } from '@/hooks/useTransfers';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TransferCard } from '@/components/transfer-card';
-import { useVehicles } from '@/hooks/useVehicles';
 
 const TransfersPage = () => {
     const { t } = useTranslation();
     const { data: transfers, loading: transfersLoading } = useTransfers();
-    const { data: vehicles, loading: vehiclesLoading } = useVehicles();
 
     return (
         <div className="flex min-h-screen flex-col bg-muted/20">
@@ -33,7 +31,7 @@ const TransfersPage = () => {
                           ))
                       ) : transfers && transfers.length > 0 ? (
                           transfers.map((transfer) => (
-                              <TransferCard key={transfer.id} transfer={transfer} vehicles={vehicles} vehiclesLoading={vehiclesLoading}/>
+                              <TransferCard key={transfer.id} transfer={transfer} />
                           ))
                       ) : (
                           <div className="col-span-full flex flex-col items-center justify-center text-center py-20 bg-card rounded-xl">

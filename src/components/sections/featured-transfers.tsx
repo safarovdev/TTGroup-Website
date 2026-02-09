@@ -6,14 +6,11 @@ import { TransferCard } from '@/components/transfer-card';
 import { cn } from '@/lib/utils';
 import { useOnScreen } from '@/hooks/use-on-screen';
 import { Skeleton } from '../ui/skeleton';
-import { useVehicles } from '@/hooks/useVehicles';
 
 export function FeaturedTransfers() {
   const { t } = useTranslation();
   const [ref, isVisible] = useOnScreen<HTMLElement>({ threshold: 0.05 });
   const { data: transfers, loading: transfersLoading } = useTransfers({ isFeatured: true });
-  const { data: vehicles, loading: vehiclesLoading } = useVehicles();
-
 
   if (!transfersLoading && (!transfers || transfers.length === 0)) {
     return null;
@@ -36,7 +33,7 @@ export function FeaturedTransfers() {
             [...Array(3)].map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-xl" />)
           ) : (
             transfers?.map((route) => (
-              <TransferCard key={route.id} transfer={route} vehicles={vehicles} vehiclesLoading={vehiclesLoading} />
+              <TransferCard key={route.id} transfer={route} />
             ))
           )}
         </div>

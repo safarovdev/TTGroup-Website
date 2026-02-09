@@ -114,20 +114,21 @@
         },
         "prices": {
           "type": "array",
-          "description": "A list of prices for specific vehicles.",
+          "description": "A list of prices for different vehicle categories on this route.",
           "items": {
             "type": "object",
             "properties": {
-              "vehicleId": {
+              "category": {
                 "type": "string",
-                "description": "The ID of the vehicle from the /vehicles collection."
+                "description": "The category of vehicle this price applies to.",
+                "enum": ["premium", "comfort", "minivan", "bus"]
               },
               "price": {
                 "type": "number",
-                "description": "The price for this specific vehicle."
+                "description": "The price for this vehicle category."
               }
             },
-            "required": ["vehicleId", "price"]
+            "required": ["category", "price"]
           }
         },
         "isFeatured": {
