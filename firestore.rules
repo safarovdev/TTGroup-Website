@@ -20,19 +20,21 @@ service cloud.firestore {
     // --- VEHICLES ---
     match /vehicles/{vehicleId} {
       allow get: if isSignedIn();
-      allow create, update, delete: if isAdmin();
+      allow update, delete: if isAdmin();
     }
     match /vehicles {
       allow list: if isSignedIn();
+      allow create: if isAdmin();
     }
 
     // --- TRANSFERS ---
     match /transfers/{transferId} {
       allow get: if isSignedIn();
-      allow create, update, delete: if isAdmin();
+      allow update, delete: if isAdmin();
     }
     match /transfers {
       allow list: if isSignedIn();
+      allow create: if isAdmin();
     }
 
     // --- USERS ---
