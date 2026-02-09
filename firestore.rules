@@ -19,23 +19,23 @@ service cloud.firestore {
     }
 
     // --- VEHICLES ---
-    match /vehicles/{vehicleId} {
-      allow get: if true;
-      allow update, delete: if isAdmin();
-    }
     match /vehicles {
        allow list: if true;
        allow create: if isAdmin();
     }
+    match /vehicles/{vehicleId} {
+      allow get: if true;
+      allow update, delete: if isAdmin();
+    }
 
     // --- TRANSFERS ---
-    match /transfers/{transferId} {
-        allow get: if true;
-        allow update, delete: if isAdmin();
-    }
     match /transfers {
         allow list: if true;
         allow create: if isAdmin();
+    }
+    match /transfers/{transferId} {
+        allow get: if true;
+        allow update, delete: if isAdmin();
     }
 
     // --- USERS ---
