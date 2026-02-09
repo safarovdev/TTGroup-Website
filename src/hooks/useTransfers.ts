@@ -50,7 +50,7 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
         }
 
         // Always sort by title
-        return [...filtered].sort((a, b) => a.title.localeCompare(b.title));
+        return [...filtered].sort((a, b) => a.title_ru.localeCompare(b.title_ru));
     }, [allTransfers, isFeatured]);
 
     return { data: processedData, loading, error };

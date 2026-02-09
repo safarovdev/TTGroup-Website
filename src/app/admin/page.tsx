@@ -671,30 +671,27 @@ function AdminDashboard() {
                                                                     </div>
                                                                     <div className="grid gap-2 max-h-60 overflow-y-auto">
                                                                         {(vehiclesByCategory[categoryKey] || []).length > 0 ? (
-                                                                            (vehiclesByCategory[categoryKey] || []).map((vehicle) => {
-                                                                                const priceIndex = watchedPrices.findIndex(p => p.category === categoryKey);
-                                                                                return (
+                                                                            (vehiclesByCategory[categoryKey] || []).map((vehicle) => (
                                                                                 <div
                                                                                     key={vehicle.id}
                                                                                     className="flex items-center space-x-2"
                                                                                 >
                                                                                     <Checkbox
                                                                                         id={`vehicle-${categoryKey}-${vehicle.id}`}
-                                                                                        checked={watchedPrices[priceIndex]?.vehicleIds?.includes(vehicle.id)}
+                                                                                        checked={currentPrice.vehicleIds?.includes(vehicle.id)}
                                                                                         onCheckedChange={(checked) => {
-                                                                                            const currentPrices = [...transferForm.getValues('prices')];
-                                                                                            const priceIndex = currentPrices.findIndex(p => p.category === categoryKey);
-                                                                                            if (priceIndex === -1) return;
-
-                                                                                            const currentVehicleIds = currentPrices[priceIndex].vehicleIds || [];
-                                                                                            let newVehicleIds;
-                                                                                            if (checked) {
-                                                                                                newVehicleIds = [...currentVehicleIds, vehicle.id];
-                                                                                            } else {
-                                                                                                newVehicleIds = currentVehicleIds.filter(id => id !== vehicle.id);
-                                                                                            }
-                                                                                            currentPrices[priceIndex].vehicleIds = newVehicleIds;
-                                                                                            transferForm.setValue('prices', currentPrices, { shouldValidate: true });
+                                                                                            const oldPrices = transferForm.getValues('prices');
+                                                                                            const newPrices = oldPrices.map(p => {
+                                                                                                if (p.category === categoryKey) {
+                                                                                                    const currentVehicleIds = p.vehicleIds || [];
+                                                                                                    const newVehicleIds = checked
+                                                                                                        ? [...currentVehicleIds, vehicle.id]
+                                                                                                        : currentVehicleIds.filter(id => id !== vehicle.id);
+                                                                                                    return { ...p, vehicleIds: newVehicleIds };
+                                                                                                }
+                                                                                                return p;
+                                                                                            });
+                                                                                            transferForm.setValue('prices', newPrices, { shouldValidate: true });
                                                                                         }}
                                                                                     />
                                                                                     <label
@@ -704,7 +701,7 @@ function AdminDashboard() {
                                                                                         {vehicle.name}
                                                                                     </label>
                                                                                 </div>
-                                                                            )})
+                                                                            ))
                                                                         ) : (
                                                                             <p className='text-sm text-muted-foreground'>Нет машин в этой категории.</p>
                                                                         )}

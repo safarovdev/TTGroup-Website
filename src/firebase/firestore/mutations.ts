@@ -88,7 +88,7 @@ export function deleteVehicle(firestore: Firestore, vehicleId: string) {
 type TransferFormData = Omit<Transfer, 'id'>;
 
 export function addTransfer(firestore: Firestore, transferData: TransferFormData) {
-    const slug = createSlug(transferData.title);
+    const slug = createSlug(transferData.title_ru);
     if (!slug) {
         console.error("Transfer title is invalid for generating an ID.");
         return;
