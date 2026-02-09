@@ -81,6 +81,63 @@
         }
       },
       "required": ["uid", "email", "isAdmin"]
+    },
+    "Transfer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Transfer",
+      "type": "object",
+      "description": "Represents a transfer route with pricing information for different vehicle types.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transfer."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the transfer route (e.g., 'Khiva to Urgench Airport')."
+        },
+        "from": {
+          "type": "string",
+          "description": "The starting point of the transfer."
+        },
+        "to": {
+          "type": "string",
+          "description": "The destination of the transfer."
+        },
+        "drivingTime": {
+          "type": "string",
+          "description": "Estimated driving time."
+        },
+        "drivingDistance": {
+          "type": "string",
+          "description": "Estimated driving distance."
+        },
+        "prices": {
+          "type": "array",
+          "description": "A list of prices for different vehicle types.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "The type of vehicle.",
+                "enum": ["sedan", "suv", "minivan"]
+              },
+              "price": {
+                "type": "number",
+                "description": "The price for this vehicle type."
+              }
+            },
+            "required": ["type", "price"]
+          }
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "Whether the transfer is featured on the homepage.",
+          "default": false
+        }
+      },
+      "required": ["id", "title", "from", "to", "drivingTime", "drivingDistance", "prices"]
     }
   },
   "auth": {
@@ -118,6 +175,22 @@
             {
               "name": "userId",
               "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/transfers/{transferId}",
+        "definition": {
+          "entityName": "Transfer",
+          "schema": {
+            "$ref": "#/backend/entities/Transfer"
+          },
+          "description": "Stores transfer route information. Writable only by admins.",
+          "params": [
+            {
+              "name": "transferId",
+              "description": "The unique identifier of the transfer."
             }
           ]
         }

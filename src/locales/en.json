@@ -2,6 +2,7 @@
   "header": {
     "about": "About Us",
     "fleet": "Fleet",
+    "transfers": "Transfers",
     "testimonials": "Reviews",
     "gallery": "Gallery",
     "faq": "FAQ",
@@ -197,6 +198,8 @@
     }
   },
   "admin": {
+    "vehicles": "Vehicles",
+    "transfers": "Transfers",
     "addTitle": "Add New Vehicle",
     "addDescription": "Fill out the form to add a new car to the fleet.",
     "editTitle": "Edit Vehicle",
@@ -214,8 +217,8 @@
     "featuresLabel": "Features",
     "isFeaturedLabel": "Featured Vehicle",
     "isFeaturedDescription": "Check this to feature the vehicle on the homepage.",
-    "addButton": "Add Vehicle",
-    "updateButton": "Update Vehicle",
+    "addButton": "Add",
+    "updateButton": "Update",
     "idCopied": "ID copied to clipboard",
     "cancelEditButton": "Cancel Edit",
     "vehicleListTitle": "Vehicle Fleet",
@@ -227,12 +230,35 @@
       "category": "Category",
       "price": "Price",
       "capacity": "Capacity",
-      "actions": "Actions"
+      "actions": "Actions",
+      "title": "Title",
+      "route": "Route",
+      "time": "Time",
+      "distance": "Distance"
     },
     "deleteConfirmTitle": "Are you absolutely sure?",
-    "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the vehicle \"{{name}}\".",
+    "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the item \"{{name}}\".",
     "deleteConfirmCancel": "Cancel",
-    "deleteConfirmAction": "Delete"
+    "deleteConfirmAction": "Delete",
+    "transferAddTitle": "Add New Transfer",
+    "transferAddDescription": "Fill out the form to add a new transfer route.",
+    "transferEditTitle": "Edit Transfer",
+    "transferEditDescription": "Update the details for the selected transfer route.",
+    "transferListTitle": "Transfer Routes",
+    "transferListDescription": "List of all transfer routes in the database.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g., Khiva to Urgench Airport",
+    "fromLabel": "From",
+    "fromPlaceholder": "e.g., Khiva",
+    "toLabel": "To",
+    "toPlaceholder": "e.g., Urgench Airport",
+    "timeLabel": "Driving Time",
+    "timePlaceholder": "e.g., 50 min",
+    "distanceLabel": "Driving Distance",
+    "distancePlaceholder": "e.g., 34 km",
+    "pricesLabel": "Prices by Vehicle Type",
+    "featuredTransferLabel": "Featured Transfer",
+    "featuredTransferDescription": "Check this to feature the transfer on the homepage."
   },
   "vehicleCategories": {
     "premium": "💎 Premium & VIP",
@@ -290,38 +316,30 @@
       "noResultsDescription": "Try changing your filter settings or reset them to see all available vehicles."
     }
   },
-  "privateTransfers": {
-    "title": "Private Transfers",
-    "description": "Fixed prices for popular routes. Choose your direction and travel with comfort.",
+  "featuredTransfers": {
+    "title": "Popular Transfers",
+    "description": "Fixed prices for our most requested routes. Choose your direction and travel with comfort."
+  },
+  "transfers": {
+    "pageTitle": "All Transfer Routes",
+    "pageDescription": "Fixed prices for all available routes. Choose your direction and travel with comfort.",
     "drivingTime": "Driving time",
     "drivingDistance": "Driving Distance",
-    "vehicles": {
-      "sedan": {
-        "name": "A Sedan",
-        "capacity": "1-3 people"
-      },
-      "suv": {
-        "name": "An SUV",
-        "capacity": "1-4 people"
-      },
-      "minivan": {
-        "name": "A Minivan",
-        "capacity": "1-6 people"
-      }
+    "noResultsTitle": "No transfers available",
+    "noResultsDescription": "We are currently updating our routes. Please check back later or contact us for a custom quote."
+  },
+  "transferVehicles": {
+    "sedan": {
+      "name": "A Sedan",
+      "capacity": "1-3 people"
     },
-    "routes": {
-      "khiva-urgench-airport": { "title": "Transfer from Khiva to Urgench Airport or Train Station", "drivingTime": "50 min", "drivingDistance": "34 km" },
-      "urgench-airport-khiva": { "title": "Pick up from Urgench Airport or Urgench Train Station to your hotel in Khiva", "drivingTime": "50 min", "drivingDistance": "34 km" },
-      "khiva-shawat-border": { "title": "Pick up from or transfer to Shawat border - Turkmenistan border from Khiva", "drivingTime": "90 min", "drivingDistance": "60 km" },
-      "bukhara-farap-border": { "title": "Pick up from Shawat border or Transfer to Farap Turkmenistan border from Bukhara", "drivingTime": "2 hours", "drivingDistance": "110 km" },
-      "khiva-ayazkala": { "title": "Transfer from Khiva to Ayaz Kala or from Ayaz Kala to Khiva (one way transfer)", "drivingTime": "2 hours", "drivingDistance": "120 km" },
-      "bukhara-ayazkala": { "title": "Transfer from Bukhara to Ayaz Kala or from Ayaz Kala to Bukhara (one way transfer)", "drivingTime": "6 hours", "drivingDistance": "440 km" },
-      "khiva-nukus": { "title": "Transfer from Khiva to Nukus or from Nukus to Khiva (door-to-door service)", "drivingTime": "3 hours", "drivingDistance": "180 km" },
-      "nukus-muynak": { "title": "Transfer from Nukus to Muynak or from Muynak to Nukus (door-to-door service)", "drivingTime": "3 hours", "drivingDistance": "205 km" },
-      "khiva-muynak": { "title": "Transfer from Khiva to Muynak or from Muynak to Khiva (door-to-door service)", "drivingTime": "5-6 hours", "drivingDistance": "385 km" },
-      "khiva-bukhara": { "title": "Transfer from Khiva to Bukhara or from Bukhara to Khiva (door-to-door service)", "drivingTime": "5-6 hours", "drivingDistance": "430 km" },
-      "nukus-bukhara": { "title": "Transfer from Nukus to Bukhara or from Bukhara to Nukus (door-to-door service)", "drivingTime": "7-8 hours", "drivingDistance": "560 km" },
-      "khiva-samarkand": { "title": "Transfer from Khiva to Samarkand or from Samarkand to Khiva", "drivingTime": "9-10 hours", "drivingDistance": "715 km" }
+    "suv": {
+      "name": "An SUV",
+      "capacity": "1-4 people"
+    },
+    "minivan": {
+      "name": "A Minivan",
+      "capacity": "1-6 people"
     }
   }
 }

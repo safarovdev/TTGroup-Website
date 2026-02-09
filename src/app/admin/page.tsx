@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle } from '@/firebase';
+import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle, addTransfer, useMemoFirebase, updateTransfer, deleteTransfer } from '@/firebase';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -22,6 +22,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTransfers } from '@/hooks/useTransfers';
+import { transferVehicleTypeMap, type Transfer, type TransferPriceInfo, type TransferVehicleType } from '@/lib/transfers';
 
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
@@ -102,6 +105,7 @@ function AdminLogin() {
 
 // Admin Dashboard Components
 const FEATURES = ["meet_and_greet", "air_conditioner", "panoramic_view", "ottoman", "tinted_windows", "city_tours"];
+const TRANSFER_VEHICLE_TYPES = Object.keys(transferVehicleTypeMap) as TransferVehicleType[];
 
 const vehicleSchema = z.object({
   name: z.string().min(3, "Название должно быть длиннее 3 символов"),
@@ -126,6 +130,31 @@ const vehicleSchema = z.object({
   isFeatured: z.boolean().optional().default(false),
 });
 type VehicleFormValues = z.infer<typeof vehicleSchema>;
+
+const transferPriceSchema = z.object({
+  type: z.enum(["sedan", "suv", "minivan"]),
+  price: z.preprocess(
+    (val) => {
+      const sVal = String(val).trim();
+      if (sVal === "") return 0;
+      const num = parseFloat(sVal);
+      return isNaN(num) ? val : num;
+    },
+    z.number().min(1, "Цена должна быть больше 0")
+  ),
+});
+
+const transferSchema = z.object({
+  title: z.string().min(3, "Название должно быть длиннее 3 символов"),
+  from: z.string().min(2, "Место отправления обязательно"),
+  to: z.string().min(2, "Место назначения обязательно"),
+  drivingTime: z.string().min(1, "Время в пути обязательно"),
+  drivingDistance: z.string().min(1, "Расстояние обязательно"),
+  prices: z.array(transferPriceSchema).min(1, "Нужно указать хотя бы одну цену"),
+  isFeatured: z.boolean().optional().default(false),
+});
+type TransferFormValues = z.infer<typeof transferSchema>;
+
 
 // ImageUploader Component
 const ImageUploader = ({ field }: { field: any }) => {
@@ -214,21 +243,34 @@ function AdminDashboard() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  // State for vehicles
+  const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
+  const [isVehicleFormOpen, setIsVehicleFormOpen] = useState(false);
+  const {data: vehicles, loading: vehiclesLoading} = useVehicles();
+
+  // State for transfers
+  const [editingTransferId, setEditingTransferId] = useState<string | null>(null);
+  const [isTransferFormOpen, setIsTransferFormOpen] = useState(false);
+  const {data: transfers, loading: transfersLoading} = useTransfers();
   
-  const form = useForm<VehicleFormValues>({
+  const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: { name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false },
   });
 
-  const {data: vehicles, loading: vehiclesLoading} = useVehicles();
+  const transferForm = useForm<TransferFormValues>({
+    resolver: zodResolver(transferSchema),
+    defaultValues: { title: "", from: "", to: "", drivingTime: "", drivingDistance: "", prices: [], isFeatured: false },
+  });
 
+
+  // Effects for forms
   useEffect(() => {
-    if (editingId && vehicles) {
-      const vehicleToEdit = vehicles.find(v => v.id === editingId);
+    if (editingVehicleId && vehicles) {
+      const vehicleToEdit = vehicles.find(v => v.id === editingVehicleId);
       if (vehicleToEdit) {
-        form.reset({
+        vehicleForm.reset({
             name: vehicleToEdit.name,
             category: vehicleToEdit.category,
             price: vehicleToEdit.price,
@@ -239,71 +281,128 @@ function AdminDashboard() {
         });
       }
     } else {
-        form.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false });
+        vehicleForm.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false });
     }
-  }, [editingId, vehicles, form]);
+  }, [editingVehicleId, vehicles, vehicleForm]);
 
-  const onSubmit = (data: VehicleFormValues) => {
-    if (editingId) {
-        // Update existing vehicle
-        updateVehicle(firestore, editingId, data);
+  useEffect(() => {
+    if (editingTransferId && transfers) {
+        const transferToEdit = transfers.find(t => t.id === editingTransferId);
+        if (transferToEdit) {
+            transferForm.reset({
+                title: transferToEdit.title,
+                from: transferToEdit.from,
+                to: transferToEdit.to,
+                drivingTime: transferToEdit.drivingTime,
+                drivingDistance: transferToEdit.drivingDistance,
+                prices: transferToEdit.prices,
+                isFeatured: transferToEdit.isFeatured || false,
+            });
+        }
+    } else {
+        transferForm.reset({ title: "", from: "", to: "", drivingTime: "", drivingDistance: "", prices: [], isFeatured: false });
+    }
+  }, [editingTransferId, transfers, transferForm]);
+
+
+  // Submit handlers
+  const onVehicleSubmit = (data: VehicleFormValues) => {
+    if (!firestore) return;
+    if (editingVehicleId) {
+        updateVehicle(firestore, editingVehicleId, data);
         toast({ title: "✅ Автомобиль обновлен", description: `Данные для "${data.name}" сохранены.` });
     } else {
-        // Add new vehicle
         addVehicle(firestore, data);
         toast({ title: "✅ Автомобиль добавлен", description: `Модель "${data.name}" добавлена в автопарк.` });
     }
-    setIsFormOpen(false);
-    setEditingId(null);
+    setIsVehicleFormOpen(false);
+    setEditingVehicleId(null);
   };
+  
+  const onTransferSubmit = (data: TransferFormValues) => {
+    if (!firestore) return;
+    if (editingTransferId) {
+        updateTransfer(firestore, editingTransferId, data);
+        toast({ title: "✅ Трансфер обновлен", description: `Данные для "${data.title}" сохранены.` });
+    } else {
+        addTransfer(firestore, data);
+        toast({ title: "✅ Трансфер добавлен", description: `Маршрут "${data.title}" добавлен.` });
+    }
+    setIsTransferFormOpen(false);
+    setEditingTransferId(null);
+  };
+
 
   const handleLogout = async () => {
     await signOutUser();
     toast({ title: "Вы вышли из системы." });
   };
   
-  const handleEdit = (vehicle: Vehicle) => {
-    setEditingId(vehicle.id);
-    setIsFormOpen(true);
+  // Handlers for Vehicles
+  const handleEditVehicle = (vehicle: Vehicle) => {
+    setEditingVehicleId(vehicle.id);
+    setIsVehicleFormOpen(true);
   };
-
-  const handleAddNew = () => {
-    setEditingId(null);
-    setIsFormOpen(true);
+  const handleAddNewVehicle = () => {
+    setEditingVehicleId(null);
+    setIsVehicleFormOpen(true);
   };
-
-  const handleDelete = (vehicleId: string) => {
+  const handleDeleteVehicle = (vehicleId: string) => {
+    if (!firestore) return;
     deleteVehicle(firestore, vehicleId);
     toast({ variant: 'destructive', title: "🗑️ Автомобиль удален", description: "Запись была удалена из базы данных."});
   };
-
-  const onFormOpenChange = (open: boolean) => {
-    setIsFormOpen(open);
+  const onVehicleFormOpenChange = (open: boolean) => {
+    setIsVehicleFormOpen(open);
     if (!open) {
-        setEditingId(null);
+        setEditingVehicleId(null);
     }
   };
 
+  // Handlers for Transfers
+  const handleEditTransfer = (transfer: Transfer) => {
+    setEditingTransferId(transfer.id);
+    setIsTransferFormOpen(true);
+  };
+  const handleAddNewTransfer = () => {
+    setEditingTransferId(null);
+    setIsTransferFormOpen(true);
+  };
+  const handleDeleteTransfer = (transferId: string, transferTitle: string) => {
+    if (!firestore) return;
+    deleteTransfer(firestore, transferId);
+    toast({ variant: 'destructive', title: "🗑️ Трансфер удален", description: `Маршрут "${transferTitle}" удален.`});
+  };
+  const onTransferFormOpenChange = (open: boolean) => {
+    setIsTransferFormOpen(open);
+    if (!open) {
+        setEditingTransferId(null);
+    }
+  };
+  
+  const watchedPrices = transferForm.watch('prices');
+
   return (
     <div className="container py-12">
-        <Dialog open={isFormOpen} onOpenChange={onFormOpenChange}>
+        {/* Vehicle Form Dialog */}
+        <Dialog open={isVehicleFormOpen} onOpenChange={onVehicleFormOpenChange}>
             <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle>{editingId ? t('admin.editTitle') : t('admin.addTitle')}</DialogTitle>
-                    <DialogDescriptionComponent>{editingId ? t('admin.editDescription') : t('admin.addDescription')}</DialogDescriptionComponent>
+                    <DialogTitle>{editingVehicleId ? t('admin.editTitle') : t('admin.addTitle')}</DialogTitle>
+                    <DialogDescriptionComponent>{editingVehicleId ? t('admin.editDescription') : t('admin.addDescription')}</DialogDescriptionComponent>
                 </DialogHeader>
                 <div className="py-4 max-h-[80vh] overflow-y-auto px-1">
-                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                 <Form {...vehicleForm}>
+                    <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
-                        <FormField control={form.control} name="name" render={({ field }) => (
+                        <FormField control={vehicleForm.control} name="name" render={({ field }) => (
                             <FormItem>
                             <FormLabel>{t('admin.nameLabel')}</FormLabel>
                             <FormControl><Input placeholder={t('admin.namePlaceholder')} {...field} /></FormControl>
                             <FormMessage />
                             </FormItem>
                         )} />
-                        <FormField control={form.control} name="category" render={({ field }) => (
+                        <FormField control={vehicleForm.control} name="category" render={({ field }) => (
                         <FormItem>
                             <FormLabel>{t('admin.categoryLabel')}</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
@@ -319,7 +418,7 @@ function AdminDashboard() {
                         )} />
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
-                        <FormField control={form.control} name="price" render={({ field }) => (
+                        <FormField control={vehicleForm.control} name="price" render={({ field }) => (
                             <FormItem>
                             <FormLabel>{t('admin.priceLabel')}</FormLabel>
                             <FormControl>
@@ -327,42 +426,27 @@ function AdminDashboard() {
                                     type="number" 
                                     placeholder={t('admin.pricePlaceholder')} 
                                     {...field}
-                                    value={field.value > 0 ? field.value : ''}
-                                    onChange={e => field.onChange(e.target.value)}
+                                    onChange={e => vehicleForm.setValue('price', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                                 />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
                         )} />
-                        <FormField control={form.control} name="capacity" render={({ field }) => (
+                        <FormField control={vehicleForm.control} name="capacity" render={({ field }) => (
                             <FormItem>
                             <FormLabel>{t('admin.capacityLabel')}</FormLabel>
-                            <FormControl><Input type="number" placeholder={t('admin.capacityPlaceholder')} {...field} /></FormControl>
+                            <FormControl><Input type="number" placeholder={t('admin.capacityPlaceholder')} {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} /></FormControl>
                             <FormMessage />
                             </FormItem>
                         )} />
                     </div>
-                    
-                    <Controller
-                        control={form.control}
-                        name="imageUrls"
-                        render={({ field }) => <ImageUploader field={field} />}
-                    />
-                    
-                    <FormField
-                        name="featureKeys"
-                        control={form.control}
-                        render={() => (
+                    <Controller control={vehicleForm.control} name="imageUrls" render={({ field }) => <ImageUploader field={field} />} />
+                    <FormField name="featureKeys" control={vehicleForm.control} render={() => (
                         <FormItem>
                             <FormLabel>{t('admin.featuresLabel')}</FormLabel>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {FEATURES.map((featureId) => (
-                                <FormField
-                                key={featureId}
-                                control={form.control}
-                                name="featureKeys"
-                                render={({ field }) => {
-                                    return (
+                                <FormField key={featureId} control={vehicleForm.control} name="featureKeys" render={({ field }) => (
                                     <FormItem key={featureId} className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                                         <FormControl>
                                         <Checkbox
@@ -370,57 +454,33 @@ function AdminDashboard() {
                                             onCheckedChange={(checked) => {
                                             return checked
                                                 ? field.onChange([...(field.value || []), featureId])
-                                                : field.onChange(
-                                                    field.value?.filter(
-                                                    (value) => value !== featureId
-                                                    )
-                                                )
+                                                : field.onChange(field.value?.filter((value) => value !== featureId))
                                             }}
                                         />
                                         </FormControl>
-                                        <FormLabel className="font-normal">
-                                        {t(`vehicleFeatures.${featureId}`)}
-                                        </FormLabel>
+                                        <FormLabel className="font-normal">{t(`vehicleFeatures.${featureId}`)}</FormLabel>
                                     </FormItem>
-                                    )
-                                }}
-                                />
+                                )}/>
                             ))}
                             </div>
                         </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="isFeatured"
-                        render={({ field }) => (
+                    )}/>
+                    <FormField control={vehicleForm.control} name="isFeatured" render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">
-                                        {t('admin.isFeaturedLabel')}
-                                    </FormLabel>
-                                    <FormDescription>
-                                        {t('admin.isFeaturedDescription')}
-                                    </FormDescription>
+                                    <FormLabel className="text-base">{t('admin.isFeaturedLabel')}</FormLabel>
+                                    <FormDescription>{t('admin.isFeaturedDescription')}</FormDescription>
                                 </div>
-                                <FormControl>
-                                    <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                </FormControl>
+                                <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                             </FormItem>
                         )}
                     />
-
-
                     <div className="flex gap-4 pt-4">
-                        <Button type="submit" disabled={form.formState.isSubmitting}>
-                            {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (editingId ? <CheckCircle className="mr-2 h-4 w-4" /> : null)}
-                            {editingId ? t('admin.updateButton') : t('admin.addButton')}
+                        <Button type="submit" disabled={vehicleForm.formState.isSubmitting}>
+                            {vehicleForm.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (editingVehicleId ? <CheckCircle className="mr-2 h-4 w-4" /> : null)}
+                            {editingVehicleId ? t('admin.updateButton') : t('admin.addButton')}
                         </Button>
-                        <Button type="button" variant="ghost" onClick={() => onFormOpenChange(false)}>
+                        <Button type="button" variant="ghost" onClick={() => onVehicleFormOpenChange(false)}>
                             <Ban className="mr-2 h-4 w-4" /> {t('admin.deleteConfirmCancel')}
                         </Button>
                     </div>
@@ -429,85 +489,240 @@ function AdminDashboard() {
                 </div>
             </DialogContent>
         </Dialog>
+        
+        {/* Transfer Form Dialog */}
+        <Dialog open={isTransferFormOpen} onOpenChange={onTransferFormOpenChange}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>{editingTransferId ? t('admin.transferEditTitle') : t('admin.transferAddTitle')}</DialogTitle>
+                    <DialogDescriptionComponent>{editingTransferId ? t('admin.transferEditDescription') : t('admin.transferAddDescription')}</DialogDescriptionComponent>
+                </DialogHeader>
+                <div className="py-4 max-h-[80vh] overflow-y-auto px-1">
+                    <Form {...transferForm}>
+                        <form onSubmit={transferForm.handleSubmit(onTransferSubmit)} className="space-y-6">
+                            <FormField control={transferForm.control} name="title" render={({ field }) => (
+                                <FormItem><FormLabel>{t('admin.titleLabel')}</FormLabel><FormControl><Input placeholder={t('admin.titlePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                             <div className="grid md:grid-cols-2 gap-6">
+                                <FormField control={transferForm.control} name="from" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.fromLabel')}</FormLabel><FormControl><Input placeholder={t('admin.fromPlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={transferForm.control} name="to" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.toLabel')}</FormLabel><FormControl><Input placeholder={t('admin.toPlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                             </div>
+                             <div className="grid md:grid-cols-2 gap-6">
+                                <FormField control={transferForm.control} name="drivingTime" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.timeLabel')}</FormLabel><FormControl><Input placeholder={t('admin.timePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={transferForm.control} name="drivingDistance" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.distanceLabel')}</FormLabel><FormControl><Input placeholder={t('admin.distancePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                            </div>
+                            <FormItem>
+                                <FormLabel>{t('admin.pricesLabel')}</FormLabel>
+                                <div className='space-y-4 rounded-lg border p-4'>
+                                    {TRANSFER_VEHICLE_TYPES.map(type => {
+                                        const currentPrice = watchedPrices.find(p => p.type === type);
+                                        return (
+                                            <div key={type} className='flex items-center gap-4'>
+                                                <Checkbox
+                                                    id={`price-enabled-${type}`}
+                                                    checked={!!currentPrice}
+                                                    onCheckedChange={checked => {
+                                                        const currentPrices = transferForm.getValues('prices');
+                                                        if (checked) {
+                                                            transferForm.setValue('prices', [...currentPrices, { type, price: 0 }]);
+                                                        } else {
+                                                            transferForm.setValue('prices', currentPrices.filter(p => p.type !== type));
+                                                        }
+                                                    }}
+                                                />
+                                                <label htmlFor={`price-enabled-${type}`} className='font-medium min-w-[120px]'>{t(transferVehicleTypeMap[type].nameKey)}</label>
+                                                {!!currentPrice && (
+                                                    <Input
+                                                        type="number"
+                                                        placeholder={t('admin.priceLabel')}
+                                                        defaultValue={currentPrice.price > 0 ? currentPrice.price : ''}
+                                                        onChange={e => {
+                                                            const newPrice = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                                                            const newPrices = transferForm.getValues('prices').map(p => p.type === type ? { ...p, price: newPrice } : p);
+                                                            transferForm.setValue('prices', newPrices, { shouldValidate: true });
+                                                        }}
+                                                        className='max-w-[150px]'
+                                                    />
+                                                )}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                <FormMessage>{transferForm.formState.errors.prices?.message}</FormMessage>
+                            </FormItem>
+                            <FormField control={transferForm.control} name="isFeatured" render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-0.5">
+                                        <FormLabel className="text-base">{t('admin.featuredTransferLabel')}</FormLabel>
+                                        <FormDescription>{t('admin.featuredTransferDescription')}</FormDescription>
+                                    </div>
+                                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                                </FormItem>
+                            )} />
+                            <div className="flex gap-4 pt-4">
+                                <Button type="submit" disabled={transferForm.formState.isSubmitting}>
+                                    {transferForm.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4" />}
+                                    {editingTransferId ? t('admin.updateButton') : t('admin.addButton')}
+                                </Button>
+                                <Button type="button" variant="ghost" onClick={() => onTransferFormOpenChange(false)}>
+                                    <Ban className="mr-2 h-4 w-4" /> {t('admin.deleteConfirmCancel')}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                </div>
+            </DialogContent>
+        </Dialog>
       
-      <Card className="max-w-7xl mx-auto">
-        <CardHeader>
-            <div className="flex justify-between items-start">
-                <div>
-                    <CardTitle>{t('admin.vehicleListTitle')}</CardTitle>
-                    <CardDescription>{t('admin.vehicleListDescription')}</CardDescription>
-                </div>
-                <div className='flex items-center gap-4'>
-                    <Button onClick={handleAddNew}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        {t('admin.addButton')}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleLogout}>
-                        {t('header.logout')} <LogOut className="ml-2 h-4 w-4" />
-                    </Button>
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent>
-            {vehiclesLoading ? (
-                 <div className="flex items-center justify-center p-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 </div>
-            ) : (
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
-                        <TableHead>{t('admin.table.name')}</TableHead>
-                        <TableHead>{t('admin.table.category')}</TableHead>
-                        <TableHead className="text-right">{t('admin.table.price')}</TableHead>
-                        <TableHead className="text-right">{t('admin.table.capacity')}</TableHead>
-                        <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                   {vehicles?.map(vehicle => (
-                     <TableRow key={vehicle.id}>
-                        <TableCell>
-                            {vehicle.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}
-                        </TableCell>
-                        <TableCell className="font-medium">{vehicle.name}</TableCell>
-                        <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
-                        <TableCell className="text-right">
-                          {vehicle.price > 0 ? `$${vehicle.price}`: t('vehicleDetail.negotiablePrice')}
-                        </TableCell>
-                        <TableCell className="text-right">{vehicle.capacity}</TableCell>
-                        <TableCell className="text-right">
-                           <div className="flex gap-2 justify-end">
-                             <Button variant="outline" size="icon" onClick={() => handleEdit(vehicle)}>
-                                <FilePenLine className="h-4 w-4" />
-                             </Button>
-                             <AlertDialog>
-                               <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button>
-                               </AlertDialogTrigger>
-                               <AlertDialogContent>
-                                 <AlertDialogHeader>
-                                   <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
-                                   <AlertDialogDescription>
-                                     {t('admin.deleteConfirmDescription', { name: vehicle.name })}
-                                   </AlertDialogDescription>
-                                 </AlertDialogHeader>
-                                 <AlertDialogFooter>
-                                   <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
-                                   <AlertDialogAction onClick={() => handleDelete(vehicle.id)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
-                                 </AlertDialogFooter>
-                               </AlertDialogContent>
-                             </AlertDialog>
-                           </div>
-                        </TableCell>
-                     </TableRow>
-                   ))}
-                </TableBody>
-            </Table>
-            )}
-        </CardContent>
-      </Card>
+      <div className="flex justify-between items-start mb-8">
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight">Панель управления</h1>
+        </div>
+        <Button variant="outline" size="sm" onClick={handleLogout}>
+            {t('header.logout')} <LogOut className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+
+      <Tabs defaultValue="vehicles">
+        <TabsList className='mb-4'>
+            <TabsTrigger value="vehicles">{t('admin.vehicles')}</TabsTrigger>
+            <TabsTrigger value="transfers">{t('admin.transfers')}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="vehicles">
+            <Card className="max-w-7xl mx-auto">
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle>{t('admin.vehicleListTitle')}</CardTitle>
+                            <CardDescription>{t('admin.vehicleListDescription')}</CardDescription>
+                        </div>
+                        <Button onClick={handleAddNewVehicle}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            {t('admin.addButton')}
+                        </Button>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {vehiclesLoading ? (
+                        <div className="flex items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+                    ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
+                                <TableHead>{t('admin.table.name')}</TableHead>
+                                <TableHead>{t('admin.table.category')}</TableHead>
+                                <TableHead className="text-right">{t('admin.table.price')}</TableHead>
+                                <TableHead className="text-right">{t('admin.table.capacity')}</TableHead>
+                                <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {vehicles?.map(vehicle => (
+                            <TableRow key={vehicle.id}>
+                                <TableCell>{vehicle.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
+                                <TableCell className="font-medium">{vehicle.name}</TableCell>
+                                <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
+                                <TableCell className="text-right">{vehicle.price > 0 ? `$${vehicle.price}`: t('vehicleDetail.negotiablePrice')}</TableCell>
+                                <TableCell className="text-right">{vehicle.capacity}</TableCell>
+                                <TableCell className="text-right">
+                                <div className="flex gap-2 justify-end">
+                                    <Button variant="outline" size="icon" onClick={() => handleEditVehicle(vehicle)}><FilePenLine className="h-4 w-4" /></Button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild><Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                            <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
+                                            <AlertDialogDescription>{t('admin.deleteConfirmDescription', { name: vehicle.name })}</AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                            <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleDeleteVehicle(vehicle.id)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                    )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="transfers">
+             <Card className="max-w-7xl mx-auto">
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle>{t('admin.transferListTitle')}</CardTitle>
+                            <CardDescription>{t('admin.transferListDescription')}</CardDescription>
+                        </div>
+                        <Button onClick={handleAddNewTransfer}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            {t('admin.addButton')}
+                        </Button>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {transfersLoading ? (
+                        <div className="flex items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+                    ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
+                                <TableHead>{t('admin.table.title')}</TableHead>
+                                <TableHead>{t('admin.table.route')}</TableHead>
+                                <TableHead>{t('admin.table.time')}</TableHead>
+                                <TableHead>{t('admin.table.distance')}</TableHead>
+                                <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {transfers?.map(transfer => (
+                            <TableRow key={transfer.id}>
+                                <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
+                                <TableCell className="font-medium">{transfer.title}</TableCell>
+                                <TableCell>{transfer.from} → {transfer.to}</TableCell>
+                                <TableCell>{transfer.drivingTime}</TableCell>
+                                <TableCell>{transfer.drivingDistance}</TableCell>
+                                <TableCell className="text-right">
+                                <div className="flex gap-2 justify-end">
+                                    <Button variant="outline" size="icon" onClick={() => handleEditTransfer(transfer)}><FilePenLine className="h-4 w-4" /></Button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild><Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
+                                                <AlertDialogDescription>{t('admin.deleteConfirmDescription', { name: transfer.title })}</AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id, transfer.title)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                    )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

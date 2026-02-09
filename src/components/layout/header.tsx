@@ -27,6 +27,7 @@ export function Header() {
   const navLinks = [
     { href: "/#about", label: t('header.about') },
     { href: "/fleet", label: t('header.fleet') },
+    { href: "/transfers", label: t('header.transfers') },
     { href: "/#testimonials", label: t('header.testimonials') },
     { href: "/#gallery", label: t('header.gallery') },
     { href: "/#faq", label: t('header.faq') },
@@ -71,7 +72,7 @@ export function Header() {
           </div>
 
           <Button asChild className="hidden sm:inline-flex">
-            <Link href="/#booking">{t('header.book')}</Link>
+             <Link href="/#booking">{t('header.book')}</Link>
           </Button>
 
           {isMounted ? (

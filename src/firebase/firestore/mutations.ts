@@ -2,6 +2,7 @@
 
 import { doc, setDoc, type Firestore, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { Vehicle } from '@/lib/vehicles';
+import type { Transfer, TransferPriceInfo } from '@/lib/transfers';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
 
@@ -49,7 +50,7 @@ export function addVehicle(firestore: Firestore, vehicleData: VehicleFormData) {
  * @param vehicleId - The ID of the vehicle document to update.
  * @param vehicleData - The new data for the vehicle.
  */
-export function updateVehicle(firestore: Firestore, vehicleId: string, vehicleData: VehicleFormData) {
+export function updateVehicle(firestore: Firestore, vehicleId: string, vehicleData: Partial<VehicleFormData>) {
     const vehicleRef = doc(firestore, 'vehicles', vehicleId);
     
     updateDoc(vehicleRef, vehicleData)
@@ -75,6 +76,60 @@ export function deleteVehicle(firestore: Firestore, vehicleId: string) {
         .catch(async (serverError) => {
             const permissionError = new FirestorePermissionError({
                 path: vehicleRef.path,
+                operation: 'delete',
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+}
+
+
+// --- Transfer Mutations ---
+
+type TransferFormData = Omit<Transfer, 'id'>;
+
+export function addTransfer(firestore: Firestore, transferData: TransferFormData) {
+    const slug = createSlug(transferData.title);
+    if (!slug) {
+        console.error("Transfer title is invalid for generating an ID.");
+        return;
+    }
+    const id = `transfer-${slug}-${Date.now()}`;
+    
+    const transferRef = doc(firestore, 'transfers', id);
+    const dataToSet = { ...transferData, id };
+
+    setDoc(transferRef, dataToSet)
+        .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: transferRef.path,
+                operation: 'create',
+                requestResourceData: dataToSet,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+}
+
+export function updateTransfer(firestore: Firestore, transferId: string, transferData: Partial<TransferFormData>) {
+    const transferRef = doc(firestore, 'transfers', transferId);
+    
+    updateDoc(transferRef, transferData)
+        .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: transferRef.path,
+                operation: 'update',
+                requestResourceData: transferData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+}
+
+export function deleteTransfer(firestore: Firestore, transferId: string) {
+    const transferRef = doc(firestore, 'transfers', transferId);
+    
+    deleteDoc(transferRef)
+        .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: transferRef.path,
                 operation: 'delete',
             });
             errorEmitter.emit('permission-error', permissionError);

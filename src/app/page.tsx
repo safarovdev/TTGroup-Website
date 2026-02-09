@@ -10,7 +10,7 @@ import { Testimonials } from '@/components/sections/testimonials';
 import { Faq } from '@/components/sections/faq';
 import { Contacts } from '@/components/sections/contacts';
 import { Gallery } from '@/components/sections/gallery';
-import { PrivateTransfers } from '@/components/sections/private-transfers';
+import { FeaturedTransfers } from '@/components/sections/featured-transfers';
 
 export default function Home() {
   return (
@@ -19,7 +19,7 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <Principles />
-        <PrivateTransfers />
+        <FeaturedTransfers />
         <Stats />
         <FleetIntro />
         <Fleet />

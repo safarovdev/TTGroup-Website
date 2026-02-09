@@ -27,6 +27,12 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // TRANSFERS: Publicly readable, admin writable.
+    match /transfers/{transferId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
     // USERS: User-owned profiles.
     // Each user can manage their own profile information but cannot grant themselves admin rights.
     match /users/{userId} {
