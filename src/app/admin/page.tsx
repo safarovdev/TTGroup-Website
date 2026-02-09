@@ -20,7 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescriptionComponent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTransfers } from '@/hooks/useTransfers';
@@ -707,9 +707,9 @@ function AdminDashboard() {
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Выберите автомобили</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescriptionComponent>
                         Для тарифа "{editingVehicleCategory?.label}"
-                    </DialogDescription>
+                    </DialogDescriptionComponent>
                 </DialogHeader>
                 {editingVehicleCategory && (
                     <div className="pt-4">
@@ -877,7 +877,7 @@ function AdminDashboard() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {transfers?.map(transfer => (
+                        {transfers?.sort((a, b) => a.title_ru.localeCompare(b.title_ru)).map(transfer => (
                             <TableRow key={transfer.id}>
                                 <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
                                 <TableCell className="font-medium">{transfer.title_ru}</TableCell>
@@ -948,3 +948,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
