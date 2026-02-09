@@ -431,27 +431,6 @@ function AdminDashboard() {
   
   const watchedPrices = transferForm.watch('prices');
   const watchedServiceType = transferForm.watch('serviceType');
-  
-  const handleVehicleIdToggle = (categoryToUpdate: string, vehicleIdToToggle: string) => {
-      const currentPrices = transferForm.getValues('prices');
-      
-      const newPrices = currentPrices.map(priceInfo => {
-        if (priceInfo.category === categoryToUpdate) {
-            const vehicleIds = priceInfo.vehicleIds || [];
-            const isSelected = vehicleIds.includes(vehicleIdToToggle);
-            
-            const newVehicleIds = isSelected
-                ? vehicleIds.filter(id => id !== vehicleIdToToggle)
-                : [...vehicleIds, vehicleIdToToggle];
-
-            return { ...priceInfo, vehicleIds: newVehicleIds };
-        }
-        return priceInfo;
-    });
-
-      transferForm.setValue('prices', newPrices, { shouldValidate: true, shouldDirty: true });
-  };
-
 
   return (
     <div className="container py-12">
@@ -644,7 +623,8 @@ function AdminDashboard() {
                                 <FormLabel>{t('admin.pricesLabel')}</FormLabel>
                                 <div className='space-y-4 rounded-lg border p-4 max-h-72 overflow-y-auto'>
                                     {Object.entries(vehicleCategoryMap).map(([categoryKey, categoryLabel]) => {
-                                        const currentPrice = watchedPrices.find(p => p.category === categoryKey);
+                                        const priceInfoIndex = watchedPrices.findIndex(p => p.category === categoryKey);
+                                        const currentPrice = priceInfoIndex !== -1 ? watchedPrices[priceInfoIndex] : null;
                                         const category = categoryKey as keyof typeof vehicleCategoryMap;
                                         return (
                                             <div key={category} className='space-y-3'>
@@ -655,15 +635,15 @@ function AdminDashboard() {
                                                         onCheckedChange={checked => {
                                                             const currentPrices = transferForm.getValues('prices');
                                                             if (checked) {
-                                                                transferForm.setValue('prices', [...currentPrices, { category: category, price: 0, vehicleIds: [] }]);
+                                                                transferForm.setValue('prices', [...currentPrices, { category: category, price: 0, vehicleIds: [] }], { shouldDirty: true, shouldValidate: true });
                                                             } else {
-                                                                transferForm.setValue('prices', currentPrices.filter(p => p.category !== category));
+                                                                transferForm.setValue('prices', currentPrices.filter(p => p.category !== category), { shouldDirty: true, shouldValidate: true });
                                                             }
                                                         }}
                                                     />
                                                     <label htmlFor={`price-enabled-${category}`} className='font-medium min-w-[200px]'>{categoryLabel}</label>
                                                 </div>
-                                                {!!currentPrice && (
+                                                {!!currentPrice && priceInfoIndex !== -1 && (
                                                    <div className='flex items-center gap-2 pl-8'>
                                                         <Input
                                                             type="number"
@@ -690,30 +670,44 @@ function AdminDashboard() {
                                                                             Выберите машины для категории "{categoryLabel}".
                                                                         </p>
                                                                     </div>
-                                                                    <div className="grid gap-2 max-h-60 overflow-y-auto">
-                                                                        {(vehiclesByCategory[categoryKey] || []).length > 0 ? (
-                                                                            (vehiclesByCategory[categoryKey] || []).map((vehicle) => (
-                                                                                <div
-                                                                                    key={vehicle.id}
-                                                                                    className="flex items-center space-x-2"
-                                                                                >
-                                                                                    <Checkbox
-                                                                                        id={`vehicle-${categoryKey}-${vehicle.id}`}
-                                                                                        checked={currentPrice.vehicleIds?.includes(vehicle.id)}
-                                                                                        onCheckedChange={() => handleVehicleIdToggle(categoryKey, vehicle.id)}
-                                                                                    />
-                                                                                    <label
-                                                                                        htmlFor={`vehicle-${categoryKey}-${vehicle.id}`}
-                                                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                                                    >
-                                                                                        {vehicle.name}
-                                                                                    </label>
-                                                                                </div>
-                                                                            ))
-                                                                        ) : (
-                                                                            <p className='text-sm text-muted-foreground'>Нет машин в этой категории.</p>
-                                                                        )}
-                                                                    </div>
+                                                                    <FormField
+                                                                        control={transferForm.control}
+                                                                        name={`prices.${priceInfoIndex}.vehicleIds`}
+                                                                        render={({ field }) => {
+                                                                            const selectedVehicleIds = field.value || [];
+                                                                            return (
+                                                                            <div className="grid gap-2 max-h-60 overflow-y-auto">
+                                                                                {(vehiclesByCategory[categoryKey] || []).length > 0 ? (
+                                                                                    (vehiclesByCategory[categoryKey] || []).map((vehicle) => (
+                                                                                        <div
+                                                                                            key={vehicle.id}
+                                                                                            className="flex items-center space-x-2"
+                                                                                        >
+                                                                                            <Checkbox
+                                                                                                id={`vehicle-${categoryKey}-${vehicle.id}`}
+                                                                                                checked={selectedVehicleIds.includes(vehicle.id)}
+                                                                                                onCheckedChange={(checked) => {
+                                                                                                    const newIds = checked
+                                                                                                        ? [...selectedVehicleIds, vehicle.id]
+                                                                                                        : selectedVehicleIds.filter(id => id !== vehicle.id);
+                                                                                                    field.onChange(newIds);
+                                                                                                }}
+                                                                                            />
+                                                                                            <label
+                                                                                                htmlFor={`vehicle-${categoryKey}-${vehicle.id}`}
+                                                                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                                            >
+                                                                                                {vehicle.name}
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    ))
+                                                                                ) : (
+                                                                                    <p className='text-sm text-muted-foreground'>Нет машин в этой категории.</p>
+                                                                                )}
+                                                                            </div>
+                                                                            );
+                                                                        }}
+                                                                    />
                                                                 </div>
                                                             </PopoverContent>
                                                         </Popover>
