@@ -13,21 +13,26 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Function to check if the user is an admin by reading their profile.
     function isAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
     // --- VEHICLES ---
     match /vehicles/{vehicleId} {
-      allow get, list: if true;
+      allow get: if true;
       allow create, update, delete: if isAdmin();
+    }
+    match /vehicles {
+      allow list: if true;
     }
 
     // --- TRANSFERS ---
     match /transfers/{transferId} {
-      allow get, list: if true;
+      allow get: if true;
       allow create, update, delete: if isAdmin();
+    }
+    match /transfers {
+      allow list: if true;
     }
 
     // --- USERS ---
