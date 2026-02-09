@@ -258,7 +258,13 @@
     "distancePlaceholder": "e.g., 34 km",
     "pricesLabel": "Prices for Vehicles",
     "featuredTransferLabel": "Featured Transfer",
-    "featuredTransferDescription": "Check this to feature the transfer on the homepage."
+    "featuredTransferDescription": "Check this to feature the transfer on the homepage.",
+    "titleRuLabel": "Title (RU)",
+    "titleEnLabel": "Title (EN)",
+    "descriptionRuLabel": "Description (RU)",
+    "descriptionEnLabel": "Description (EN)",
+    "serviceTypeLabel": "Service Type",
+    "cityLabel": "City"
   },
   "vehicleCategories": {
     "premium": "💎 Premium & VIP",
@@ -322,11 +328,24 @@
   },
   "transfers": {
     "pageTitle": "All Transfer Routes",
-    "pageDescription": "Fixed prices for all available routes. Choose your direction and travel with comfort.",
+    "pageDescription": "Find the perfect transfer for your trip. We offer a wide range of routes for any purpose.",
     "drivingTime": "Driving time",
     "drivingDistance": "Driving Distance",
-    "noResultsTitle": "No transfers available",
-    "noResultsDescription": "We are currently updating our routes. Please check back later or contact us for a custom quote.",
-    "noPrices": "Prices not specified."
+    "noResultsTitle": "No transfers found",
+    "noResultsDescription": "Try changing your search parameters or clearing the filters.",
+    "noPrices": "Prices not specified.",
+    "serviceType": "Service Type",
+    "serviceTypes": {
+      "intercity": "Intercity",
+      "meet_and_greet": "Meet & Greet",
+      "excursion": "Excursion"
+    },
+    "city": "City",
+    "from": "From",
+    "to": "To",
+    "search": "Search",
+    "allServices": "All services",
+    "clearFilters": "Clear Filters",
+    "searchPlaceholder": "Search by title..."
   }
 }

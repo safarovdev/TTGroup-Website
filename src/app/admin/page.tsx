@@ -26,6 +26,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTransfers } from '@/hooks/useTransfers';
 import { type Transfer, type TransferPriceInfo } from '@/lib/transfers';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
+import { locations, serviceTypesMap, ServiceType } from '@/lib/locations';
+import { useLanguage } from '@/context/LanguageContext';
 
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
@@ -146,14 +149,30 @@ const transferPriceSchema = z.object({
 });
 
 const transferSchema = z.object({
-  title: z.string().min(3, "Название должно быть длиннее 3 символов"),
-  from: z.string().min(2, "Место отправления обязательно"),
-  to: z.string().min(2, "Место назначения обязательно"),
+  serviceType: z.enum(["intercity", "meet_and_greet", "excursion"], { required_error: "Выберите тип услуги" }),
+  city: z.string().optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  title_ru: z.string().min(3, "Название (RU) обязательно"),
+  title_en: z.string().min(3, "Название (EN) обязательно"),
+  description_ru: z.string().optional(),
+  description_en: z.string().optional(),
   drivingTime: z.string().min(1, "Время в пути обязательно"),
   drivingDistance: z.string().min(1, "Расстояние обязательно"),
   prices: z.array(transferPriceSchema).min(1, "Нужно указать хотя бы одну цену"),
   isFeatured: z.boolean().optional().default(false),
-});
+}).refine(data => {
+    if (data.serviceType === 'intercity') {
+        return !!data.from && !!data.to;
+    }
+    return true;
+}, { message: "Для межгорода поля 'Откуда' и 'Куда' обязательны", path: ["from"] })
+.refine(data => {
+    if (data.serviceType === 'meet_and_greet' || data.serviceType === 'excursion') {
+        return !!data.city;
+    }
+    return true;
+}, { message: "Для встреч и экскурсий поле 'Город' обязательно", path: ["city"] });
 type TransferFormValues = z.infer<typeof transferSchema>;
 
 
@@ -244,6 +263,7 @@ function AdminDashboard() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { locale } = useLanguage();
 
   // State for vehicles
   const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
@@ -262,7 +282,20 @@ function AdminDashboard() {
 
   const transferForm = useForm<TransferFormValues>({
     resolver: zodResolver(transferSchema),
-    defaultValues: { title: "", from: "", to: "", drivingTime: "", drivingDistance: "", prices: [], isFeatured: false },
+    defaultValues: {
+      serviceType: 'intercity',
+      title_ru: "",
+      title_en: "",
+      city: "",
+      from: "",
+      to: "",
+      description_ru: "",
+      description_en: "",
+      drivingTime: "",
+      drivingDistance: "",
+      prices: [],
+      isFeatured: false,
+    },
   });
 
   const vehiclesByCategory = useMemo(() => {
@@ -299,17 +332,24 @@ function AdminDashboard() {
         const transferToEdit = transfers.find(t => t.id === editingTransferId);
         if (transferToEdit) {
             transferForm.reset({
-                title: transferToEdit.title,
-                from: transferToEdit.from,
-                to: transferToEdit.to,
-                drivingTime: transferToEdit.drivingTime,
-                drivingDistance: transferToEdit.drivingDistance,
-                prices: transferToEdit.prices,
-                isFeatured: transferToEdit.isFeatured || false,
+                ...transferToEdit
             });
         }
     } else {
-        transferForm.reset({ title: "", from: "", to: "", drivingTime: "", drivingDistance: "", prices: [], isFeatured: false });
+        transferForm.reset({
+          serviceType: 'intercity',
+          title_ru: "",
+          title_en: "",
+          city: "",
+          from: "",
+          to: "",
+          description_ru: "",
+          description_en: "",
+          drivingTime: "",
+          drivingDistance: "",
+          prices: [],
+          isFeatured: false,
+        });
     }
   }, [editingTransferId, transfers, transferForm]);
 
@@ -330,12 +370,18 @@ function AdminDashboard() {
   
   const onTransferSubmit = (data: TransferFormValues) => {
     if (!firestore) return;
+    const dataToSubmit = {
+        ...data,
+        city: data.serviceType !== 'intercity' ? data.city : '',
+        from: data.serviceType === 'intercity' ? data.from : '',
+        to: data.serviceType === 'intercity' ? data.to : '',
+    };
     if (editingTransferId) {
-        updateTransfer(firestore, editingTransferId, data);
-        toast({ title: "✅ Трансфер обновлен", description: `Данные для "${data.title}" сохранены.` });
+        updateTransfer(firestore, editingTransferId, dataToSubmit);
+        toast({ title: "✅ Трансфер обновлен", description: `Данные для "${data.title_ru}" сохранены.` });
     } else {
-        addTransfer(firestore, data);
-        toast({ title: "✅ Трансфер добавлен", description: `Маршрут "${data.title}" добавлен.` });
+        addTransfer(firestore, dataToSubmit);
+        toast({ title: "✅ Трансфер добавлен", description: `Маршрут "${data.title_ru}" добавлен.` });
     }
     setIsTransferFormOpen(false);
     setEditingTransferId(null);
@@ -390,6 +436,7 @@ function AdminDashboard() {
   };
   
   const watchedPrices = transferForm.watch('prices');
+  const watchedServiceType = transferForm.watch('serviceType');
 
   return (
     <div className="container py-12">
@@ -501,7 +548,7 @@ function AdminDashboard() {
         
         {/* Transfer Form Dialog */}
         <Dialog open={isTransferFormOpen} onOpenChange={onTransferFormOpenChange}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl">
                 <DialogHeader>
                     <DialogTitle>{editingTransferId ? t('admin.transferEditTitle') : t('admin.transferAddTitle')}</DialogTitle>
                     <DialogDescriptionComponent>{editingTransferId ? t('admin.transferEditDescription') : t('admin.transferAddDescription')}</DialogDescriptionComponent>
@@ -509,17 +556,66 @@ function AdminDashboard() {
                 <div className="py-4 max-h-[80vh] overflow-y-auto px-1">
                     <Form {...transferForm}>
                         <form onSubmit={transferForm.handleSubmit(onTransferSubmit)} className="space-y-6">
-                            <FormField control={transferForm.control} name="title" render={({ field }) => (
-                                <FormItem><FormLabel>{t('admin.titleLabel')}</FormLabel><FormControl><Input placeholder={t('admin.titlePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormField control={transferForm.control} name="title_ru" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.titleRuLabel')}</FormLabel><FormControl><Input placeholder={t('admin.titlePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={transferForm.control} name="title_en" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.titleEnLabel')}</FormLabel><FormControl><Input placeholder="e.g., Khiva to Urgench Airport" {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                            </div>
+
+                            <FormField control={transferForm.control} name="serviceType" render={({ field }) => (
+                                <FormItem><FormLabel>{t('admin.serviceTypeLabel')}</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder={t('admin.serviceTypeLabel')} /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    {Object.entries(serviceTypesMap).map(([key, value]) => (
+                                        <SelectItem key={key} value={key}>{value.ru}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                                </Select>
+                                <FormMessage /></FormItem>
                             )} />
-                             <div className="grid md:grid-cols-2 gap-6">
-                                <FormField control={transferForm.control} name="from" render={({ field }) => (
-                                    <FormItem><FormLabel>{t('admin.fromLabel')}</FormLabel><FormControl><Input placeholder={t('admin.fromPlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
+
+                            {watchedServiceType === 'intercity' && (
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <FormField control={transferForm.control} name="from" render={({ field }) => (
+                                        <FormItem><FormLabel>{t('admin.fromLabel')}</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl><SelectTrigger><SelectValue placeholder={t('admin.fromPlaceholder')} /></SelectTrigger></FormControl>
+                                            <SelectContent>
+                                                {locations.map(loc => <SelectItem key={loc.id} value={loc.id}>{loc.name_ru}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage /></FormItem>
+                                    )} />
+                                    <FormField control={transferForm.control} name="to" render={({ field }) => (
+                                        <FormItem><FormLabel>{t('admin.toLabel')}</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl><SelectTrigger><SelectValue placeholder={t('admin.toPlaceholder')} /></SelectTrigger></FormControl>
+                                            <SelectContent>
+                                                {locations.map(loc => <SelectItem key={loc.id} value={loc.id}>{loc.name_ru}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage /></FormItem>
+                                    )} />
+                                </div>
+                            )}
+
+                            {(watchedServiceType === 'meet_and_greet' || watchedServiceType === 'excursion') && (
+                                <FormField control={transferForm.control} name="city" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.cityLabel')}</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder={t('admin.cityLabel')} /></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            {locations.map(loc => <SelectItem key={loc.id} value={loc.id}>{loc.name_ru}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage /></FormItem>
                                 )} />
-                                <FormField control={transferForm.control} name="to" render={({ field }) => (
-                                    <FormItem><FormLabel>{t('admin.toLabel')}</FormLabel><FormControl><Input placeholder={t('admin.toPlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
-                                )} />
-                             </div>
+                            )}
+
                              <div className="grid md:grid-cols-2 gap-6">
                                 <FormField control={transferForm.control} name="drivingTime" render={({ field }) => (
                                     <FormItem><FormLabel>{t('admin.timeLabel')}</FormLabel><FormControl><Input placeholder={t('admin.timePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
@@ -528,6 +624,16 @@ function AdminDashboard() {
                                     <FormItem><FormLabel>{t('admin.distanceLabel')}</FormLabel><FormControl><Input placeholder={t('admin.distancePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
                                 )} />
                             </div>
+
+                             <div className="grid md:grid-cols-2 gap-6">
+                                <FormField control={transferForm.control} name="description_ru" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.descriptionRuLabel')}</FormLabel><FormControl><Textarea placeholder="Дополнительная информация на русском..." {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={transferForm.control} name="description_en" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.descriptionEnLabel')}</FormLabel><FormControl><Textarea placeholder="Additional information in English..." {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                             </div>
+
                             <FormItem>
                                 <FormLabel>{t('admin.pricesLabel')}</FormLabel>
                                 <div className='space-y-4 rounded-lg border p-4 max-h-72 overflow-y-auto'>
@@ -763,8 +869,10 @@ function AdminDashboard() {
                         {transfers?.map(transfer => (
                             <TableRow key={transfer.id}>
                                 <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
-                                <TableCell className="font-medium">{transfer.title}</TableCell>
-                                <TableCell>{transfer.from} → {transfer.to}</TableCell>
+                                <TableCell className="font-medium">{transfer.title_ru}</TableCell>
+                                <TableCell>
+                                    {transfer.serviceType === 'intercity' ? `${transfer.from} → ${transfer.to}` : transfer.city}
+                                </TableCell>
                                 <TableCell>{transfer.drivingTime}</TableCell>
                                 <TableCell>{transfer.drivingDistance}</TableCell>
                                 <TableCell className="text-right">
@@ -775,11 +883,11 @@ function AdminDashboard() {
                                         <AlertDialogContent>
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
-                                                <AlertDialogDescription>{t('admin.deleteConfirmDescription', { name: transfer.title })}</AlertDialogDescription>
+                                                <AlertDialogDescription>{t('admin.deleteConfirmDescription', { name: transfer.title_ru })}</AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id, transfer.title)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
+                                                <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id, transfer.title_ru)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>

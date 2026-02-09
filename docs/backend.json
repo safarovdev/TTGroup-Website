@@ -92,17 +92,38 @@
           "type": "string",
           "description": "Unique identifier for the transfer."
         },
-        "title": {
+        "serviceType": {
           "type": "string",
-          "description": "The title of the transfer route (e.g., 'Khiva to Urgench Airport')."
+          "description": "The type of service provided.",
+          "enum": ["intercity", "meet_and_greet", "excursion"]
+        },
+        "city": {
+          "type": "string",
+          "description": "The city for 'meet_and_greet' or 'excursion' services."
         },
         "from": {
           "type": "string",
-          "description": "The starting point of the transfer."
+          "description": "The starting point for 'intercity' transfers."
         },
         "to": {
           "type": "string",
-          "description": "The destination of the transfer."
+          "description": "The destination for 'intercity' transfers."
+        },
+        "title_ru": {
+          "type": "string",
+          "description": "Title in Russian, can be auto-generated or custom."
+        },
+        "title_en": {
+          "type": "string",
+          "description": "Title in English, can be auto-generated or custom."
+        },
+        "description_ru": {
+          "type": "string",
+          "description": "Optional description in Russian."
+        },
+        "description_en": {
+          "type": "string",
+          "description": "Optional description in English."
         },
         "drivingTime": {
           "type": "string",
@@ -144,7 +165,7 @@
           "default": false
         }
       },
-      "required": ["id", "title", "from", "to", "drivingTime", "drivingDistance", "prices"]
+      "required": ["id", "serviceType", "prices", "title_ru", "title_en", "drivingTime", "drivingDistance"]
     }
   },
   "auth": {

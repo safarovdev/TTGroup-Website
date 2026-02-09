@@ -6,9 +6,14 @@ export interface TransferPriceInfo {
 
 export interface Transfer {
     id: string;
-    title: string;
-    from: string;
-    to: string;
+    serviceType: 'intercity' | 'meet_and_greet' | 'excursion';
+    city?: string;
+    from?: string;
+    to?: string;
+    title_ru: string;
+    title_en: string;
+    description_ru?: string;
+    description_en?: string;
     drivingTime: string;
     drivingDistance: string;
     prices: TransferPriceInfo[];
