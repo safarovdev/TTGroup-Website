@@ -431,6 +431,34 @@ function AdminDashboard() {
   
   const watchedPrices = transferForm.watch('prices');
   const watchedServiceType = transferForm.watch('serviceType');
+  
+  const handleVehicleIdToggle = (categoryToUpdate: string, vehicleIdToToggle: string, isChecked: boolean | 'indeterminate') => {
+      const currentPrices = transferForm.getValues('prices');
+      const priceIndex = currentPrices.findIndex(p => p.category === categoryToUpdate);
+      
+      if (priceIndex === -1) return;
+
+      const priceToUpdate = currentPrices[priceIndex];
+      const vehicleIds = priceToUpdate.vehicleIds || [];
+      
+      let updatedVehicleIds;
+      if (isChecked) {
+          updatedVehicleIds = vehicleIds.includes(vehicleIdToToggle) ? vehicleIds : [...vehicleIds, vehicleIdToToggle];
+      } else {
+          updatedVehicleIds = vehicleIds.filter(id => id !== vehicleIdToToggle);
+      }
+      
+      const updatedPrice = { ...priceToUpdate, vehicleIds: updatedVehicleIds };
+
+      const newPrices = [
+          ...currentPrices.slice(0, priceIndex),
+          updatedPrice,
+          ...currentPrices.slice(priceIndex + 1)
+      ];
+
+      transferForm.setValue('prices', newPrices, { shouldValidate: true });
+  };
+
 
   return (
     <div className="container py-12">
@@ -679,20 +707,7 @@ function AdminDashboard() {
                                                                                     <Checkbox
                                                                                         id={`vehicle-${categoryKey}-${vehicle.id}`}
                                                                                         checked={currentPrice.vehicleIds?.includes(vehicle.id)}
-                                                                                        onCheckedChange={(checked) => {
-                                                                                            const oldPrices = transferForm.getValues('prices');
-                                                                                            const newPrices = oldPrices.map(p => {
-                                                                                                if (p.category === categoryKey) {
-                                                                                                    const currentVehicleIds = p.vehicleIds || [];
-                                                                                                    const newVehicleIds = checked
-                                                                                                        ? [...currentVehicleIds, vehicle.id]
-                                                                                                        : currentVehicleIds.filter(id => id !== vehicle.id);
-                                                                                                    return { ...p, vehicleIds: newVehicleIds };
-                                                                                                }
-                                                                                                return p;
-                                                                                            });
-                                                                                            transferForm.setValue('prices', newPrices, { shouldValidate: true });
-                                                                                        }}
+                                                                                        onCheckedChange={(checked) => handleVehicleIdToggle(categoryKey, vehicle.id, checked)}
                                                                                     />
                                                                                     <label
                                                                                         htmlFor={`vehicle-${categoryKey}-${vehicle.id}`}

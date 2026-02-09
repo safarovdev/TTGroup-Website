@@ -191,7 +191,7 @@ const VehicleDetailPage = () => {
                                         <DialogDescription>{t('booking.description')}</DialogDescription>
                                     </DialogHeader>
                                     <div className="pt-4">
-                                       <BookingForm defaultVehicleName={vehicle.name} />
+                                       <BookingForm bookingSubject={vehicle.name} />
                                     </div>
                                 </DialogContent>
                             </Dialog>

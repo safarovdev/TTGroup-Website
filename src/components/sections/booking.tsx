@@ -27,7 +27,7 @@ function BookingSectionContent() {
         }
     }, [searchParams, vehicles]);
 
-    return <BookingForm variant="inverted" defaultVehicleName={vehicleName} />;
+    return <BookingForm variant="inverted" bookingSubject={vehicleName} />;
 }
 
 

@@ -2,12 +2,15 @@
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguage } from '@/context/LanguageContext';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { type Transfer } from '@/lib/transfers';
 import { useMemo } from 'react';
 import { vehicleCategoryMap } from '@/lib/vehicles';
 import { getLocationName } from '@/lib/locations';
 import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { BookingForm } from '@/components/booking-form';
 
 export function TransferCard({ transfer }: { transfer: Transfer }) {
   const { t } = useTranslation();
@@ -31,7 +34,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
   const description = transfer[`description_${locale}`];
 
   return (
-    <Card key={transfer.id} className="flex flex-col p-6 text-center hover:shadow-xl transition-shadow duration-300 bg-card">
+    <Card key={transfer.id} className="flex flex-col p-6 text-center bg-card">
         
         <h3 className="text-xl font-bold flex-grow flex items-center justify-center my-4">{title}</h3>
         
@@ -60,6 +63,23 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                 </li>
             )) : <p className="text-sm text-muted-foreground text-center">{t('transfers.noPrices')}</p>}
         </ul>
+
+        <div className="mt-6">
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button size="lg" className="w-full font-semibold">{t('header.book')}</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[625px]">
+                    <DialogHeader>
+                        <DialogTitle>{t('booking.title')}</DialogTitle>
+                        <DialogDescription>{t('booking.description')}</DialogDescription>
+                    </DialogHeader>
+                    <div className="pt-4">
+                       <BookingForm bookingSubject={title} />
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
     </Card>
   );
 }

@@ -27,10 +27,10 @@ const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
 const TELEGRAM_CHAT_ID = '-1003780724209';
 
 export function BookingForm({ 
-    defaultVehicleName,
+    bookingSubject,
     variant = 'default',
  }: { 
-    defaultVehicleName?: string,
+    bookingSubject?: string,
     variant?: 'default' | 'inverted' 
 }) {
   const { toast } = useToast();
@@ -45,7 +45,7 @@ export function BookingForm({
     phone: z.string().min(9, { message: t('booking.form.phoneError') }),
     username: z.string().optional(),
     date: z.string().optional(),
-    vehicle: z.string({ required_error: t('booking.form.vehicleError') }),
+    item: z.string({ required_error: t('booking.form.itemError') }),
     contactMethod: z.enum(["telegram", "whatsapp", "call"], {required_error: t('booking.form.contactMethodError')}),
   });
   
@@ -58,7 +58,7 @@ export function BookingForm({
       phone: "",
       username: "",
       date: "",
-      vehicle: defaultVehicleName || t('booking.form.vehicleConsultation'),
+      item: bookingSubject || t('booking.form.subjectConsultation'),
       contactMethod: "telegram",
     },
   });
@@ -76,10 +76,10 @@ export function BookingForm({
 
 
   useEffect(() => {
-    if (defaultVehicleName) {
-        form.setValue('vehicle', defaultVehicleName);
+    if (bookingSubject) {
+        form.setValue('item', bookingSubject);
     }
-  }, [defaultVehicleName, form]);
+  }, [bookingSubject, form]);
 
 
   async function onSubmit(data: BookingFormValues) {
@@ -105,7 +105,7 @@ export function BookingForm({
         `*Телефон:* \`${data.phone}\``,
         data.username ? `*Username:* @${data.username.replace('@', '')}` : null,
         dateText,
-        `*Автомобиль:* ${data.vehicle}`,
+        `*Услуга/Авто:* ${data.item}`,
         `*Способ связи:* ${data.contactMethod}`,
     ];
 
@@ -138,7 +138,7 @@ export function BookingForm({
               phone: "",
               username: "",
               date: "",
-              vehicle: defaultVehicleName || t('booking.form.vehicleConsultation'),
+              item: bookingSubject || t('booking.form.subjectConsultation'),
               contactMethod: "telegram",
             });
         } else {
@@ -220,30 +220,36 @@ export function BookingForm({
           />
           <FormField
               control={form.control}
-              name="vehicle"
+              name="item"
               render={({ field }) => (
                   <FormItem>
-                  <FormLabel>{t('booking.form.vehicleLabel')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <FormLabel>{t('booking.form.itemLabel')}</FormLabel>
+                   {bookingSubject ? (
                       <FormControl>
-                      <SelectTrigger className={cn(is_inverted && invertedClasses)}>
-                          <SelectValue placeholder={t('booking.form.vehiclePlaceholder')} />
-                      </SelectTrigger>
+                         <Input {...field} disabled className={cn(is_inverted && invertedClasses, "cursor-default")} />
                       </FormControl>
-                      <SelectContent>
-                          <SelectItem value={t('booking.form.vehicleConsultation')}>{t('booking.form.vehicleConsultation')}</SelectItem>
-                          {Object.entries(groupedVehicles).map(([category, vehicles]) => (
-                              <SelectGroup key={category}>
-                                  <SelectLabel>{t(`vehicleCategories.${category}`)}</SelectLabel>
-                                  {vehicles.map((vehicle) => (
-                                      <SelectItem key={vehicle.id} value={vehicle.name}>
-                                          {vehicle.name}
-                                      </SelectItem>
-                                  ))}
-                              </SelectGroup>
-                          ))}
-                      </SelectContent>
-                  </Select>
+                   ) : (
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                          <FormControl>
+                          <SelectTrigger className={cn(is_inverted && invertedClasses)}>
+                              <SelectValue placeholder={t('booking.form.itemPlaceholder')} />
+                          </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              <SelectItem value={t('booking.form.subjectConsultation')}>{t('booking.form.subjectConsultation')}</SelectItem>
+                              {Object.entries(groupedVehicles).map(([category, vehicles]) => (
+                                  <SelectGroup key={category}>
+                                      <SelectLabel>{t(`vehicleCategories.${category}`)}</SelectLabel>
+                                      {vehicles.map((vehicle) => (
+                                          <SelectItem key={vehicle.id} value={vehicle.name}>
+                                              {vehicle.name}
+                                          </SelectItem>
+                                      ))}
+                                  </SelectGroup>
+                              ))}
+                          </SelectContent>
+                      </Select>
+                   )}
                   <FormMessage className="text-accent" />
                   </FormItem>
               )}
