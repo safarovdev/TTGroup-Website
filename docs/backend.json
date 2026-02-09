@@ -125,14 +125,6 @@
           "type": "string",
           "description": "Optional description in English."
         },
-        "drivingTime": {
-          "type": "string",
-          "description": "Estimated driving time."
-        },
-        "drivingDistance": {
-          "type": "string",
-          "description": "Estimated driving distance."
-        },
         "prices": {
           "type": "array",
           "description": "A list of prices for different vehicle categories on this route.",
@@ -165,7 +157,7 @@
           "default": false
         }
       },
-      "required": ["id", "serviceType", "prices", "title_ru", "title_en", "drivingTime", "drivingDistance"]
+      "required": ["id", "serviceType", "prices", "title_ru", "title_en"]
     }
   },
   "auth": {

@@ -32,11 +32,6 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
 
   return (
     <Card key={transfer.id} className="flex flex-col p-6 text-center hover:shadow-xl transition-shadow duration-300 bg-card">
-        <div className="text-sm text-muted-foreground mb-3">
-            <span>{t('transfers.drivingTime')}: {transfer.drivingTime}</span>
-            <span className="mx-2">·</span>
-            <span>{t('transfers.drivingDistance')}: {transfer.drivingDistance}</span>
-        </div>
         
         <h3 className="text-xl font-bold flex-grow flex items-center justify-center my-4">{title}</h3>
         

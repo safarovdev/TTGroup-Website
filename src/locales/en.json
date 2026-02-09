@@ -232,9 +232,7 @@
       "capacity": "Capacity",
       "actions": "Actions",
       "title": "Title",
-      "route": "Route",
-      "time": "Time",
-      "distance": "Distance"
+      "route": "Route"
     },
     "deleteConfirmTitle": "Are you absolutely sure?",
     "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the item \"{{name}}\".",
@@ -252,10 +250,6 @@
     "fromPlaceholder": "e.g., Khiva",
     "toLabel": "To",
     "toPlaceholder": "e.g., Urgench Airport",
-    "timeLabel": "Driving Time",
-    "timePlaceholder": "e.g., 50 min",
-    "distanceLabel": "Driving Distance",
-    "distancePlaceholder": "e.g., 34 km",
     "pricesLabel": "Prices for Vehicles",
     "featuredTransferLabel": "Featured Transfer",
     "featuredTransferDescription": "Check this to feature the transfer on the homepage.",
@@ -329,8 +323,6 @@
   "transfers": {
     "pageTitle": "All Transfer Routes",
     "pageDescription": "Find the perfect transfer for your trip. We offer a wide range of routes for any purpose.",
-    "drivingTime": "Driving time",
-    "drivingDistance": "Driving Distance",
     "noResultsTitle": "No transfers found",
     "noResultsDescription": "Try changing your search parameters or clearing the filters.",
     "noPrices": "Prices not specified.",

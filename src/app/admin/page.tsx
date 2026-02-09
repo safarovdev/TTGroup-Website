@@ -157,8 +157,6 @@ const transferSchema = z.object({
   title_en: z.string().min(3, "Название (EN) обязательно"),
   description_ru: z.string().optional(),
   description_en: z.string().optional(),
-  drivingTime: z.string().min(1, "Время в пути обязательно"),
-  drivingDistance: z.string().min(1, "Расстояние обязательно"),
   prices: z.array(transferPriceSchema).min(1, "Нужно указать хотя бы одну цену"),
   isFeatured: z.boolean().optional().default(false),
 }).refine(data => {
@@ -291,8 +289,6 @@ function AdminDashboard() {
       to: "",
       description_ru: "",
       description_en: "",
-      drivingTime: "",
-      drivingDistance: "",
       prices: [],
       isFeatured: false,
     },
@@ -345,8 +341,6 @@ function AdminDashboard() {
           to: "",
           description_ru: "",
           description_en: "",
-          drivingTime: "",
-          drivingDistance: "",
           prices: [],
           isFeatured: false,
         });
@@ -617,15 +611,6 @@ function AdminDashboard() {
                             )}
 
                              <div className="grid md:grid-cols-2 gap-6">
-                                <FormField control={transferForm.control} name="drivingTime" render={({ field }) => (
-                                    <FormItem><FormLabel>{t('admin.timeLabel')}</FormLabel><FormControl><Input placeholder={t('admin.timePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
-                                )} />
-                                <FormField control={transferForm.control} name="drivingDistance" render={({ field }) => (
-                                    <FormItem><FormLabel>{t('admin.distanceLabel')}</FormLabel><FormControl><Input placeholder={t('admin.distancePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
-                                )} />
-                            </div>
-
-                             <div className="grid md:grid-cols-2 gap-6">
                                 <FormField control={transferForm.control} name="description_ru" render={({ field }) => (
                                     <FormItem><FormLabel>{t('admin.descriptionRuLabel')}</FormLabel><FormControl><Textarea placeholder="Дополнительная информация на русском..." {...field} /></FormControl><FormMessage /></FormItem>
                                 )} />
@@ -860,8 +845,6 @@ function AdminDashboard() {
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.title')}</TableHead>
                                 <TableHead>{t('admin.table.route')}</TableHead>
-                                <TableHead>{t('admin.table.time')}</TableHead>
-                                <TableHead>{t('admin.table.distance')}</TableHead>
                                 <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -873,8 +856,6 @@ function AdminDashboard() {
                                 <TableCell>
                                     {transfer.serviceType === 'intercity' ? `${transfer.from} → ${transfer.to}` : transfer.city}
                                 </TableCell>
-                                <TableCell>{transfer.drivingTime}</TableCell>
-                                <TableCell>{transfer.drivingDistance}</TableCell>
                                 <TableCell className="text-right">
                                 <div className="flex gap-2 justify-end">
                                     <Button variant="outline" size="icon" onClick={() => handleEditTransfer(transfer)}><FilePenLine className="h-4 w-4" /></Button>

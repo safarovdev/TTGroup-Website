@@ -232,9 +232,7 @@
       "capacity": "Вместимость",
       "actions": "Действия",
       "title": "Название",
-      "route": "Маршрут",
-      "time": "Время",
-      "distance": "Расстояние"
+      "route": "Маршрут"
     },
     "deleteConfirmTitle": "Вы уверены?",
     "deleteConfirmDescription": "Это действие нельзя отменить. Запись \"{{name}}\" будет удалена навсегда.",
@@ -252,10 +250,6 @@
     "fromPlaceholder": "Например, Хива",
     "toLabel": "Куда",
     "toPlaceholder": "Например, Аэропорт Ургенч",
-    "timeLabel": "Время в пути",
-    "timePlaceholder": "Например, 50 мин",
-    "distanceLabel": "Расстояние",
-    "distancePlaceholder": "Например, 34 км",
     "pricesLabel": "Цены для автомобилей",
     "featuredTransferLabel": "Популярный трансфер",
     "featuredTransferDescription": "Отметьте, чтобы показать этот трансфер на главной странице.",
@@ -329,8 +323,6 @@
   "transfers": {
     "pageTitle": "Все маршруты трансферов",
     "pageDescription": "Найдите идеальный трансфер для вашей поездки. Мы предлагаем широкий выбор маршрутов для любых целей.",
-    "drivingTime": "Время в пути",
-    "drivingDistance": "Расстояние",
     "noResultsTitle": "Трансферы не найдены",
     "noResultsDescription": "Попробуйте изменить параметры поиска или сбросить фильтры.",
     "noPrices": "Цены не указаны.",
