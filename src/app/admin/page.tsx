@@ -432,31 +432,24 @@ function AdminDashboard() {
   const watchedPrices = transferForm.watch('prices');
   const watchedServiceType = transferForm.watch('serviceType');
   
-  const handleVehicleIdToggle = (categoryToUpdate: string, vehicleIdToToggle: string, isChecked: boolean | 'indeterminate') => {
+  const handleVehicleIdToggle = (categoryToUpdate: string, vehicleIdToToggle: string) => {
       const currentPrices = transferForm.getValues('prices');
-      const priceIndex = currentPrices.findIndex(p => p.category === categoryToUpdate);
       
-      if (priceIndex === -1) return;
+      const newPrices = currentPrices.map(priceInfo => {
+        if (priceInfo.category === categoryToUpdate) {
+            const vehicleIds = priceInfo.vehicleIds || [];
+            const isSelected = vehicleIds.includes(vehicleIdToToggle);
+            
+            const newVehicleIds = isSelected
+                ? vehicleIds.filter(id => id !== vehicleIdToToggle)
+                : [...vehicleIds, vehicleIdToToggle];
 
-      const priceToUpdate = currentPrices[priceIndex];
-      const vehicleIds = priceToUpdate.vehicleIds || [];
-      
-      let updatedVehicleIds;
-      if (isChecked) {
-          updatedVehicleIds = vehicleIds.includes(vehicleIdToToggle) ? vehicleIds : [...vehicleIds, vehicleIdToToggle];
-      } else {
-          updatedVehicleIds = vehicleIds.filter(id => id !== vehicleIdToToggle);
-      }
-      
-      const updatedPrice = { ...priceToUpdate, vehicleIds: updatedVehicleIds };
+            return { ...priceInfo, vehicleIds: newVehicleIds };
+        }
+        return priceInfo;
+    });
 
-      const newPrices = [
-          ...currentPrices.slice(0, priceIndex),
-          updatedPrice,
-          ...currentPrices.slice(priceIndex + 1)
-      ];
-
-      transferForm.setValue('prices', newPrices, { shouldValidate: true });
+      transferForm.setValue('prices', newPrices, { shouldValidate: true, shouldDirty: true });
   };
 
 
@@ -707,7 +700,7 @@ function AdminDashboard() {
                                                                                     <Checkbox
                                                                                         id={`vehicle-${categoryKey}-${vehicle.id}`}
                                                                                         checked={currentPrice.vehicleIds?.includes(vehicle.id)}
-                                                                                        onCheckedChange={(checked) => handleVehicleIdToggle(categoryKey, vehicle.id, checked)}
+                                                                                        onCheckedChange={() => handleVehicleIdToggle(categoryKey, vehicle.id)}
                                                                                     />
                                                                                     <label
                                                                                         htmlFor={`vehicle-${categoryKey}-${vehicle.id}`}
