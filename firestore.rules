@@ -15,45 +15,36 @@ service cloud.firestore {
 
     // Function to check if the user is an admin by reading their profile.
     function isAdmin() {
-      // Access the user's document in the 'users' collection using their UID.
-      // This is a server-side read and does not incur extra client costs.
       return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // VEHICLES: Publicly readable, admin writable.
+    // --- VEHICLES ---
     match /vehicles/{vehicleId} {
       allow get: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /vehicles {
       allow list: if true;
-      allow create, update, delete: if isAdmin();
+      allow create: if isAdmin();
     }
 
-    // TRANSFERS: Publicly readable, admin writable.
+    // --- TRANSFERS ---
     match /transfers/{transferId} {
       allow get: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /transfers {
       allow list: if true;
-      allow create, update, delete: if isAdmin();
+      allow create: if isAdmin();
     }
 
-    // USERS: User-owned profiles.
-    // Each user can manage their own profile information but cannot grant themselves admin rights.
+    // --- USERS ---
     match /users/{userId} {
-      // Allow a user to get their own document.
       allow get: if isOwner(userId);
-
-      // Allow a user to create their own profile document.
-      // On creation, `isAdmin` must be set to false. This prevents self-promotion.
       allow create: if isOwner(userId) && request.resource.data.isAdmin == false;
-      
-      // Allow a user to update their own profile, but they cannot change their `isAdmin` status.
-      // This field must be changed directly in the Firebase Console or by a server-side function.
       allow update: if isOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin;
+      allow list, delete: if false; 
 
-      // Disallow listing all users to prevent user enumeration.
-      // Disallow client-side deletion of user profiles for data integrity.
-      allow list, delete: if false;
-
-      // BOOKINGS: Subcollection owned by the user.
-      // All booking operations are only allowed for the owner of the parent user document.
       match /bookings/{bookingId} {
         allow read, write: if isOwner(userId);
       }
