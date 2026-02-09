@@ -1,8 +1,9 @@
 'use client';
 
-import { collection, query, where, orderBy, documentId, type Query } from 'firebase/firestore';
+import { collection, query, where, documentId, type Query } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import type { Vehicle } from '@/lib/vehicles';
+import { useMemo } from 'react';
 
 export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) {
     const firestore = useFirestore();
@@ -23,10 +24,22 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
         } else if (isFeatured === true) {
             q = query(vehiclesCollection, where('isFeatured', '==', true));
         } else {
-            q = query(vehiclesCollection, orderBy('name'));
+            // Remove order by to avoid needing an index
+            q = vehiclesCollection;
         }
         return q as Query<Vehicle>;
     }, [firestore, ids ? JSON.stringify(ids) : 'all', isFeatured]);
 
-    return useCollection<Vehicle>(vehiclesQuery);
+    const { data, ...rest } = useCollection<Vehicle>(vehiclesQuery);
+
+    const sortedData = useMemo(() => {
+        if (!data) return null;
+        // Sort by name if no specific ordering is from the query
+        if (!options?.ids && !options?.isFeatured) {
+            return [...data].sort((a, b) => a.name.localeCompare(b.name));
+        }
+        return data;
+    }, [data, options?.ids, options?.isFeatured]);
+
+    return { data: sortedData, ...rest };
 }
