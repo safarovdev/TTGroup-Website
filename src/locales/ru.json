@@ -18,7 +18,8 @@
     "title": "TourEast Transport Group",
     "subtitle": "Профессиональные пассажирские перевозки: от индивидуальных встреч в аэропорту до групповых туров.",
     "bookButton": "Забронировать",
-    "fleetButton": "Наш автопарк"
+    "fleetButton": "Наш автопарк",
+    "transfersButton": "Посмотреть трансферы"
   },
   "principles": {
     "title": "Добро пожаловать в TourEast Transport Group",
@@ -172,7 +173,9 @@
       "itemLabel": "Выберите Услугу/Автомобиль",
       "itemPlaceholder": "Услуга или модель авто",
       "itemError": "Пожалуйста, сделайте выбор.",
-      "subjectConsultation": "Не уверен, нужна консультация",
+      "subjectConsultation": "Нужна консультация",
+      "subjectCar": "Выбрать авто для поездки",
+      "subjectTransfer": "Выбрать трансфер",
       "contactMethodLabel": "Предпочтительный способ связи",
       "contactMethodError": "Выберите способ связи.",
       "call": "Звонок",
@@ -338,6 +341,10 @@
     "search": "Найти",
     "allServices": "Все услуги",
     "clearFilters": "Сбросить фильтры",
-    "searchPlaceholder": "Найти по названию..."
+    "searchPlaceholder": "Найти по названию...",
+    "detailsButton": "Детали",
+    "detailsTitle": "Детали тарифов для «{{title}}»",
+    "detailsDescription": "Список доступных автомобилей для каждой категории на этом маршруте.",
+    "anyVehicleInCategory": "Доступен любой автомобиль из этой категории."
   }
 }

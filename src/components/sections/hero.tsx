@@ -41,6 +41,9 @@ export function Hero() {
             <Button asChild variant="secondary" size="lg">
               <Link href="/fleet">{t('hero.fleetButton')}</Link>
             </Button>
+             <Button asChild variant="secondary" size="lg">
+              <Link href="/transfers">{t('hero.transfersButton')}</Link>
+            </Button>
           </div>
         </div>
       </div>

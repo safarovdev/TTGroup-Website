@@ -18,7 +18,8 @@
     "title": "TourEast Transport Group",
     "subtitle": "Professional passenger transport: from individual airport transfers to group tours.",
     "bookButton": "Book Now",
-    "fleetButton": "Our Fleet"
+    "fleetButton": "Our Fleet",
+    "transfersButton": "View Transfers"
   },
   "principles": {
     "title": "Welcome to TourEast Transport Group",
@@ -172,7 +173,9 @@
       "itemLabel": "Select Vehicle / Service",
       "itemPlaceholder": "Car model or service",
       "itemError": "Please make a selection.",
-      "subjectConsultation": "Not sure, need consultation",
+      "subjectConsultation": "Need consultation",
+      "subjectCar": "Choose car for a trip",
+      "subjectTransfer": "Choose a transfer",
       "contactMethodLabel": "Preferred contact method",
       "contactMethodError": "Please choose a contact method.",
       "call": "Phone Call",
@@ -338,6 +341,10 @@
     "search": "Search",
     "allServices": "All services",
     "clearFilters": "Clear Filters",
-    "searchPlaceholder": "Search by title..."
+    "searchPlaceholder": "Search by title...",
+    "detailsButton": "Details",
+    "detailsTitle": "Tariff details for \"{{title}}\"",
+    "detailsDescription": "List of available vehicles for each category on this route.",
+    "anyVehicleInCategory": "Any vehicle from this category is available."
   }
 }

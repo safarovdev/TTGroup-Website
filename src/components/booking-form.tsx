@@ -15,13 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2, Send, MessageSquare, PhoneCall } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import React, { useMemo, useEffect, useState } from "react";
-import { vehicleCategoryMap, type Vehicle } from "@/lib/vehicles";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useVehicles } from "@/hooks/useVehicles";
 
 const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
 const TELEGRAM_CHAT_ID = '-1003780724209';
@@ -35,7 +33,6 @@ export function BookingForm({
 }) {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const { data: vehicles } = useVehicles();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const is_inverted = variant === 'inverted';
@@ -62,18 +59,6 @@ export function BookingForm({
       contactMethod: "telegram",
     },
   });
-
-  const groupedVehicles = useMemo(() => {
-    if (!vehicles) return {};
-    return (Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>).reduce((acc, category) => {
-        const categoryVehicles = vehicles.filter(v => v.category === category);
-        if (categoryVehicles.length > 0) {
-            acc[category] = categoryVehicles;
-        }
-        return acc;
-    }, {} as Record<keyof typeof vehicleCategoryMap, Vehicle[]>);
-  }, [vehicles]);
-
 
   useEffect(() => {
     if (bookingSubject) {
@@ -237,16 +222,8 @@ export function BookingForm({
                           </FormControl>
                           <SelectContent>
                               <SelectItem value={t('booking.form.subjectConsultation')}>{t('booking.form.subjectConsultation')}</SelectItem>
-                              {Object.entries(groupedVehicles).map(([category, vehicles]) => (
-                                  <SelectGroup key={category}>
-                                      <SelectLabel>{t(`vehicleCategories.${category}`)}</SelectLabel>
-                                      {vehicles.map((vehicle) => (
-                                          <SelectItem key={vehicle.id} value={vehicle.name}>
-                                              {vehicle.name}
-                                          </SelectItem>
-                                      ))}
-                                  </SelectGroup>
-                              ))}
+                              <SelectItem value={t('booking.form.subjectCar')}>{t('booking.form.subjectCar')}</SelectItem>
+                              <SelectItem value={t('booking.form.subjectTransfer')}>{t('booking.form.subjectTransfer')}</SelectItem>
                           </SelectContent>
                       </Select>
                    )}
