@@ -139,14 +139,20 @@ export const useFirebase = (): FirebaseServicesAndUser => {
 };
 
 /** Hook to access Firebase Auth instance. */
-export const useAuth = (): Auth => {
-  const { auth } = useFirebase();
+export const useAuth = (): Auth | null => {
+  const { auth, isUserLoading } = useFirebase();
+  if (isUserLoading) {
+    return null;
+  }
   return auth;
 };
 
 /** Hook to access Firestore instance. */
-export const useFirestore = (): Firestore => {
-  const { firestore } = useFirebase();
+export const useFirestore = (): Firestore | null => {
+  const { firestore, isUserLoading } = useFirebase();
+  if (isUserLoading) {
+    return null;
+  }
   return firestore;
 };
 
