@@ -22,14 +22,14 @@ service cloud.firestore {
 
     // VEHICLES: Publicly readable, admin writable.
     match /vehicles/{vehicleId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     // TRANSFERS: Publicly readable, admin writable.
     match /transfers/{transferId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     // USERS: User-owned profiles.
