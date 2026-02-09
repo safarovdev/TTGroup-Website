@@ -1,25 +1,44 @@
 'use client';
 
-import { collection, query, where, type Query } from 'firebase/firestore';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useEffect, useMemo } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import type { Transfer } from '@/lib/transfers';
-import { useMemo } from 'react';
 
 export function useTransfers(options?: { isFeatured?: boolean }) {
     const firestore = useFirestore();
+    const [allTransfers, setAllTransfers] = useState<Transfer[] | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    
     const isFeatured = options?.isFeatured;
 
-    // STEP 1: Always fetch the entire collection.
-    const transfersQuery = useMemoFirebase(() => {
+    useEffect(() => {
         if (!firestore) {
-            return null;
+            // Firestore is not yet available, wait.
+            return;
         }
-        return collection(firestore, 'transfers') as Query<Transfer>;
-    }, [firestore]);
 
-    const { data: allTransfers, ...rest } = useCollection<Transfer>(transfersQuery);
+        const fetchTransfers = async () => {
+            setLoading(true);
+            try {
+                const transfersRef = collection(firestore, 'transfers');
+                const querySnapshot = await getDocs(transfersRef);
+                const transfersData = querySnapshot.docs.map(doc => ({ ...doc.data() as Transfer, id: doc.id }));
+                setAllTransfers(transfersData);
+                setError(null);
+            } catch (e: any) {
+                console.error("Error fetching transfers:", e);
+                setError(e);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // STEP 2: Perform all filtering and sorting on the client side.
+        fetchTransfers();
+
+    }, [firestore]); // Only re-run when firestore instance changes
+
     const processedData = useMemo(() => {
         if (!allTransfers) return null;
 
@@ -34,5 +53,5 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
         return [...filtered].sort((a, b) => a.title.localeCompare(b.title));
     }, [allTransfers, isFeatured]);
 
-    return { data: processedData, ...rest };
+    return { data: processedData, loading, error };
 }

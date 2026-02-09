@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import {
   DocumentReference,
-  onSnapshot,
+  getDoc,
   DocumentData,
   FirestoreError,
-  DocumentSnapshot,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -25,13 +24,8 @@ export interface UseDocResult<T> {
 }
 
 /**
- * React hook to subscribe to a single Firestore document in real-time.
- * Handles nullable references.
- * 
- * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedTargetRefOrQuery or BAD THINGS WILL HAPPEN
- * use useMemo to memoize it per React guidence.  Also make sure that it's dependencies are stable
- * references
- *
+ * React hook to fetch a single Firestore document.
+ * It performs a one-time fetch instead of subscribing to real-time updates.
  *
  * @template T Optional type for document data. Defaults to any.
  * @param {DocumentReference<DocumentData> | null | undefined} docRef -
@@ -39,55 +33,47 @@ export interface UseDocResult<T> {
  * @returns {UseDocResult<T>} Object with data, isLoading, error.
  */
 export function useDoc<T = any>(
-  memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
+  docRef: DocumentReference<DocumentData> | null | undefined,
 ): UseDocResult<T> {
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    if (!memoizedDocRef) {
-      setData(null);
+    if (!docRef) {
       setIsLoading(false);
-      setError(null);
+      setData(null);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-    // Optional: setData(null); // Clear previous data instantly
-
-    const unsubscribe = onSnapshot(
-      memoizedDocRef,
-      (snapshot: DocumentSnapshot<DocumentData>) => {
-        if (snapshot.exists()) {
-          setData({ ...(snapshot.data() as T), id: snapshot.id });
-        } else {
-          // Document does not exist
-          setData(null);
+    const fetchDoc = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                setData({ ...(docSnap.data() as T), id: docSnap.id });
+            } else {
+                setData(null);
+            }
+        } catch (e: any) {
+            const contextualError = new FirestorePermissionError({
+                operation: 'get',
+                path: docRef.path,
+            });
+            setError(contextualError);
+            setData(null);
+            errorEmitter.emit('permission-error', contextualError);
+        } finally {
+            setIsLoading(false);
         }
-        setError(null); // Clear any previous error on successful snapshot (even if doc doesn't exist)
-        setIsLoading(false);
-      },
-      (error: FirestoreError) => {
-        const contextualError = new FirestorePermissionError({
-          operation: 'get',
-          path: memoizedDocRef.path,
-        })
+    };
 
-        setError(contextualError)
-        setData(null)
-        setIsLoading(false)
-
-        // trigger global error propagation
-        errorEmitter.emit('permission-error', contextualError);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [memoizedDocRef]); // Re-run if the memoizedDocRef changes.
+    fetchDoc();
+    
+  }, [docRef]);
 
   return { data, isLoading, error };
 }

@@ -1,26 +1,45 @@
 'use client';
 
-import { collection, query, where, documentId, type Query } from 'firebase/firestore';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useEffect, useMemo } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import type { Vehicle } from '@/lib/vehicles';
-import { useMemo } from 'react';
 
 export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) {
     const firestore = useFirestore();
+    const [allVehicles, setAllVehicles] = useState<Vehicle[] | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    
     const ids = options?.ids;
     const isFeatured = options?.isFeatured;
 
-    // STEP 1: Always fetch the entire collection. This avoids needing any specific indexes.
-    const vehiclesQuery = useMemoFirebase(() => {
+    useEffect(() => {
         if (!firestore) {
-            return null;
+            // Firestore is not yet available, wait.
+            return;
         }
-        return collection(firestore, 'vehicles') as Query<Vehicle>;
-    }, [firestore]);
 
-    const { data: allVehicles, ...rest } = useCollection<Vehicle>(vehiclesQuery);
+        const fetchVehicles = async () => {
+            setLoading(true);
+            try {
+                const vehiclesRef = collection(firestore, 'vehicles');
+                const querySnapshot = await getDocs(vehiclesRef);
+                const vehiclesData = querySnapshot.docs.map(doc => ({ ...doc.data() as Vehicle, id: doc.id }));
+                setAllVehicles(vehiclesData);
+                setError(null);
+            } catch (e: any) {
+                console.error("Error fetching vehicles:", e);
+                setError(e);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // STEP 2: Perform all filtering and sorting on the client side.
+        fetchVehicles();
+
+    }, [firestore]); // Only re-run when firestore instance changes
+
     const processedData = useMemo(() => {
         if (!allVehicles) return null;
 
@@ -45,5 +64,5 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
         return filtered;
     }, [allVehicles, ids ? JSON.stringify(ids) : 'all', isFeatured]);
 
-    return { data: processedData, ...rest };
+    return { data: processedData, loading, error };
 }
