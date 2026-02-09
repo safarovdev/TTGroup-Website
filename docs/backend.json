@@ -126,6 +126,13 @@
               "price": {
                 "type": "number",
                 "description": "The price for this vehicle category."
+              },
+              "vehicleIds": {
+                "type": "array",
+                "description": "A list of specific vehicle IDs available for this price category on this route.",
+                "items": {
+                  "type": "string"
+                }
               }
             },
             "required": ["category", "price"]

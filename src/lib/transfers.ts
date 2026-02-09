@@ -1,6 +1,7 @@
 export interface TransferPriceInfo {
     category: 'premium' | 'comfort' | 'minivan' | 'bus';
     price: number;
+    vehicleIds?: string[];
 }
 
 export interface Transfer {

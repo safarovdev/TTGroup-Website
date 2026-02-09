@@ -3,7 +3,7 @@
 import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle, addTransfer, useMemoFirebase, updateTransfer, deleteTransfer } from '@/firebase';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Star } from 'lucide-react';
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
@@ -25,6 +25,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTransfers } from '@/hooks/useTransfers';
 import { type Transfer, type TransferPriceInfo } from '@/lib/transfers';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
@@ -141,6 +142,7 @@ const transferPriceSchema = z.object({
     },
     z.number().min(1, "Цена должна быть больше 0")
   ),
+  vehicleIds: z.string().array().optional(),
 });
 
 const transferSchema = z.object({
@@ -262,6 +264,14 @@ function AdminDashboard() {
     resolver: zodResolver(transferSchema),
     defaultValues: { title: "", from: "", to: "", drivingTime: "", drivingDistance: "", prices: [], isFeatured: false },
   });
+
+  const vehiclesByCategory = useMemo(() => {
+    if (!vehicles) return {};
+    return vehicles.reduce((acc, vehicle) => {
+        (acc[vehicle.category] = acc[vehicle.category] || []).push(vehicle);
+        return acc;
+    }, {} as Record<string, Vehicle[]>);
+  }, [vehicles]);
 
 
   // Effects for forms
@@ -491,7 +501,7 @@ function AdminDashboard() {
         
         {/* Transfer Form Dialog */}
         <Dialog open={isTransferFormOpen} onOpenChange={onTransferFormOpenChange}>
-            <DialogContent className="max-w-xl">
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{editingTransferId ? t('admin.transferEditTitle') : t('admin.transferAddTitle')}</DialogTitle>
                     <DialogDescriptionComponent>{editingTransferId ? t('admin.transferEditDescription') : t('admin.transferAddDescription')}</DialogDescriptionComponent>
@@ -520,37 +530,98 @@ function AdminDashboard() {
                             </div>
                             <FormItem>
                                 <FormLabel>{t('admin.pricesLabel')}</FormLabel>
-                                <div className='space-y-4 rounded-lg border p-4 max-h-60 overflow-y-auto'>
+                                <div className='space-y-4 rounded-lg border p-4 max-h-72 overflow-y-auto'>
                                     {Object.entries(vehicleCategoryMap).map(([categoryKey, categoryLabel]) => {
                                         const currentPrice = watchedPrices.find(p => p.category === categoryKey);
                                         const category = categoryKey as keyof typeof vehicleCategoryMap;
                                         return (
-                                            <div key={category} className='flex items-center gap-4'>
-                                                <Checkbox
-                                                    id={`price-enabled-${category}`}
-                                                    checked={!!currentPrice}
-                                                    onCheckedChange={checked => {
-                                                        const currentPrices = transferForm.getValues('prices');
-                                                        if (checked) {
-                                                            transferForm.setValue('prices', [...currentPrices, { category: category, price: 0 }]);
-                                                        } else {
-                                                            transferForm.setValue('prices', currentPrices.filter(p => p.category !== category));
-                                                        }
-                                                    }}
-                                                />
-                                                <label htmlFor={`price-enabled-${category}`} className='font-medium min-w-[200px]'>{categoryLabel}</label>
-                                                {!!currentPrice && (
-                                                    <Input
-                                                        type="number"
-                                                        placeholder="Цена"
-                                                        defaultValue={currentPrice.price > 0 ? currentPrice.price : ''}
-                                                        onChange={e => {
-                                                            const newPrice = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                                                            const newPrices = transferForm.getValues('prices').map(p => p.category === category ? { ...p, price: newPrice } : p);
-                                                            transferForm.setValue('prices', newPrices, { shouldValidate: true });
+                                            <div key={category} className='space-y-3'>
+                                                <div className='flex items-center gap-4'>
+                                                    <Checkbox
+                                                        id={`price-enabled-${category}`}
+                                                        checked={!!currentPrice}
+                                                        onCheckedChange={checked => {
+                                                            const currentPrices = transferForm.getValues('prices');
+                                                            if (checked) {
+                                                                transferForm.setValue('prices', [...currentPrices, { category: category, price: 0, vehicleIds: [] }]);
+                                                            } else {
+                                                                transferForm.setValue('prices', currentPrices.filter(p => p.category !== category));
+                                                            }
                                                         }}
-                                                        className='max-w-[150px]'
                                                     />
+                                                    <label htmlFor={`price-enabled-${category}`} className='font-medium min-w-[200px]'>{categoryLabel}</label>
+                                                </div>
+                                                {!!currentPrice && (
+                                                   <div className='flex items-center gap-2 pl-8'>
+                                                        <Input
+                                                            type="number"
+                                                            placeholder="Цена"
+                                                            defaultValue={currentPrice.price > 0 ? currentPrice.price : ''}
+                                                            onChange={e => {
+                                                                const newPrice = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                                                                const newPrices = transferForm.getValues('prices').map(p => p.category === category ? { ...p, price: newPrice } : p);
+                                                                transferForm.setValue('prices', newPrices, { shouldValidate: true });
+                                                            }}
+                                                            className='max-w-[150px]'
+                                                        />
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <Button variant="outline" className="shrink-0 font-normal">
+                                                                    Машины ({currentPrice.vehicleIds?.length || 0})
+                                                                </Button>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-80">
+                                                                <div className="grid gap-4">
+                                                                    <div className="space-y-2">
+                                                                        <h4 className="font-medium leading-none">Автомобили для тарифа</h4>
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                            Выберите машины для категории "{categoryLabel}".
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="grid gap-2 max-h-60 overflow-y-auto">
+                                                                        {(vehiclesByCategory[categoryKey] || []).length > 0 ? (
+                                                                            (vehiclesByCategory[categoryKey] || []).map((vehicle) => {
+                                                                                const priceIndex = watchedPrices.findIndex(p => p.category === categoryKey);
+                                                                                return (
+                                                                                <div
+                                                                                    key={vehicle.id}
+                                                                                    className="flex items-center space-x-2"
+                                                                                >
+                                                                                    <Checkbox
+                                                                                        id={`vehicle-${categoryKey}-${vehicle.id}`}
+                                                                                        checked={watchedPrices[priceIndex]?.vehicleIds?.includes(vehicle.id)}
+                                                                                        onCheckedChange={(checked) => {
+                                                                                            const currentPrices = [...transferForm.getValues('prices')];
+                                                                                            const priceIndex = currentPrices.findIndex(p => p.category === categoryKey);
+                                                                                            if (priceIndex === -1) return;
+
+                                                                                            const currentVehicleIds = currentPrices[priceIndex].vehicleIds || [];
+                                                                                            let newVehicleIds;
+                                                                                            if (checked) {
+                                                                                                newVehicleIds = [...currentVehicleIds, vehicle.id];
+                                                                                            } else {
+                                                                                                newVehicleIds = currentVehicleIds.filter(id => id !== vehicle.id);
+                                                                                            }
+                                                                                            currentPrices[priceIndex].vehicleIds = newVehicleIds;
+                                                                                            transferForm.setValue('prices', currentPrices, { shouldValidate: true });
+                                                                                        }}
+                                                                                    />
+                                                                                    <label
+                                                                                        htmlFor={`vehicle-${categoryKey}-${vehicle.id}`}
+                                                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                                    >
+                                                                                        {vehicle.name}
+                                                                                    </label>
+                                                                                </div>
+                                                                            )})
+                                                                        ) : (
+                                                                            <p className='text-sm text-muted-foreground'>Нет машин в этой категории.</p>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    </div>
                                                 )}
                                             </div>
                                         )
