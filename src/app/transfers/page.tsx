@@ -113,10 +113,16 @@ const TransfersPage = () => {
                                />
                                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                            </div>
-                           <Select value={serviceType} onValueChange={val => {setServiceType(val); setCity(''); setFrom(''); setTo('')}}>
+                           <Select value={serviceType} onValueChange={val => {
+                               const finalVal = val === 'all' ? '' : val;
+                               setServiceType(finalVal); 
+                               setCity(''); 
+                               setFrom(''); 
+                               setTo('');
+                           }}>
                                <SelectTrigger><SelectValue placeholder={t('transfers.serviceType')} /></SelectTrigger>
                                <SelectContent>
-                                   <SelectItem value="">{t('transfers.allServices')}</SelectItem>
+                                   <SelectItem value="all">{t('transfers.allServices')}</SelectItem>
                                    {Object.entries(serviceTypesMap).map(([key, value]) => (
                                        <SelectItem key={key} value={key}>{value[locale]}</SelectItem>
                                    ))}
@@ -125,26 +131,26 @@ const TransfersPage = () => {
 
                            {serviceType === 'intercity' ? (
                                <>
-                                   <Select value={from} onValueChange={setFrom}>
+                                   <Select value={from} onValueChange={val => setFrom(val === 'all' ? '' : val)}>
                                        <SelectTrigger><SelectValue placeholder={t('transfers.from')} /></SelectTrigger>
                                        <SelectContent>
-                                          <SelectItem value="">{t('transfers.from')}</SelectItem>
+                                          <SelectItem value="all">{t('transfers.from')}</SelectItem>
                                           {fromOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.name}</SelectItem>)}
                                        </SelectContent>
                                    </Select>
-                                   <Select value={to} onValueChange={setTo}>
+                                   <Select value={to} onValueChange={val => setTo(val === 'all' ? '' : val)}>
                                        <SelectTrigger><SelectValue placeholder={t('transfers.to')} /></SelectTrigger>
                                        <SelectContent>
-                                           <SelectItem value="">{t('transfers.to')}</SelectItem>
+                                           <SelectItem value="all">{t('transfers.to')}</SelectItem>
                                            {toOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.name}</SelectItem>)}
                                        </SelectContent>
                                    </Select>
                                </>
                            ) : serviceType === 'meet_and_greet' || serviceType === 'excursion' ? (
-                               <Select value={city} onValueChange={setCity}>
+                               <Select value={city} onValueChange={val => setCity(val === 'all' ? '' : val)}>
                                    <SelectTrigger><SelectValue placeholder={t('transfers.city')} /></SelectTrigger>
                                    <SelectContent>
-                                       <SelectItem value="">{t('transfers.city')}</SelectItem>
+                                       <SelectItem value="all">{t('transfers.city')}</SelectItem>
                                        {cityOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.name}</SelectItem>)}
                                    </SelectContent>
                                </Select>
