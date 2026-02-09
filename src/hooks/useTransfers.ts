@@ -9,31 +9,30 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
     const firestore = useFirestore();
     const isFeatured = options?.isFeatured;
 
+    // STEP 1: Always fetch the entire collection.
     const transfersQuery = useMemoFirebase(() => {
         if (!firestore) {
             return null;
         }
+        return collection(firestore, 'transfers') as Query<Transfer>;
+    }, [firestore]);
 
-        const transfersCollection = collection(firestore, 'transfers');
-        let q: Query;
+    const { data: allTransfers, ...rest } = useCollection<Transfer>(transfersQuery);
 
+    // STEP 2: Perform all filtering and sorting on the client side.
+    const processedData = useMemo(() => {
+        if (!allTransfers) return null;
+
+        let filtered = allTransfers;
+
+        // Filter by isFeatured if provided
         if (isFeatured === true) {
-            // Remove orderBy to avoid needing a composite index
-            q = query(transfersCollection, where('isFeatured', '==', true));
-        } else {
-            // Remove orderBy to avoid needing an index
-            q = collection(firestore, 'transfers');
+            filtered = filtered.filter(transfer => transfer.isFeatured === true);
         }
-        return q as Query<Transfer>;
-    }, [firestore, isFeatured]);
 
-    const { data, ...rest } = useCollection<Transfer>(transfersQuery);
+        // Always sort by title
+        return [...filtered].sort((a, b) => a.title.localeCompare(b.title));
+    }, [allTransfers, isFeatured]);
 
-    const sortedData = useMemo(() => {
-        if (!data) return null;
-        // Sort by title client-side
-        return [...data].sort((a, b) => a.title.localeCompare(b.title));
-    }, [data]);
-
-    return { data: sortedData, ...rest };
+    return { data: processedData, ...rest };
 }

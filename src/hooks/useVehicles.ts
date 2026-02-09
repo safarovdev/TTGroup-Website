@@ -10,36 +10,40 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
     const ids = options?.ids;
     const isFeatured = options?.isFeatured;
 
+    // STEP 1: Always fetch the entire collection. This avoids needing any specific indexes.
     const vehiclesQuery = useMemoFirebase(() => {
         if (!firestore) {
             return null;
         }
+        return collection(firestore, 'vehicles') as Query<Vehicle>;
+    }, [firestore]);
 
-        const vehiclesCollection = collection(firestore, 'vehicles');
-        let q: Query;
+    const { data: allVehicles, ...rest } = useCollection<Vehicle>(vehiclesQuery);
 
+    // STEP 2: Perform all filtering and sorting on the client side.
+    const processedData = useMemo(() => {
+        if (!allVehicles) return null;
+
+        let filtered = allVehicles;
+
+        // Filter by IDs if provided
         if (ids && ids.length > 0) {
-            // Firestore 'in' queries are limited to 30 items.
-            q = query(vehiclesCollection, where(documentId(), 'in', ids.slice(0, 30)));
-        } else if (isFeatured === true) {
-            q = query(vehiclesCollection, where('isFeatured', '==', true));
-        } else {
-            // Remove order by to avoid needing an index
-            q = vehiclesCollection;
+            const idSet = new Set(ids);
+            filtered = filtered.filter(vehicle => idSet.has(vehicle.id));
         }
-        return q as Query<Vehicle>;
-    }, [firestore, ids ? JSON.stringify(ids) : 'all', isFeatured]);
 
-    const { data, ...rest } = useCollection<Vehicle>(vehiclesQuery);
-
-    const sortedData = useMemo(() => {
-        if (!data) return null;
-        // Sort by name if no specific ordering is from the query
-        if (!options?.ids && !options?.isFeatured) {
-            return [...data].sort((a, b) => a.name.localeCompare(b.name));
+        // Filter by isFeatured if provided
+        if (isFeatured === true) {
+            filtered = filtered.filter(vehicle => vehicle.isFeatured === true);
         }
-        return data;
-    }, [data, options?.ids, options?.isFeatured]);
+        
+        // Default sort by name if no specific ID order is given
+        if (!ids) {
+            return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+        }
 
-    return { data: sortedData, ...rest };
+        return filtered;
+    }, [allVehicles, ids ? JSON.stringify(ids) : 'all', isFeatured]);
+
+    return { data: processedData, ...rest };
 }
