@@ -36,9 +36,9 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
   const description = transfer[`description_${locale}`];
 
   return (
-    <Card key={transfer.id} className="flex flex-col p-6 text-center bg-card border">
+    <Card key={transfer.id} className="flex flex-col h-full p-6 text-center bg-card border">
         
-        <h3 className="text-xl font-bold flex-grow flex items-center justify-center my-4">{title}</h3>
+        <h3 className="text-xl font-bold flex items-center justify-center my-4 min-h-[3.5rem]">{title}</h3>
         
         {transfer.serviceType === 'intercity' && transfer.from && transfer.to && (
             <div className='flex items-center justify-center gap-2 text-muted-foreground font-semibold mb-4'>
@@ -55,7 +55,9 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
         
         {description && <p className="text-sm text-muted-foreground mb-4">{description}</p>}
 
-        <ul className="space-y-3 text-left mt-auto pt-4 border-t">
+        <div className="flex-grow" />
+
+        <ul className="space-y-3 text-left pt-4 border-t">
             {sortedPrices.length > 0 ? sortedPrices.map((p) => (
                 <li key={p.category} className="flex justify-between items-center">
                     <span className="text-base text-muted-foreground font-medium">
