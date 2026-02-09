@@ -114,21 +114,20 @@
         },
         "prices": {
           "type": "array",
-          "description": "A list of prices for different vehicle types.",
+          "description": "A list of prices for specific vehicles.",
           "items": {
             "type": "object",
             "properties": {
-              "type": {
+              "vehicleId": {
                 "type": "string",
-                "description": "The type of vehicle.",
-                "enum": ["sedan", "suv", "minivan"]
+                "description": "The ID of the vehicle from the /vehicles collection."
               },
               "price": {
                 "type": "number",
-                "description": "The price for this vehicle type."
+                "description": "The price for this specific vehicle."
               }
             },
-            "required": ["type", "price"]
+            "required": ["vehicleId", "price"]
           }
         },
         "isFeatured": {

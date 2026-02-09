@@ -24,7 +24,7 @@ import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent,
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTransfers } from '@/hooks/useTransfers';
-import { transferVehicleTypeMap, type Transfer, type TransferPriceInfo, type TransferVehicleType } from '@/lib/transfers';
+import { type Transfer, type TransferPriceInfo } from '@/lib/transfers';
 
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
@@ -105,7 +105,6 @@ function AdminLogin() {
 
 // Admin Dashboard Components
 const FEATURES = ["meet_and_greet", "air_conditioner", "panoramic_view", "ottoman", "tinted_windows", "city_tours"];
-const TRANSFER_VEHICLE_TYPES = Object.keys(transferVehicleTypeMap) as TransferVehicleType[];
 
 const vehicleSchema = z.object({
   name: z.string().min(3, "Название должно быть длиннее 3 символов"),
@@ -132,7 +131,7 @@ const vehicleSchema = z.object({
 type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
 const transferPriceSchema = z.object({
-  type: z.enum(["sedan", "suv", "minivan"]),
+  vehicleId: z.string(),
   price: z.preprocess(
     (val) => {
       const sVal = String(val).trim();
@@ -521,32 +520,34 @@ function AdminDashboard() {
                             </div>
                             <FormItem>
                                 <FormLabel>{t('admin.pricesLabel')}</FormLabel>
-                                <div className='space-y-4 rounded-lg border p-4'>
-                                    {TRANSFER_VEHICLE_TYPES.map(type => {
-                                        const currentPrice = watchedPrices.find(p => p.type === type);
+                                <div className='space-y-4 rounded-lg border p-4 max-h-60 overflow-y-auto'>
+                                    {vehiclesLoading ? (
+                                        <div className="flex items-center justify-center p-4"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+                                    ) : vehicles?.map(vehicle => {
+                                        const currentPrice = watchedPrices.find(p => p.vehicleId === vehicle.id);
                                         return (
-                                            <div key={type} className='flex items-center gap-4'>
+                                            <div key={vehicle.id} className='flex items-center gap-4'>
                                                 <Checkbox
-                                                    id={`price-enabled-${type}`}
+                                                    id={`price-enabled-${vehicle.id}`}
                                                     checked={!!currentPrice}
                                                     onCheckedChange={checked => {
                                                         const currentPrices = transferForm.getValues('prices');
                                                         if (checked) {
-                                                            transferForm.setValue('prices', [...currentPrices, { type, price: 0 }]);
+                                                            transferForm.setValue('prices', [...currentPrices, { vehicleId: vehicle.id, price: 0 }]);
                                                         } else {
-                                                            transferForm.setValue('prices', currentPrices.filter(p => p.type !== type));
+                                                            transferForm.setValue('prices', currentPrices.filter(p => p.vehicleId !== vehicle.id));
                                                         }
                                                     }}
                                                 />
-                                                <label htmlFor={`price-enabled-${type}`} className='font-medium min-w-[120px]'>{t(transferVehicleTypeMap[type].nameKey)}</label>
+                                                <label htmlFor={`price-enabled-${vehicle.id}`} className='font-medium min-w-[200px]'>{vehicle.name}</label>
                                                 {!!currentPrice && (
                                                     <Input
                                                         type="number"
-                                                        placeholder={t('admin.priceLabel')}
+                                                        placeholder={t('admin.pricePlaceholder')}
                                                         defaultValue={currentPrice.price > 0 ? currentPrice.price : ''}
                                                         onChange={e => {
                                                             const newPrice = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                                                            const newPrices = transferForm.getValues('prices').map(p => p.type === type ? { ...p, price: newPrice } : p);
+                                                            const newPrices = transferForm.getValues('prices').map(p => p.vehicleId === vehicle.id ? { ...p, price: newPrice } : p);
                                                             transferForm.setValue('prices', newPrices, { shouldValidate: true });
                                                         }}
                                                         className='max-w-[150px]'

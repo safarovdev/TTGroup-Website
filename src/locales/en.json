@@ -256,7 +256,7 @@
     "timePlaceholder": "e.g., 50 min",
     "distanceLabel": "Driving Distance",
     "distancePlaceholder": "e.g., 34 km",
-    "pricesLabel": "Prices by Vehicle Type",
+    "pricesLabel": "Prices for Vehicles",
     "featuredTransferLabel": "Featured Transfer",
     "featuredTransferDescription": "Check this to feature the transfer on the homepage."
   },
@@ -326,20 +326,7 @@
     "drivingTime": "Driving time",
     "drivingDistance": "Driving Distance",
     "noResultsTitle": "No transfers available",
-    "noResultsDescription": "We are currently updating our routes. Please check back later or contact us for a custom quote."
-  },
-  "transferVehicles": {
-    "sedan": {
-      "name": "A Sedan",
-      "capacity": "1-3 people"
-    },
-    "suv": {
-      "name": "An SUV",
-      "capacity": "1-4 people"
-    },
-    "minivan": {
-      "name": "A Minivan",
-      "capacity": "1-6 people"
-    }
+    "noResultsDescription": "We are currently updating our routes. Please check back later or contact us for a custom quote.",
+    "noPrices": "Prices not specified."
   }
 }

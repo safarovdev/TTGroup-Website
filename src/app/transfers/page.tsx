@@ -7,10 +7,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useTransfers } from '@/hooks/useTransfers';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TransferCard } from '@/components/transfer-card';
+import { useVehicles } from '@/hooks/useVehicles';
 
 const TransfersPage = () => {
     const { t } = useTranslation();
-    const { data: transfers, loading } = useTransfers();
+    const { data: transfers, loading: transfersLoading } = useTransfers();
+    const { data: vehicles, loading: vehiclesLoading } = useVehicles();
 
     return (
         <div className="flex min-h-screen flex-col bg-muted/20">
@@ -25,13 +27,13 @@ const TransfersPage = () => {
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                      {loading ? (
+                      {transfersLoading ? (
                           [...Array(6)].map((_, i) => (
                               <Skeleton key={i} className="h-64 w-full rounded-xl" />
                           ))
                       ) : transfers && transfers.length > 0 ? (
                           transfers.map((transfer) => (
-                              <TransferCard key={transfer.id} transfer={transfer} />
+                              <TransferCard key={transfer.id} transfer={transfer} vehicles={vehicles} vehiclesLoading={vehiclesLoading}/>
                           ))
                       ) : (
                           <div className="col-span-full flex flex-col items-center justify-center text-center py-20 bg-card rounded-xl">
