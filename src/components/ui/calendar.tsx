@@ -21,25 +21,25 @@ function Calendar({
       className={cn("p-0", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4 p-2",
+        month: "space-y-4",
         caption: "flex justify-center relative items-center h-12 bg-primary text-primary-foreground",
         caption_label: "text-base font-bold",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 p-0 hover:bg-primary/90 hover:text-primary-foreground"
+          "h-8 w-8 p-0 text-primary-foreground/80 hover:bg-primary/90 hover:text-primary-foreground"
         ),
         nav_button_previous: "absolute left-2",
         nav_button_next: "absolute right-2",
-        table: "w-full border-collapse", // container for the grid
-        head_row: "grid grid-cols-7", // Use CSS Grid
+        table: "w-full border-collapse space-y-1 px-2 pb-2",
+        head_row: "flex",
         head_cell:
-          "text-muted-foreground rounded-md w-10 h-10 flex items-center justify-center font-normal text-[0.8rem]", // Centered
-        row: "grid grid-cols-7 w-full mt-2", // Use CSS Grid
-        cell: "h-10 w-10 text-center text-sm p-0 relative", // Cell is a container
+          "text-muted-foreground rounded-md w-10 font-normal text-[0.8rem] flex items-center justify-center",
+        row: "flex w-full mt-2",
+        cell: "h-10 w-10 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-10 w-10 p-0 font-normal aria-selected:opacity-100 rounded-full flex items-center justify-center" // Button fills cell
+          "h-10 w-10 p-0 font-normal aria-selected:opacity-100 rounded-full"
         ),
         day_selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
