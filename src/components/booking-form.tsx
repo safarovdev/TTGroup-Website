@@ -229,7 +229,6 @@ export function BookingForm({
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                                initialFocus
                                 locale={locale === 'ru' ? ruLocale : undefined}
                             />
                         </PopoverContent>
