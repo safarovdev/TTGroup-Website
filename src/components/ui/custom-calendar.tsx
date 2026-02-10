@@ -65,11 +65,11 @@ export function CustomCalendar({
       </Button>
       <Button
           variant="ghost"
-          className="text-base font-semibold capitalize px-4"
+          className="text-base font-semibold capitalize px-4 border rounded-md"
           onClick={() => setView(view === 'days' ? 'months' : 'days')}
       >
           {view === 'days' 
-              ? format(currentMonth, 'LLLL', { locale: dateFnsLocale }) 
+              ? format(currentMonth, 'LLLL yyyy', { locale: dateFnsLocale }) 
               : format(currentMonth, 'yyyy', { locale: dateFnsLocale })}
       </Button>
       <Button
@@ -148,7 +148,7 @@ export function CustomCalendar({
   };
 
   return (
-    <div className="w-full max-w-[320px] mx-auto">
+    <div className="w-full mx-auto">
       {renderHeader()}
       {view === 'days' ? renderDays() : renderMonths()}
     </div>

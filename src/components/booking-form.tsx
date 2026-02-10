@@ -223,7 +223,7 @@ export function BookingForm({
                                 </Button>
                             </FormControl>
                         </DialogTrigger>
-                        <DialogContent className="w-auto p-0">
+                        <DialogContent className="w-[calc(100vw-2rem)] sm:w-auto p-0 rounded-lg">
                             <DialogHeader>
                                 <DialogTitle className='sr-only'>{t('booking.form.dateLabel')}</DialogTitle>
                             </DialogHeader>
