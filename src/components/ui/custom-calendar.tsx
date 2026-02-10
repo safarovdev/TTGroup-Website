@@ -148,9 +148,11 @@ export function CustomCalendar({
   };
 
   return (
-    <div className="w-full mx-auto">
+    <div className="w-full sm:w-[350px] mx-auto">
       {renderHeader()}
-      {view === 'days' ? renderDays() : renderMonths()}
+      <div className="min-h-[320px]">
+        {view === 'days' ? renderDays() : renderMonths()}
+      </div>
     </div>
   );
 }
