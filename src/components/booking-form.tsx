@@ -20,11 +20,11 @@ import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from "@/components/ui/popover";
 import { CustomCalendar } from "@/components/ui/custom-calendar";
 import { format } from 'date-fns';
 import { ru as ruLocale, enUS } from 'date-fns/locale';
 import { useLanguage } from "@/context/LanguageContext";
+import { Dialog, DialogContent, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 
 
 const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
@@ -203,8 +203,8 @@ export function BookingForm({
             render={({ field }) => (
                 <FormItem className="flex flex-col">
                     <FormLabel>{t('booking.form.dateLabel')}</FormLabel>
-                    <Popover>
-                        <PopoverTrigger asChild>
+                    <Dialog>
+                        <DialogTrigger asChild>
                             <FormControl>
                                 <Button
                                     variant={"outline"}
@@ -222,26 +222,26 @@ export function BookingForm({
                                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                             </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        </DialogTrigger>
+                        <DialogContent className="w-auto p-0">
                             <CustomCalendar
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                 locale={locale}
                             />
-                            <div className="p-3 pt-2 border-t flex items-center justify-between gap-2">
+                            <DialogFooter className="p-3 pt-2 border-t flex-row items-center justify-between gap-2 sm:justify-between">
                                 <div className="text-sm border rounded-md px-3 h-10 flex items-center bg-muted/50 w-full">
                                     {field.value ? format(field.value, 'dd / MM / yyyy') : '...'}
                                 </div>
-                                <PopoverClose asChild>
+                                <DialogClose asChild>
                                     <Button className="font-semibold">
                                         {t('booking.form.setDateButton')}
                                     </Button>
-                                </PopoverClose>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                     <FormMessage className="text-accent" />
                 </FormItem>
             )}
