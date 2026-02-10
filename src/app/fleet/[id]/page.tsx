@@ -116,9 +116,9 @@ const VehicleDetailPage = () => {
                                     </div>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-none w-auto h-auto bg-transparent border-none shadow-none p-0 flex items-center justify-center">
-                                     <DialogHeader className="sr-only">
-                                        <DialogTitle>{vehicle.name}</DialogTitle>
-                                        <DialogDescription>{t('vehicleDetail.imagePopupDescription', { name: vehicle.name })}</DialogDescription>
+                                     <DialogHeader>
+                                        <DialogTitle className="sr-only">{vehicle.name}</DialogTitle>
+                                        <DialogDescription className="sr-only">{t('vehicleDetail.imagePopupDescription', { name: vehicle.name })}</DialogDescription>
                                      </DialogHeader>
                                     {mainImage && (
                                         <Image 
