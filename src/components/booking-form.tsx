@@ -24,7 +24,7 @@ import { CustomCalendar } from "@/components/ui/custom-calendar";
 import { format } from 'date-fns';
 import { ru as ruLocale, enUS } from 'date-fns/locale';
 import { useLanguage } from "@/context/LanguageContext";
-import { Dialog, DialogContent, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogFooter, DialogClose, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 
 const TELEGRAM_BOT_TOKEN = '8122606632:AAFXhxCNBDe2JH0vwGEBwEdj1c7mclLKjYw';
@@ -223,14 +223,17 @@ export function BookingForm({
                                 </Button>
                             </FormControl>
                         </DialogTrigger>
-                        <DialogContent className="w-auto p-4">
+                        <DialogContent className="w-auto p-0">
+                            <DialogHeader>
+                                <DialogTitle className='sr-only'>{t('booking.form.dateLabel')}</DialogTitle>
+                            </DialogHeader>
                             <CustomCalendar
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                 locale={locale}
                             />
-                            <DialogFooter className="pt-4 flex-row items-center justify-between gap-2 sm:justify-between">
+                            <DialogFooter className="pt-4 flex-row items-center justify-between gap-2 sm:justify-between px-4 pb-4">
                                 <div className="text-sm border bg-background rounded-md px-3 h-10 flex items-center w-full">
                                     {field.value ? format(field.value, 'dd / MM / yyyy') : '...'}
                                 </div>
