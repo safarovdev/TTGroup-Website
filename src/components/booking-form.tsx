@@ -21,9 +21,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { CustomCalendar } from "@/components/ui/custom-calendar";
 import { format } from 'date-fns';
-import { ru as ruLocale } from 'date-fns/locale';
+import { ru as ruLocale, enUS } from 'date-fns/locale';
 import { useLanguage } from "@/context/LanguageContext";
 
 
@@ -215,7 +215,7 @@ export function BookingForm({
                                     )}
                                 >
                                     {field.value ? (
-                                        format(field.value, 'PPP', { locale: locale === 'ru' ? ruLocale : undefined })
+                                        format(field.value, 'PPP', { locale: locale === 'ru' ? ruLocale : enUS })
                                     ) : (
                                         <span>{t('booking.form.datePlaceholder')}</span>
                                     )}
@@ -224,13 +224,11 @@ export function BookingForm({
                             </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                mode="single"
+                            <CustomCalendar
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                                locale={locale === 'ru' ? ruLocale : undefined}
-                                initialFocus={false}
+                                locale={locale}
                             />
                         </PopoverContent>
                     </Popover>
