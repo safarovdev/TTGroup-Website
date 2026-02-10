@@ -54,7 +54,7 @@ export function CustomCalendar({
   }
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between py-2 px-2">
+    <div className="flex items-center justify-between pt-2 px-2">
       <Button
         variant="ghost"
         size="icon"
@@ -95,7 +95,7 @@ export function CustomCalendar({
     return (
       <div className="grid grid-cols-7 gap-y-1 text-center text-sm p-2">
         {weekdays.map((day, i) => (
-          <div key={i} className="text-xs font-medium text-muted-foreground w-9 h-9 flex items-center justify-center">
+          <div key={i} className="text-xs font-medium text-muted-foreground w-10 h-10 flex items-center justify-center">
             {day}
           </div>
         ))}
@@ -103,14 +103,14 @@ export function CustomCalendar({
           const isDisabled = (disabled && disabled(day)) || isBefore(day, startOfDay(new Date()));
 
           return (
-            <div key={day.toString()} className="flex justify-center items-center w-9 h-9">
+            <div key={day.toString()} className="flex justify-center items-center w-10 h-10">
               <button
                 type="button"
                 onClick={() => !isDisabled && onSelect(day)}
                 disabled={isDisabled}
                 className={cn(
-                  'w-9 h-9 flex items-center justify-center rounded-full transition-colors text-sm',
-                  !isSameMonth(day, currentMonth) && 'text-transparent bg-transparent pointer-events-none',
+                  'w-10 h-10 flex items-center justify-center rounded-full transition-colors text-sm',
+                  !isSameMonth(day, currentMonth) && 'text-muted-foreground opacity-30 pointer-events-none',
                   isSameMonth(day, currentMonth) && !isSameDay(day, selected || new Date(0)) && 'hover:bg-accent',
                   isSameDay(day, selected || new Date(0)) &&
                     'bg-primary text-primary-foreground font-semibold',
@@ -148,7 +148,7 @@ export function CustomCalendar({
   };
 
   return (
-    <div className="p-2 bg-card text-card-foreground rounded-lg w-full max-w-[320px] mx-auto">
+    <div className="w-full max-w-[320px] mx-auto">
       {renderHeader()}
       {view === 'days' ? renderDays() : renderMonths()}
     </div>

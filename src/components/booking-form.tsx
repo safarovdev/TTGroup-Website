@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, Send, MessageSquare, PhoneCall, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, Send, MessageSquare, PhoneCall, Calendar as CalendarIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -223,16 +223,16 @@ export function BookingForm({
                                 </Button>
                             </FormControl>
                         </DialogTrigger>
-                        <DialogContent className="w-auto p-0 bg-transparent border-none shadow-none">
+                        <DialogContent className="w-auto p-4">
                             <CustomCalendar
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                 locale={locale}
                             />
-                            <DialogFooter className="p-3 pt-2 bg-card rounded-b-lg border-t flex-row items-center justify-between gap-2 sm:justify-between">
+                            <DialogFooter className="pt-4 flex-row items-center justify-between gap-2 sm:justify-between">
                                 <div className="text-sm border bg-background rounded-md px-3 h-10 flex items-center w-full">
-                                    {field.value ? format(field.value, 'dd/MM/yyyy') : '...'}
+                                    {field.value ? format(field.value, 'dd / MM / yyyy') : '...'}
                                 </div>
                                 <DialogClose asChild>
                                     <Button className="font-semibold">
