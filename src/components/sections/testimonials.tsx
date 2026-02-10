@@ -96,7 +96,7 @@ export function Testimonials() {
                      </p>
                      <div className="flex flex-col gap-4">
                         <Button asChild variant="secondary" size="lg" className="w-full h-16 text-base font-semibold">
-                            <Link href="#" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
+                            <Link href="https://share.google/AmDlNEsYGvnfAJokR" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
                                     <path d="M12.005 1.25A8.505 8.505 0 003.5 9.755c0 6.13 8.505 13 8.505 13s8.505-6.87 8.505-13a8.505 8.505 0 00-8.505-8.505zm0 11.41a2.905 2.905 0 110-5.81 2.905 2.905 0 010 5.81z"/>
                                 </svg>
@@ -104,7 +104,7 @@ export function Testimonials() {
                             </Link>
                         </Button>
                         <Button asChild variant="secondary" size="lg" className="w-full h-16 text-base font-semibold">
-                            <Link href="#" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
+                            <Link href="https://yandex.com/maps/-/CPQRv8p5" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
                                     <path d="M12 3c-4.42 0-8 3.58-8 8s8 11 8 11 8-7.58 8-11-3.58-8-8-8zm0 11.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 7.5 12 7.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
                                 </svg>
@@ -112,7 +112,7 @@ export function Testimonials() {
                             </Link>
                         </Button>
                         <Button asChild variant="secondary" size="lg" className="w-full h-16 text-base font-semibold">
-                            <Link href="#" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
+                            <Link href="https://go.2gis.com/lrXSR" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
                                     <path d="M12 2C7.58 2 4 5.58 4 10c0 5.63 8 12 8 12s8-6.37 8-12C20 5.58 16.42 2 12 2zm-1.5 11h3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5H11v-1h2.5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-3a.5.5 0 0 0-.5.5v3c0 .28.22.5.5.5z"/>
                                 </svg>

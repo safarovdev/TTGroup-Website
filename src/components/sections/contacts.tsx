@@ -9,7 +9,7 @@ export function Contacts() {
 
   const socialLinks = [
     { name: "Telegram", icon: <MessageCircle className="w-6 h-6"/>, href: "https://t.me/toureast_transport" },
-    { name: "Instagram", icon: <Instagram className="w-6 h-6"/>, href: "#" },
+    { name: "Instagram", icon: <Instagram className="w-6 h-6"/>, href: "https://www.instagram.com/toureast.uzbekistan" },
   ];
 
   const navLinks = [
@@ -34,6 +34,8 @@ export function Contacts() {
                 <div>
                     <p className="font-semibold text-sm text-muted-foreground mb-1">{t('contacts.generalContactTitle')}</p>
                     <a href="tel:+998997278020" className="text-lg text-foreground hover:text-primary transition-colors">+998 99 727 80 20</a>
+                    <br/>
+                    <a href="tel:+998997778020" className="text-lg text-foreground hover:text-primary transition-colors">+998 99 777 80 20</a>
                     <br/>
                     <a href="mailto:info@ttgroup.uz" className="text-lg text-foreground hover:text-primary transition-colors">info@ttgroup.uz</a>
                 </div>
