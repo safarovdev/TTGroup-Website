@@ -180,6 +180,7 @@
       "contactMethodError": "Please choose a contact method.",
       "call": "Phone Call",
       "submitButton": "Send Request",
+      "setDateButton": "Set Date",
       "toastSuccessTitle": "Request sent!",
       "toastSuccessDescription": "We will contact you soon to confirm."
     }

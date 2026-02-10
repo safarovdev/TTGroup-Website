@@ -180,6 +180,7 @@
       "contactMethodError": "Выберите способ связи.",
       "call": "Звонок",
       "submitButton": "Отправить заявку",
+      "setDateButton": "Выбрать",
       "toastSuccessTitle": "Заявка отправлена!",
       "toastSuccessDescription": "Мы скоро свяжемся с вами для подтверждения."
     }

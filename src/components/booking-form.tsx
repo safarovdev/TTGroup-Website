@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from "@/components/ui/popover";
 import { CustomCalendar } from "@/components/ui/custom-calendar";
 import { format } from 'date-fns';
 import { ru as ruLocale, enUS } from 'date-fns/locale';
@@ -230,6 +230,16 @@ export function BookingForm({
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                 locale={locale}
                             />
+                            <div className="p-3 pt-2 border-t flex items-center justify-between gap-2">
+                                <div className="text-sm border rounded-md px-3 h-10 flex items-center bg-muted/50 w-full">
+                                    {field.value ? format(field.value, 'dd / MM / yyyy') : '...'}
+                                </div>
+                                <PopoverClose asChild>
+                                    <Button className="font-semibold">
+                                        {t('booking.form.setDateButton')}
+                                    </Button>
+                                </PopoverClose>
+                            </div>
                         </PopoverContent>
                     </Popover>
                     <FormMessage className="text-accent" />
