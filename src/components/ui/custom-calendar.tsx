@@ -16,6 +16,7 @@ import {
   startOfDay,
   setMonth,
   getMonth,
+  getYear,
 } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -53,28 +54,28 @@ export function CustomCalendar({
   }
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between py-2 px-1">
+    <div className="flex items-center justify-between py-2 px-2">
       <Button
         variant="ghost"
         size="icon"
-        className="h-9 w-9"
+        className="h-9 w-9 rounded-md"
         onClick={handlePrev}
       >
         <ChevronLeft className="h-5 w-5" />
       </Button>
       <Button
           variant="ghost"
-          className="text-sm font-semibold capitalize px-4"
+          className="text-base font-semibold capitalize px-4"
           onClick={() => setView(view === 'days' ? 'months' : 'days')}
       >
           {view === 'days' 
-              ? format(currentMonth, 'LLLL yyyy', { locale: dateFnsLocale }) 
+              ? format(currentMonth, 'LLLL', { locale: dateFnsLocale }) 
               : format(currentMonth, 'yyyy', { locale: dateFnsLocale })}
       </Button>
       <Button
         variant="ghost"
         size="icon"
-        className="h-9 w-9"
+        className="h-9 w-9 rounded-md"
         onClick={handleNext}
       >
         <ChevronRight className="h-5 w-5" />
@@ -92,7 +93,7 @@ export function CustomCalendar({
     const weekdays = [...Array(7).keys()].map(i => format(days[i], 'EEEEEE', { locale: dateFnsLocale }));
 
     return (
-      <div className="grid grid-cols-7 gap-y-1 text-center text-sm">
+      <div className="grid grid-cols-7 gap-y-1 text-center text-sm p-2">
         {weekdays.map((day, i) => (
           <div key={i} className="text-xs font-medium text-muted-foreground w-9 h-9 flex items-center justify-center">
             {day}
@@ -108,11 +109,11 @@ export function CustomCalendar({
                 onClick={() => !isDisabled && onSelect(day)}
                 disabled={isDisabled}
                 className={cn(
-                  'w-8 h-8 flex items-center justify-center rounded-full transition-colors',
-                  !isSameMonth(day, currentMonth) && 'text-muted-foreground/30',
-                  !isDisabled && 'hover:bg-accent hover:text-accent-foreground',
+                  'w-9 h-9 flex items-center justify-center rounded-full transition-colors text-sm',
+                  !isSameMonth(day, currentMonth) && 'text-transparent bg-transparent pointer-events-none',
+                  isSameMonth(day, currentMonth) && !isSameDay(day, selected || new Date(0)) && 'hover:bg-accent',
                   isSameDay(day, selected || new Date(0)) &&
-                    'bg-primary text-primary-foreground hover:bg-primary/90',
+                    'bg-primary text-primary-foreground font-semibold',
                   isDisabled && 'opacity-50 cursor-not-allowed'
                 )}
               >
@@ -130,13 +131,13 @@ export function CustomCalendar({
     const currentSelectedMonth = getMonth(currentMonth);
 
     return (
-        <div className="grid grid-cols-3 gap-2 p-2">
+        <div className="grid grid-cols-3 gap-2 p-4">
             {months.map((month, i) => (
                 <Button
                     key={i}
                     variant={i === currentSelectedMonth ? "default" : "ghost"}
                     size="sm"
-                    className="capitalize"
+                    className="capitalize h-10"
                     onClick={() => handleMonthSelect(i)}
                 >
                     {format(month, 'LLL', { locale: dateFnsLocale })}
@@ -147,7 +148,7 @@ export function CustomCalendar({
   };
 
   return (
-    <div className="p-2 bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-xs mx-auto">
+    <div className="p-2 bg-card text-card-foreground rounded-lg w-full max-w-[320px] mx-auto">
       {renderHeader()}
       {view === 'days' ? renderDays() : renderMonths()}
     </div>

@@ -223,16 +223,16 @@ export function BookingForm({
                                 </Button>
                             </FormControl>
                         </DialogTrigger>
-                        <DialogContent className="w-auto p-0">
+                        <DialogContent className="w-auto p-0 bg-transparent border-none shadow-none">
                             <CustomCalendar
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                 locale={locale}
                             />
-                            <DialogFooter className="p-3 pt-2 border-t flex-row items-center justify-between gap-2 sm:justify-between">
-                                <div className="text-sm border rounded-md px-3 h-10 flex items-center bg-muted/50 w-full">
-                                    {field.value ? format(field.value, 'dd / MM / yyyy') : '...'}
+                            <DialogFooter className="p-3 pt-2 bg-card rounded-b-lg border-t flex-row items-center justify-between gap-2 sm:justify-between">
+                                <div className="text-sm border bg-background rounded-md px-3 h-10 flex items-center w-full">
+                                    {field.value ? format(field.value, 'dd/MM/yyyy') : '...'}
                                 </div>
                                 <DialogClose asChild>
                                     <Button className="font-semibold">
