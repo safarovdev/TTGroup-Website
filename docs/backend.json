@@ -47,6 +47,11 @@
           "type": "boolean",
           "description": "Whether the vehicle is a featured 'hit' to be shown on the homepage.",
           "default": false
+        },
+        "displayOrder": {
+          "type": "number",
+          "description": "Determines the display order of the vehicle on the website. Lower numbers appear first.",
+          "default": 0
         }
       },
       "required": [ "id", "name", "imageUrls", "category", "capacity" ]
@@ -155,6 +160,11 @@
           "type": "boolean",
           "description": "Whether the transfer is featured on the homepage.",
           "default": false
+        },
+        "displayOrder": {
+          "type": "number",
+          "description": "Determines the display order of the transfer on the website. Lower numbers appear first.",
+          "default": 0
         }
       },
       "required": ["id", "serviceType", "prices", "title_ru", "title_en"]

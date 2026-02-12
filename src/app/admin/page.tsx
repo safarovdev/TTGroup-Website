@@ -1,10 +1,10 @@
 'use client';
 
-import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle, addTransfer, useMemoFirebase, updateTransfer, deleteTransfer } from '@/firebase';
-import { useVehicles } from '@/hooks/useVehicles';
+import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle, addTransfer, useMemoFirebase, updateTransfer, deleteTransfer, useCollection } from '@/firebase';
+import { collection, updateDoc, doc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Star } from 'lucide-react';
+import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Star, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,11 +23,11 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogDescription as DialogDescriptionComponent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useTransfers } from '@/hooks/useTransfers';
-import { type Transfer, type TransferPriceInfo } from '@/lib/transfers';
+import { type Transfer } from '@/lib/transfers';
 import { Textarea } from '@/components/ui/textarea';
-import { locations, serviceTypesMap, ServiceType } from '@/lib/locations';
+import { locations, serviceTypesMap } from '@/lib/locations';
 import { useLanguage } from '@/context/LanguageContext';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
@@ -130,6 +130,7 @@ const vehicleSchema = z.object({
   imageUrls: z.string().url().array().min(1, "Загрузите хотя бы одно изображение"),
   featureKeys: z.string().array().optional().default([]),
   isFeatured: z.boolean().optional().default(false),
+  displayOrder: z.number().optional(),
 });
 type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
@@ -158,6 +159,7 @@ const transferSchema = z.object({
   description_en: z.string().optional(),
   prices: z.array(transferPriceSchema).min(1, "Нужно указать хотя бы одну цену"),
   isFeatured: z.boolean().optional().default(false),
+  displayOrder: z.number().optional(),
 }).refine(data => {
     if (data.serviceType === 'intercity') {
         return !!data.from && !!data.to;
@@ -260,25 +262,23 @@ function AdminDashboard() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const { locale } = useLanguage();
 
-  // State for vehicles
-  const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
-  const [isVehicleFormOpen, setIsVehicleFormOpen] = useState(false);
-  const {data: vehicles, loading: vehiclesLoading} = useVehicles();
+  // Data fetching with useCollection for real-time updates
+  const vehiclesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'vehicles') : null, [firestore]);
+  const { data: vehicles, loading: vehiclesLoading } = useCollection<Vehicle>(vehiclesQuery);
+  const transfersQuery = useMemoFirebase(() => firestore ? collection(firestore, 'transfers') : null, [firestore]);
+  const { data: transfers, loading: transfersLoading } = useCollection<Transfer>(transfersQuery);
 
-  // State for transfers
-  const [editingTransferId, setEditingTransferId] = useState<string | null>(null);
-  const [isTransferFormOpen, setIsTransferFormOpen] = useState(false);
-  const {data: transfers, loading: transfersLoading} = useTransfers();
-
-  // State for vehicle selector dialog
-  const [isVehicleSelectorOpen, setIsVehicleSelectorOpen] = useState(false);
-  const [editingVehicleCategory, setEditingVehicleCategory] = useState<{key: string; label: string} | null>(null);
+  // Sorting state
+  type VehicleSortOption = 'order' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+  const [vehicleSort, setVehicleSort] = useState<VehicleSortOption>('order');
+  type TransferSortOption = 'order' | 'name-asc' | 'name-desc';
+  const [transferSort, setTransferSort] = useState<TransferSortOption>('order');
   
+  // Forms
   const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
-    defaultValues: { name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false },
+    defaultValues: { name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false, displayOrder: 0 },
   });
 
   const transferForm = useForm<TransferFormValues>({
@@ -294,8 +294,41 @@ function AdminDashboard() {
       description_en: "",
       prices: [],
       isFeatured: false,
+      displayOrder: 0,
     },
   });
+
+  // Dialog states
+  const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
+  const [isVehicleFormOpen, setIsVehicleFormOpen] = useState(false);
+  const [editingTransferId, setEditingTransferId] = useState<string | null>(null);
+  const [isTransferFormOpen, setIsTransferFormOpen] = useState(false);
+  const [isVehicleSelectorOpen, setIsVehicleSelectorOpen] = useState(false);
+  const [editingVehicleCategory, setEditingVehicleCategory] = useState<{key: string; label: string} | null>(null);
+
+  // Memoized sorted data
+  const sortedVehicles = useMemo(() => {
+      if (!vehicles) return [];
+      const sorted = [...vehicles];
+      switch (vehicleSort) {
+          case 'price-asc': return sorted.sort((a, b) => a.price - b.price);
+          case 'price-desc': return sorted.sort((a, b) => b.price - a.price);
+          case 'name-asc': return sorted.sort((a, b) => a.name.localeCompare(b.name));
+          case 'name-desc': return sorted.sort((a, b) => b.name.localeCompare(a.name));
+          case 'order': default: return sorted.sort((a, b) => (a.displayOrder || 999) - (b.displayOrder || 999));
+      }
+  }, [vehicles, vehicleSort]);
+
+  const sortedTransfers = useMemo(() => {
+      if (!transfers) return [];
+      const sorted = [...transfers];
+      switch (transferSort) {
+          case 'name-asc': return sorted.sort((a, b) => a.title_ru.localeCompare(b.title_ru));
+          case 'name-desc': return sorted.sort((a, b) => b.title_ru.localeCompare(a.title_ru));
+          case 'order': default: return sorted.sort((a, b) => (a.displayOrder || 999) - (b.displayOrder || 999));
+      }
+  }, [transfers, transferSort]);
+
 
   const vehiclesByCategory = useMemo(() => {
     if (!vehicles) return {};
@@ -306,46 +339,23 @@ function AdminDashboard() {
   }, [vehicles]);
 
 
-  // Effects for forms
+  // Effects to reset forms when dialogs close or data changes
   useEffect(() => {
     if (editingVehicleId && vehicles) {
       const vehicleToEdit = vehicles.find(v => v.id === editingVehicleId);
-      if (vehicleToEdit) {
-        vehicleForm.reset({
-            name: vehicleToEdit.name,
-            category: vehicleToEdit.category,
-            price: vehicleToEdit.price,
-            capacity: vehicleToEdit.capacity,
-            imageUrls: vehicleToEdit.imageUrls,
-            featureKeys: vehicleToEdit.featureKeys,
-            isFeatured: vehicleToEdit.isFeatured || false,
-        });
-      }
+      if (vehicleToEdit) vehicleForm.reset({ ...vehicleToEdit });
     } else {
-        vehicleForm.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false });
+        vehicleForm.reset({ name: "", price: 0, capacity: 1, imageUrls: [], featureKeys: [], isFeatured: false, displayOrder: 0 });
     }
   }, [editingVehicleId, vehicles, vehicleForm]);
 
   useEffect(() => {
     if (editingTransferId && transfers) {
         const transferToEdit = transfers.find(t => t.id === editingTransferId);
-        if (transferToEdit) {
-            transferForm.reset({
-                ...transferToEdit
-            });
-        }
+        if (transferToEdit) transferForm.reset({ ...transferToEdit });
     } else {
         transferForm.reset({
-          serviceType: 'intercity',
-          title_ru: "",
-          title_en: "",
-          city: "",
-          from: "",
-          to: "",
-          description_ru: "",
-          description_en: "",
-          prices: [],
-          isFeatured: false,
+          serviceType: 'intercity', title_ru: "", title_en: "", city: "", from: "", to: "", description_ru: "", description_en: "", prices: [], isFeatured: false, displayOrder: 0
         });
     }
   }, [editingTransferId, transfers, transferForm]);
@@ -353,12 +363,13 @@ function AdminDashboard() {
 
   // Submit handlers
   const onVehicleSubmit = (data: VehicleFormValues) => {
-    if (!firestore) return;
+    if (!firestore || !vehicles) return;
     if (editingVehicleId) {
         updateVehicle(firestore, editingVehicleId, data);
         toast({ title: "✅ Автомобиль обновлен", description: `Данные для "${data.name}" сохранены.` });
     } else {
-        addVehicle(firestore, data);
+        const maxOrder = Math.max(0, ...vehicles.map(v => v.displayOrder || 0));
+        addVehicle(firestore, { ...data, displayOrder: maxOrder + 1 });
         toast({ title: "✅ Автомобиль добавлен", description: `Модель "${data.name}" добавлена в автопарк.` });
     }
     setIsVehicleFormOpen(false);
@@ -366,7 +377,7 @@ function AdminDashboard() {
   };
   
   const onTransferSubmit = (data: TransferFormValues) => {
-    if (!firestore) return;
+    if (!firestore || !transfers) return;
     const dataToSubmit = {
         ...data,
         city: data.serviceType !== 'intercity' ? data.city : '',
@@ -377,60 +388,55 @@ function AdminDashboard() {
         updateTransfer(firestore, editingTransferId, dataToSubmit);
         toast({ title: "✅ Трансфер обновлен", description: `Данные для "${data.title_ru}" сохранены.` });
     } else {
-        addTransfer(firestore, dataToSubmit);
+        const maxOrder = Math.max(0, ...transfers.map(t => t.displayOrder || 0));
+        addTransfer(firestore, { ...dataToSubmit, displayOrder: maxOrder + 1 });
         toast({ title: "✅ Трансфер добавлен", description: `Маршрут "${data.title_ru}" добавлен.` });
     }
     setIsTransferFormOpen(false);
     setEditingTransferId(null);
   };
 
+  const handleReorder = async (collectionName: 'vehicles' | 'transfers', itemId: string, direction: 'up' | 'down') => {
+    if (!firestore) return;
+    
+    const list = collectionName === 'vehicles' ? sortedVehicles : sortedTransfers;
+    if (!list) return;
+
+    const currentIndex = list.findIndex(item => item.id === itemId);
+    if (currentIndex === -1) return;
+
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (swapIndex < 0 || swapIndex >= list.length) return;
+    
+    const currentItem = list[currentIndex];
+    const swapItem = list[swapIndex];
+    
+    // Ensure displayOrder exists before swapping by using index as a fallback
+    const currentOrder = currentItem.displayOrder ?? currentIndex;
+    const swapOrder = swapItem.displayOrder ?? swapIndex;
+
+    // Use updateDoc for non-blocking updates; useCollection hook will handle UI refresh
+    await updateDoc(doc(firestore, collectionName, currentItem.id), { displayOrder: swapOrder });
+    await updateDoc(doc(firestore, collectionName, swapItem.id), { displayOrder: currentOrder });
+
+    toast({ title: "Порядок обновлен" });
+  };
 
   const handleLogout = async () => {
     await signOutUser();
     toast({ title: "Вы вышли из системы." });
   };
   
-  // Handlers for Vehicles
-  const handleEditVehicle = (vehicle: Vehicle) => {
-    setEditingVehicleId(vehicle.id);
-    setIsVehicleFormOpen(true);
-  };
-  const handleAddNewVehicle = () => {
-    setEditingVehicleId(null);
-    setIsVehicleFormOpen(true);
-  };
-  const handleDeleteVehicle = (vehicleId: string) => {
-    if (!firestore) return;
-    deleteVehicle(firestore, vehicleId);
-    toast({ variant: 'destructive', title: "🗑️ Автомобиль удален", description: "Запись была удалена из базы данных."});
-  };
-  const onVehicleFormOpenChange = (open: boolean) => {
-    setIsVehicleFormOpen(open);
-    if (!open) {
-        setEditingVehicleId(null);
-    }
-  };
+  // Dialog and form open/close handlers
+  const handleEditVehicle = (vehicle: Vehicle) => { setEditingVehicleId(vehicle.id); setIsVehicleFormOpen(true); };
+  const handleAddNewVehicle = () => { setEditingVehicleId(null); setIsVehicleFormOpen(true); };
+  const handleDeleteVehicle = (vehicleId: string) => { if (firestore) deleteVehicle(firestore, vehicleId); toast({ variant: 'destructive', title: "🗑️ Автомобиль удален"});};
+  const onVehicleFormOpenChange = (open: boolean) => { setIsVehicleFormOpen(open); if (!open) setEditingVehicleId(null); };
 
-  // Handlers for Transfers
-  const handleEditTransfer = (transfer: Transfer) => {
-    setEditingTransferId(transfer.id);
-    setIsTransferFormOpen(true);
-  };
-  const handleAddNewTransfer = () => {
-    setEditingTransferId(null);
-    setIsTransferFormOpen(true);
-  };
-  const handleDeleteTransfer = (transferId: string, transferTitle: string) => {
-    if (!firestore) return;
-    deleteTransfer(firestore, transferId);
-    toast({ variant: 'destructive', title: "🗑️ Трансфер удален", description: `Маршрут "${transferTitle}" удален.`});
-  };
-  const onTransferFormOpenChange = (open: boolean) => {
-    setIsTransferFormOpen(open);
-    if (!open) {
-        setEditingTransferId(null);
-    }
-  };
+  const handleEditTransfer = (transfer: Transfer) => { setEditingTransferId(transfer.id); setIsTransferFormOpen(true); };
+  const handleAddNewTransfer = () => { setEditingTransferId(null); setIsTransferFormOpen(true); };
+  const handleDeleteTransfer = (transferId: string) => { if (firestore) deleteTransfer(firestore, transferId); toast({ variant: 'destructive', title: "🗑️ Трансфер удален"}); };
+  const onTransferFormOpenChange = (open: boolean) => { setIsTransferFormOpen(open); if (!open) setEditingTransferId(null); };
   
   const watchedPrices = transferForm.watch('prices');
   const watchedServiceType = transferForm.watch('serviceType');
@@ -794,10 +800,29 @@ function AdminDashboard() {
                             <CardTitle>{t('admin.vehicleListTitle')}</CardTitle>
                             <CardDescription>{t('admin.vehicleListDescription')}</CardDescription>
                         </div>
-                        <Button onClick={handleAddNewVehicle}>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            {t('admin.addButton')}
-                        </Button>
+                        <div className='flex items-center gap-4'>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline">
+                                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                                    Сортировка
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuRadioGroup value={vehicleSort} onValueChange={(v) => setVehicleSort(v as VehicleSortOption)}>
+                                        <DropdownMenuRadioItem value="order">По порядку</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="price-asc">Цена (возр.)</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="price-desc">Цена (убыв.)</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="name-asc">Название (А-Я)</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="name-desc">Название (Я-А)</DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button onClick={handleAddNewVehicle}>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                {t('admin.addButton')}
+                            </Button>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -807,6 +832,7 @@ function AdminDashboard() {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead className='w-[60px]'>Порядок</TableHead>
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.name')}</TableHead>
                                 <TableHead>{t('admin.table.category')}</TableHead>
@@ -816,8 +842,18 @@ function AdminDashboard() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {vehicles?.map(vehicle => (
+                        {sortedVehicles.map((vehicle, index) => (
                             <TableRow key={vehicle.id}>
+                                <TableCell>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={vehicleSort !== 'order' || index === 0} onClick={() => handleReorder('vehicles', vehicle.id, 'up')}>
+                                            <ArrowUp className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={vehicleSort !== 'order' || index === sortedVehicles.length - 1} onClick={() => handleReorder('vehicles', vehicle.id, 'down')}>
+                                            <ArrowDown className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </TableCell>
                                 <TableCell>{vehicle.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
                                 <TableCell className="font-medium">{vehicle.name}</TableCell>
                                 <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
@@ -857,10 +893,27 @@ function AdminDashboard() {
                             <CardTitle>{t('admin.transferListTitle')}</CardTitle>
                             <CardDescription>{t('admin.transferListDescription')}</CardDescription>
                         </div>
-                        <Button onClick={handleAddNewTransfer}>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            {t('admin.addButton')}
-                        </Button>
+                        <div className="flex items-center gap-4">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline">
+                                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                                    Сортировка
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuRadioGroup value={transferSort} onValueChange={(v) => setTransferSort(v as TransferSortOption)}>
+                                        <DropdownMenuRadioItem value="order">По порядку</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="name-asc">Название (А-Я)</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="name-desc">Название (Я-А)</DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button onClick={handleAddNewTransfer}>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                {t('admin.addButton')}
+                            </Button>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -870,6 +923,7 @@ function AdminDashboard() {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead className='w-[60px]'>Порядок</TableHead>
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.title')}</TableHead>
                                 <TableHead>{t('admin.table.route')}</TableHead>
@@ -877,8 +931,18 @@ function AdminDashboard() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {transfers?.sort((a, b) => a.title_ru.localeCompare(b.title_ru)).map(transfer => (
+                        {sortedTransfers.map((transfer, index) => (
                             <TableRow key={transfer.id}>
+                                <TableCell>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={transferSort !== 'order' || index === 0} onClick={() => handleReorder('transfers', transfer.id, 'up')}>
+                                            <ArrowUp className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={transferSort !== 'order' || index === sortedTransfers.length - 1} onClick={() => handleReorder('transfers', transfer.id, 'down')}>
+                                            <ArrowDown className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </TableCell>
                                 <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
                                 <TableCell className="font-medium">{transfer.title_ru}</TableCell>
                                 <TableCell>
@@ -896,7 +960,7 @@ function AdminDashboard() {
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id, transfer.title_ru)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
+                                                <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>
@@ -948,5 +1012,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    

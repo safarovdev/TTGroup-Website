@@ -7,6 +7,7 @@ export type Vehicle = {
     price: number;
     capacity: number;
     isFeatured?: boolean;
+    displayOrder?: number;
 };
   
 export const vehicleCategoryMap: Record<Vehicle['category'], string> = {

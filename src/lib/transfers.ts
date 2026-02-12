@@ -16,4 +16,5 @@ export interface Transfer {
     description_en?: string;
     prices: TransferPriceInfo[];
     isFeatured?: boolean;
+    displayOrder?: number;
 }
