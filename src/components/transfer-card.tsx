@@ -78,15 +78,35 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
 
         <div className="flex-grow" />
 
-        <ul className="space-y-3 text-left pt-4 border-t">
-            {sortedPrices.length > 0 ? sortedPrices.map((p) => (
-                <li key={p.category} className="flex justify-between items-center">
-                    <span className="text-base text-muted-foreground font-medium">
-                        {t(`vehicleCategories.${p.category}`)}
-                    </span>
-                    <span className="font-bold text-lg text-primary">${p.price}</span>
+        <ul className="space-y-4 text-left pt-4 border-t">
+            {sortedPrices.length > 0 ? sortedPrices.map((p) => {
+                 const categoryCapacity = capacityByCategory[p.category];
+                 let capacityString = '';
+                 if (categoryCapacity) {
+                     if (categoryCapacity.min === categoryCapacity.max) {
+                         capacityString = t('vehicleDetail.capacity', { count: categoryCapacity.max });
+                     } else {
+                         capacityString = t('vehicleDetail.capacityRange', { min: categoryCapacity.min, max: categoryCapacity.max });
+                     }
+                 }
+
+                return (
+                <li key={p.category} className="flex justify-between items-start gap-2">
+                    <div className="flex-1">
+                        <Link href={`/fleet?category=${p.category}`} className="group inline-flex items-center gap-2 text-base text-muted-foreground font-medium hover:text-primary transition-colors">
+                            {t(`vehicleCategories.${p.category}`)}
+                            <ArrowRight className="h-4 w-4 text-primary/40 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                        </Link>
+                        {capacityString && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                <Users className="h-4 w-4" />
+                                <span>{capacityString}</span>
+                            </div>
+                        )}
+                    </div>
+                    <span className="font-bold text-lg text-primary shrink-0">${p.price}</span>
                 </li>
-            )) : <p className="text-sm text-muted-foreground text-center">{t('transfers.noPrices')}</p>}
+            )}) : <p className="text-sm text-muted-foreground text-center">{t('transfers.noPrices')}</p>}
         </ul>
 
         <div className="mt-6 grid grid-cols-3 gap-2 items-center">
@@ -138,7 +158,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                                             <h4 className="font-semibold text-primary transition-colors cursor-pointer group-hover:text-primary/80">
                                                 {t(`vehicleCategories.${priceInfo.category}`)}
                                             </h4>
-                                            <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1 group-hover:text-primary/80" />
+                                            <ArrowRight className="h-4 w-4 text-primary/40 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                                         </Link>
                                         <span className="font-bold text-lg text-primary">${priceInfo.price}</span>
                                     </div>
@@ -156,7 +176,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                                                 const vehicle = allVehicles.find(v => v.id === id);
                                                 return vehicle ? (
                                                     <li key={id}>
-                                                         <Link href={`/fleet/${vehicle.id}`} className="text-primary/90 underline underline-offset-4 hover:text-primary transition-colors">
+                                                         <Link href={`/fleet/${vehicle.id}`} className="text-primary/90 underline-offset-4 hover:text-primary hover:underline transition-colors">
                                                             {vehicle.name}
                                                         </Link>
                                                     </li>
