@@ -273,7 +273,7 @@ function AdminDashboard() {
   // Sorting state
   type VehicleSortOption = 'order' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
   const [vehicleSort, setVehicleSort] = useState<VehicleSortOption>('order');
-  type TransferSortOption = 'order' | 'name-asc' | 'name-desc';
+  type TransferSortOption = 'order' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
   const [transferSort, setTransferSort] = useState<TransferSortOption>('order');
   
   // Drag-and-drop state
@@ -326,8 +326,18 @@ function AdminDashboard() {
 
   const sortedTransfers = useMemo(() => {
       if (!transfers) return [];
+      
+      const getMinPrice = (transfer: Transfer) => {
+        if (!transfer.prices || transfer.prices.length === 0) return Infinity;
+        const validPrices = transfer.prices.filter(p => p.price > 0).map(p => p.price);
+        if (validPrices.length === 0) return Infinity; // Treat as most expensive if no valid price
+        return Math.min(...validPrices);
+      };
+
       const sorted = [...transfers];
       switch (transferSort) {
+          case 'price-asc': return sorted.sort((a, b) => getMinPrice(a) - getMinPrice(b));
+          case 'price-desc': return sorted.sort((a, b) => getMinPrice(b) - getMinPrice(a));
           case 'name-asc': return sorted.sort((a, b) => a.title_ru.localeCompare(b.title_ru));
           case 'name-desc': return sorted.sort((a, b) => b.title_ru.localeCompare(a.title_ru));
           case 'order': default: return sorted.sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
@@ -462,6 +472,13 @@ function AdminDashboard() {
   
   const watchedPrices = transferForm.watch('prices');
   const watchedServiceType = transferForm.watch('serviceType');
+  
+  const getMinTransferPriceForDisplay = (t: Transfer) => {
+    if (!t.prices || t.prices.length === 0) return 0;
+    const validPrices = t.prices.filter(p => p.price > 0).map(p => p.price);
+    if (validPrices.length === 0) return 0;
+    return Math.min(...validPrices);
+  };
 
   return (
     <div className="container py-12">
@@ -934,6 +951,8 @@ function AdminDashboard() {
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuRadioGroup value={transferSort} onValueChange={(v) => setTransferSort(v as TransferSortOption)}>
                                         <DropdownMenuRadioItem value="order">По порядку</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="price-asc">Цена (возр.)</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="price-desc">Цена (убыв.)</DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem value="name-asc">Название (А-Я)</DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem value="name-desc">Название (Я-А)</DropdownMenuRadioItem>
                                     </DropdownMenuRadioGroup>
@@ -957,55 +976,62 @@ function AdminDashboard() {
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.title')}</TableHead>
                                 <TableHead>{t('admin.table.route')}</TableHead>
+                                <TableHead className="text-right">{t('admin.table.price')}</TableHead>
                                 <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                        {sortedTransfers.map((transfer, index) => (
-                            <TableRow 
-                                key={transfer.id}
-                                draggable={transferSort === 'order'}
-                                onDragStart={(e) => {
-                                    setDraggingTransferIndex(index);
-                                    e.dataTransfer.effectAllowed = 'move';
-                                }}
-                                onDragOver={handleDragOver}
-                                onDrop={() => handleTransferDrop(index)}
-                                onDragEnd={() => setDraggingTransferIndex(null)}
-                                className={cn('transition-opacity', draggingTransferIndex === index && 'opacity-30')}
-                            >
-                                <TableCell className='pl-4'>
-                                    {transferSort === 'order' ? (
-                                        <div className="flex items-center justify-center cursor-grab active:cursor-grabbing">
-                                            <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                        </div>
-                                    ) : null}
-                                </TableCell>
-                                <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
-                                <TableCell className="font-medium">{transfer.title_ru}</TableCell>
-                                <TableCell>
-                                    {transfer.serviceType === 'intercity' ? `${transfer.from} → ${transfer.to}` : transfer.city}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                <div className="flex gap-2 justify-end">
-                                    <Button variant="outline" size="icon" onClick={() => handleEditTransfer(transfer)}><FilePenLine className="h-4 w-4" /></Button>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild><Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
-                                                <AlertDialogDescription>{t('admin.deleteConfirmDescription', { name: transfer.title_ru })}</AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {sortedTransfers.map((transfer, index) => {
+                            const minPrice = getMinTransferPriceForDisplay(transfer);
+                            return (
+                                <TableRow 
+                                    key={transfer.id}
+                                    draggable={transferSort === 'order'}
+                                    onDragStart={(e) => {
+                                        setDraggingTransferIndex(index);
+                                        e.dataTransfer.effectAllowed = 'move';
+                                    }}
+                                    onDragOver={handleDragOver}
+                                    onDrop={() => handleTransferDrop(index)}
+                                    onDragEnd={() => setDraggingTransferIndex(null)}
+                                    className={cn('transition-opacity', draggingTransferIndex === index && 'opacity-30')}
+                                >
+                                    <TableCell className='pl-4'>
+                                        {transferSort === 'order' ? (
+                                            <div className="flex items-center justify-center cursor-grab active:cursor-grabbing">
+                                                <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                            </div>
+                                        ) : null}
+                                    </TableCell>
+                                    <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
+                                    <TableCell className="font-medium">{transfer.title_ru}</TableCell>
+                                    <TableCell>
+                                        {transfer.serviceType === 'intercity' ? `${transfer.from} → ${transfer.to}` : transfer.city}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {minPrice > 0 ? `$${minPrice}` : t('vehicleDetail.negotiablePrice')}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                    <div className="flex gap-2 justify-end">
+                                        <Button variant="outline" size="icon" onClick={() => handleEditTransfer(transfer)}><FilePenLine className="h-4 w-4" /></Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild><Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>{t('admin.deleteConfirmTitle')}</AlertDialogTitle>
+                                                    <AlertDialogDescription>{t('admin.deleteConfirmDescription', { name: transfer.title_ru })}</AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>{t('admin.deleteConfirmCancel')}</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDeleteTransfer(transfer.id)}>{t('admin.deleteConfirmAction')}</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
                         </TableBody>
                     </Table>
                     )}
