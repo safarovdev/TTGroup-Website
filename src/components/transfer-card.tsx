@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookingForm } from '@/components/booking-form';
 import { useVehicles } from '@/hooks/useVehicles';
+import Link from 'next/link';
 
 export function TransferCard({ transfer }: { transfer: Transfer }) {
   const { t } = useTranslation();
@@ -133,7 +134,11 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                             return (
                                 <div key={priceInfo.category}>
                                     <div className="flex justify-between items-baseline">
-                                        <h4 className="font-semibold">{t(`vehicleCategories.${priceInfo.category}`)}</h4>
+                                        <Link href={`/fleet?category=${priceInfo.category}`} passHref>
+                                            <h4 className="font-semibold text-primary hover:underline cursor-pointer">
+                                                {t(`vehicleCategories.${priceInfo.category}`)}
+                                            </h4>
+                                        </Link>
                                         <span className="font-bold text-lg text-primary">${priceInfo.price}</span>
                                     </div>
 
@@ -144,11 +149,17 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                                         </div>
                                     )}
                                     
-                                    {priceInfo.vehicleIds && priceInfo.vehicleIds.length > 0 ? (
+                                    {priceInfo.vehicleIds && priceInfo.vehicleIds.length > 0 && allVehicles ? (
                                         <ul className="list-disc list-inside text-sm text-muted-foreground pl-4 mt-2">
                                             {priceInfo.vehicleIds.map(id => {
-                                                const vehicle = allVehicles?.find(v => v.id === id);
-                                                return <li key={id}>{vehicle ? vehicle.name : id}</li>
+                                                const vehicle = allVehicles.find(v => v.id === id);
+                                                return vehicle ? (
+                                                    <li key={id}>
+                                                         <Link href={`/fleet/${vehicle.id}`} className="hover:underline text-primary/80 hover:text-primary">
+                                                            {vehicle.name}
+                                                        </Link>
+                                                    </li>
+                                                ) : null
                                             })}
                                         </ul>
                                     ) : (

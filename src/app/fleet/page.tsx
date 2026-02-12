@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { vehicleCategoryMap, type Vehicle } from '@/lib/vehicles';
@@ -18,9 +19,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenu
 
 const FleetPage = () => {
     const { t } = useTranslation();
+    const searchParams = useSearchParams();
+    const initialCategory = searchParams.get('category');
+    
     type VehicleSortOption = 'order' | 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc';
     const [sortOption, setSortOption] = useState<VehicleSortOption>('priceAsc');
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategory ? [initialCategory] : []);
     const { data: vehicles, loading } = useVehicles();
     
     const categories = Object.keys(vehicleCategoryMap) as Array<keyof typeof vehicleCategoryMap>;
