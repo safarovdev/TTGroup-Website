@@ -49,8 +49,15 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
             filtered = filtered.filter(transfer => transfer.isFeatured === true);
         }
 
-        // Always sort by title
-        return [...filtered].sort((a, b) => a.title_ru.localeCompare(b.title_ru));
+        // Sort by displayOrder, then by title as a fallback
+        return [...filtered].sort((a, b) => {
+            const orderA = a.displayOrder ?? 999;
+            const orderB = b.displayOrder ?? 999;
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+            return a.title_ru.localeCompare(b.title_ru);
+        });
     }, [allTransfers, isFeatured]);
 
     return { data: processedData, loading, error };

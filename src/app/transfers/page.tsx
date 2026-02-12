@@ -12,9 +12,10 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Search } from 'lucide-react';
+import { X, Search, ArrowUpDown } from 'lucide-react';
 import { serviceTypesMap, locations } from '@/lib/locations';
 import type { Transfer } from '@/lib/transfers';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const TransfersPage = () => {
     const { t } = useTranslation();
@@ -26,6 +27,8 @@ const TransfersPage = () => {
     const [to, setTo] = useState('');
     const [city, setCity] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    type TransferSortOption = 'order' | 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc';
+    const [sortOption, setSortOption] = useState<TransferSortOption>('order');
 
     const clearFilters = () => {
         setServiceType('');
@@ -83,10 +86,37 @@ const TransfersPage = () => {
             }
             return true;
         });
+        
+        const getMinPrice = (transfer: Transfer) => {
+            if (!transfer.prices || transfer.prices.length === 0) return Infinity;
+            const validPrices = transfer.prices.filter(p => p.price > 0).map(p => p.price);
+            if (validPrices.length === 0) return Infinity;
+            return Math.min(...validPrices);
+        };
+        
+        const sorted = [...filtered];
+        switch (sortOption) {
+            case 'priceAsc':
+                sorted.sort((a, b) => getMinPrice(a) - getMinPrice(b));
+                break;
+            case 'priceDesc':
+                sorted.sort((a, b) => getMinPrice(b) - getMinPrice(a));
+                break;
+            case 'nameAsc':
+                sorted.sort((a, b) => a[`title_${locale}`].localeCompare(b[`title_${locale}`]));
+                break;
+            case 'nameDesc':
+                sorted.sort((a, b) => b[`title_${locale}`].localeCompare(a[`title_${locale}`]));
+                break;
+            case 'order':
+            default:
+                // Hook provides default sort by displayOrder
+                break;
+        }
 
-        return { filteredTransfers: filtered, fromOptions, toOptions, cityOptions };
+        return { filteredTransfers: sorted, fromOptions, toOptions, cityOptions };
 
-    }, [transfers, searchTerm, serviceType, from, to, city, locale]);
+    }, [transfers, searchTerm, serviceType, from, to, city, locale, sortOption]);
     
     const hasActiveFilters = serviceType || from || to || city || searchTerm;
 
@@ -103,7 +133,7 @@ const TransfersPage = () => {
                     </div>
 
                     <Card className="p-4 md:p-6 mb-8 md:mb-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                            <div className="relative">
                                <Input 
                                    placeholder={t('transfers.searchPlaceholder')}
@@ -155,15 +185,38 @@ const TransfersPage = () => {
                                    </SelectContent>
                                </Select>
                            ) : (
-                               <div className='hidden lg:block'></div>
+                               <>
+                                <div className='hidden lg:block'></div>
+                                <div className='hidden lg:block'></div>
+                               </>
                            )}
+                           
+                           <div className="lg:col-start-5 flex flex-col gap-2">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-full">
+                                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                                        {t('transfers.sortBy')}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuRadioGroup value={sortOption} onValueChange={(v) => setSortOption(v as TransferSortOption)}>
+                                            <DropdownMenuRadioItem value="order">{t('transfers.sortOptions.order')}</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="priceAsc">{t('transfers.sortOptions.priceAsc')}</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="priceDesc">{t('transfers.sortOptions.priceDesc')}</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="nameAsc">{t('transfers.sortOptions.nameAsc')}</DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="nameDesc">{t('transfers.sortOptions.nameDesc')}</DropdownMenuRadioItem>
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
 
-                           {hasActiveFilters && (
-                               <Button onClick={clearFilters} variant="ghost" className="w-full md:col-span-2 lg:col-span-1">
-                                   <X className="w-4 h-4 mr-2" />
-                                   {t('transfers.clearFilters')}
-                               </Button>
-                           )}
+                               {hasActiveFilters && (
+                                   <Button onClick={clearFilters} variant="ghost" className="w-full">
+                                       <X className="w-4 h-4 mr-2" />
+                                       {t('transfers.clearFilters')}
+                                   </Button>
+                               )}
+                           </div>
                         </div>
                     </Card>
 

@@ -56,13 +56,20 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
             filtered = filtered.filter(vehicle => vehicle.isFeatured === true);
         }
         
-        // Default sort by name if no specific ID order is given
+        // Default sort by displayOrder, then by name as a fallback.
         if (!ids) {
-            return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+            return [...filtered].sort((a, b) => {
+                const orderA = a.displayOrder ?? 999;
+                const orderB = b.displayOrder ?? 999;
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+                return a.name.localeCompare(b.name);
+            });
         }
 
         return filtered;
-    }, [allVehicles, ids ? JSON.stringify(ids) : 'all', isFeatured]);
+    }, [allVehicles, ids ? JSON.stringify(ids) : undefined, isFeatured]);
 
     return { data: processedData, loading, error };
 }

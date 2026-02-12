@@ -317,7 +317,15 @@
       "clear": "Clear",
       "found": "Found: {{count}}",
       "noResultsTitle": "No vehicles found",
-      "noResultsDescription": "Try changing your filter settings or reset them to see all available vehicles."
+      "noResultsDescription": "Try changing your filter settings or reset them to see all available vehicles.",
+      "sortBy": "Sort by",
+      "sortOptions": {
+        "order": "Default Order",
+        "priceAsc": "Price: Low to High",
+        "priceDesc": "Price: High to Low",
+        "nameAsc": "Name: A-Z",
+        "nameDesc": "Name: Z-A"
+      }
     }
   },
   "featuredTransfers": {
@@ -346,6 +354,14 @@
     "detailsButton": "Details",
     "detailsTitle": "Tariff details for \"{{title}}\"",
     "detailsDescription": "List of available vehicles for each category on this route.",
-    "anyVehicleInCategory": "Any vehicle from this category is available."
+    "anyVehicleInCategory": "Any vehicle from this category is available.",
+    "sortBy": "Sort by",
+    "sortOptions": {
+      "order": "Default Order",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "nameAsc": "Name: A-Z",
+      "nameDesc": "Name: Z-A"
+    }
   }
 }
