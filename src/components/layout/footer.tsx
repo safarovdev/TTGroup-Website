@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="bg-background border-t">
       <div className="container py-8">
         <p className="text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} {t('footer.copyright')}
+          &copy; 2019-2026 {t('footer.copyright')}
         </p>
       </div>
     </footer>
