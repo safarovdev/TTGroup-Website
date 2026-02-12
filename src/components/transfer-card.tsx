@@ -7,7 +7,7 @@ import { type Transfer } from '@/lib/transfers';
 import { useMemo } from 'react';
 import { vehicleCategoryMap } from '@/lib/vehicles';
 import { getLocationName } from '@/lib/locations';
-import { ArrowRight, Info, Users } from 'lucide-react';
+import { ArrowRight, Info, Users, Clock, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookingForm } from '@/components/booking-form';
@@ -71,6 +71,23 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
         {transfer.serviceType !== 'intercity' && transfer.city && (
             <div className='text-muted-foreground font-semibold mb-4'>
                 {t('transfers.city')}: {getLocationName(transfer.city, locale)}
+            </div>
+        )}
+
+        { (transfer.duration || transfer.distance) && (
+            <div className='flex items-center justify-center gap-4 text-muted-foreground text-sm mb-4'>
+                {transfer.duration && (
+                    <div className='flex items-center gap-1.5'>
+                        <Clock className='h-4 w-4'/>
+                        <span>{t('transfers.duration', { duration: transfer.duration })}</span>
+                    </div>
+                )}
+                {transfer.distance && (
+                    <div className='flex items-center gap-1.5'>
+                        <Route className='h-4 w-4'/>
+                        <span>{t('transfers.distance', { distance: transfer.distance })}</span>
+                    </div>
+                )}
             </div>
         )}
         
@@ -154,11 +171,13 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                             return (
                                 <div key={priceInfo.category}>
                                     <div className="flex justify-between items-center">
-                                        <Link href={`/fleet?category=${priceInfo.category}`} passHref className="group inline-flex items-center gap-2">
-                                            <h4 className="font-semibold text-primary transition-colors cursor-pointer group-hover:text-primary/80">
+                                        <Link href={`/fleet?category=${priceInfo.category}`} passHref>
+                                          <span className="group inline-flex items-center gap-2 text-primary/90 underline-offset-4 hover:text-primary hover:underline transition-colors cursor-pointer">
+                                            <h4 className="font-semibold">
                                                 {t(`vehicleCategories.${priceInfo.category}`)}
                                             </h4>
                                             <ArrowRight className="h-4 w-4 text-primary/40 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                                          </span>
                                         </Link>
                                         <span className="font-bold text-lg text-primary">${priceInfo.price}</span>
                                     </div>

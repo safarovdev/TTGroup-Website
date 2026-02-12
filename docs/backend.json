@@ -130,6 +130,14 @@
           "type": "string",
           "description": "Optional description in English."
         },
+        "duration": {
+          "type": "string",
+          "description": "The estimated travel time, e.g., '6-7 hours'."
+        },
+        "distance": {
+          "type": "number",
+          "description": "The estimated travel distance in kilometers."
+        },
         "prices": {
           "type": "array",
           "description": "A list of prices for different vehicle categories on this route.",

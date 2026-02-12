@@ -14,6 +14,8 @@ export interface Transfer {
     title_en: string;
     description_ru?: string;
     description_en?: string;
+    duration?: string;
+    distance?: number;
     prices: TransferPriceInfo[];
     isFeatured?: boolean;
     displayOrder?: number;

@@ -236,7 +236,9 @@
       "capacity": "Capacity",
       "actions": "Actions",
       "title": "Title",
-      "route": "Route"
+      "route": "Route",
+      "duration": "Duration",
+      "distance": "Distance"
     },
     "deleteConfirmTitle": "Are you absolutely sure?",
     "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the item \"{{name}}\".",
@@ -262,7 +264,11 @@
     "descriptionRuLabel": "Description (RU)",
     "descriptionEnLabel": "Description (EN)",
     "serviceTypeLabel": "Service Type",
-    "cityLabel": "City"
+    "cityLabel": "City",
+    "durationLabel": "Travel time (h)",
+    "durationPlaceholder": "e.g., 6-7",
+    "distanceLabel": "Distance (km)",
+    "distancePlaceholder": "e.g., 450"
   },
   "vehicleCategories": {
     "premium": "💎 Premium & VIP",
@@ -363,6 +369,8 @@
       "priceDesc": "Price: High to Low",
       "nameAsc": "Name: A-Z",
       "nameDesc": "Name: Z-A"
-    }
+    },
+    "duration": "{{duration}}h",
+    "distance": "{{distance}} km"
   }
 }

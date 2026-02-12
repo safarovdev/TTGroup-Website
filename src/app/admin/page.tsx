@@ -158,6 +158,11 @@ const transferSchema = z.object({
   title_en: z.string().min(3, "Название (EN) обязательно"),
   description_ru: z.string().optional(),
   description_en: z.string().optional(),
+  duration: z.string().optional(),
+  distance: z.preprocess(
+    (val) => (String(val).trim() === "" ? undefined : parseFloat(String(val))),
+    z.number({ invalid_type_error: "Расстояние должно быть числом" }).min(0, "Расстояние не может быть отрицательным").optional()
+  ),
   prices: z.array(transferPriceSchema).min(1, "Нужно указать хотя бы одну цену"),
   isFeatured: z.boolean().optional().default(false),
   displayOrder: z.number().optional(),
@@ -297,6 +302,8 @@ function AdminDashboard() {
       to: "",
       description_ru: "",
       description_en: "",
+      duration: "",
+      distance: undefined,
       prices: [],
       isFeatured: false,
       displayOrder: 0,
@@ -370,7 +377,7 @@ function AdminDashboard() {
         if (transferToEdit) transferForm.reset({ ...transferToEdit });
     } else {
         transferForm.reset({
-          serviceType: 'intercity', title_ru: "", title_en: "", city: "", from: "", to: "", description_ru: "", description_en: "", prices: [], isFeatured: false, displayOrder: 0
+          serviceType: 'intercity', title_ru: "", title_en: "", city: "", from: "", to: "", description_ru: "", description_en: "", duration: "", distance: undefined, prices: [], isFeatured: false, displayOrder: 0
         });
     }
   }, [editingTransferId, transfers, transferForm]);
@@ -666,6 +673,15 @@ function AdminDashboard() {
                                     <FormItem><FormLabel>{t('admin.descriptionEnLabel')}</FormLabel><FormControl><Textarea placeholder="Additional information in English..." {...field} /></FormControl><FormMessage /></FormItem>
                                 )} />
                              </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormField control={transferForm.control} name="duration" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.durationLabel')}</FormLabel><FormControl><Input placeholder={t('admin.durationPlaceholder')} {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={transferForm.control} name="distance" render={({ field }) => (
+                                    <FormItem><FormLabel>{t('admin.distanceLabel')}</FormLabel><FormControl><Input type="number" placeholder={t('admin.distancePlaceholder')} {...field} value={field.value || ''} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                            </div>
 
                             <FormItem>
                                 <FormLabel>{t('admin.pricesLabel')}</FormLabel>
@@ -976,6 +992,8 @@ function AdminDashboard() {
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.title')}</TableHead>
                                 <TableHead>{t('admin.table.route')}</TableHead>
+                                <TableHead>{t('admin.table.duration')}</TableHead>
+                                <TableHead>{t('admin.table.distance')}</TableHead>
                                 <TableHead className="text-right">{t('admin.table.price')}</TableHead>
                                 <TableHead className="text-right">{t('admin.table.actions')}</TableHead>
                             </TableRow>
@@ -1008,6 +1026,8 @@ function AdminDashboard() {
                                     <TableCell>
                                         {transfer.serviceType === 'intercity' ? `${transfer.from} → ${transfer.to}` : transfer.city}
                                     </TableCell>
+                                    <TableCell>{transfer.duration ? `${transfer.duration} ч.` : '—'}</TableCell>
+                                    <TableCell>{transfer.distance ? `${transfer.distance} км` : '—'}</TableCell>
                                     <TableCell className="text-right">
                                         {minPrice > 0 ? `$${minPrice}` : t('vehicleDetail.negotiablePrice')}
                                     </TableCell>
