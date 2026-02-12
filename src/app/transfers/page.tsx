@@ -28,7 +28,7 @@ const TransfersPage = () => {
     const [city, setCity] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     type TransferSortOption = 'order' | 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc';
-    const [sortOption, setSortOption] = useState<TransferSortOption>('order');
+    const [sortOption, setSortOption] = useState<TransferSortOption>('priceAsc');
 
     const clearFilters = () => {
         setServiceType('');

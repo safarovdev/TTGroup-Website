@@ -19,7 +19,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenu
 const FleetPage = () => {
     const { t } = useTranslation();
     type VehicleSortOption = 'order' | 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc';
-    const [sortOption, setSortOption] = useState<VehicleSortOption>('order');
+    const [sortOption, setSortOption] = useState<VehicleSortOption>('priceAsc');
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const { data: vehicles, loading } = useVehicles();
     
