@@ -7,7 +7,7 @@ import { type Transfer } from '@/lib/transfers';
 import { useMemo } from 'react';
 import { vehicleCategoryMap } from '@/lib/vehicles';
 import { getLocationName } from '@/lib/locations';
-import { ArrowRight, Info } from 'lucide-react';
+import { ArrowRight, Info, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookingForm } from '@/components/booking-form';
@@ -17,6 +17,26 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
   const { t } = useTranslation();
   const { locale } = useLanguage();
   const { data: allVehicles } = useVehicles();
+
+  const capacityByCategory = useMemo(() => {
+    if (!allVehicles) return {};
+    const result: Record<string, { min: number, max: number } | null> = {};
+    const categories = Object.keys(vehicleCategoryMap);
+    
+    for (const category of categories) {
+        const vehiclesInCategory = allVehicles.filter(v => v.category === category);
+        if (vehiclesInCategory.length > 0) {
+            const caps = vehiclesInCategory.map(v => v.capacity);
+            result[category] = {
+                min: Math.min(...caps),
+                max: Math.max(...caps),
+            };
+        } else {
+            result[category] = null;
+        }
+    }
+    return result;
+  }, [allVehicles]);
 
   const sortedPrices = useMemo(() => {
     if (!transfer.prices) return [];
@@ -99,21 +119,37 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4 max-h-96 overflow-y-auto">
-                        {sortedPrices.map(priceInfo => (
-                            <div key={priceInfo.category}>
-                                <h4 className="font-semibold">{t(`vehicleCategories.${priceInfo.category}`)} - ${priceInfo.price}</h4>
-                                {priceInfo.vehicleIds && priceInfo.vehicleIds.length > 0 ? (
-                                    <ul className="list-disc list-inside text-sm text-muted-foreground pl-2 mt-1">
-                                        {priceInfo.vehicleIds.map(id => {
-                                            const vehicle = allVehicles?.find(v => v.id === id);
-                                            return <li key={id}>{vehicle ? vehicle.name : id}</li>
-                                        })}
-                                    </ul>
-                                ) : (
-                                    <p className="text-sm text-muted-foreground mt-1">{t('transfers.anyVehicleInCategory')}</p>
-                                )}
-                            </div>
-                        ))}
+                        {sortedPrices.map(priceInfo => {
+                            const categoryCapacity = capacityByCategory[priceInfo.category];
+                            const capacityString = categoryCapacity ? t('vehicleDetail.capacity', { count: categoryCapacity.max }) : '';
+                            
+                            return (
+                                <div key={priceInfo.category}>
+                                    <div className="flex justify-between items-baseline">
+                                        <h4 className="font-semibold">{t(`vehicleCategories.${priceInfo.category}`)}</h4>
+                                        <span className="font-bold text-lg text-primary">${priceInfo.price}</span>
+                                    </div>
+
+                                    {capacityString && (
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                            <Users className="h-4 w-4" />
+                                            <span>{capacityString}</span>
+                                        </div>
+                                    )}
+                                    
+                                    {priceInfo.vehicleIds && priceInfo.vehicleIds.length > 0 ? (
+                                        <ul className="list-disc list-inside text-sm text-muted-foreground pl-4 mt-2">
+                                            {priceInfo.vehicleIds.map(id => {
+                                                const vehicle = allVehicles?.find(v => v.id === id);
+                                                return <li key={id}>{vehicle ? vehicle.name : id}</li>
+                                            })}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground mt-2 italic">{t('transfers.anyVehicleInCategory')}</p>
+                                    )}
+                                </div>
+                            )
+                        })}
                     </div>
                 </DialogContent>
             </Dialog>
