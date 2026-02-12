@@ -1,10 +1,10 @@
 'use client';
 
 import { useUser, signInWithEmail, addVehicle, useFirestore, signOutUser, deleteVehicle, updateVehicle, addTransfer, useMemoFirebase, updateTransfer, deleteTransfer, useCollection } from '@/firebase';
-import { collection, updateDoc, doc } from 'firebase/firestore';
+import { collection, writeBatch, doc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Star, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Loader2, LogOut, Upload, X, Trash2, FilePenLine, Ban, CheckCircle, PlusCircle, Star, ArrowUpDown, GripVertical } from 'lucide-react';
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +28,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { locations, serviceTypesMap } from '@/lib/locations';
 import { useLanguage } from '@/context/LanguageContext';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 
 const IMG_BB_API_KEY = "b451ce82e7b70dcf36531062261b837f";
@@ -275,6 +276,10 @@ function AdminDashboard() {
   type TransferSortOption = 'order' | 'name-asc' | 'name-desc';
   const [transferSort, setTransferSort] = useState<TransferSortOption>('order');
   
+  // Drag-and-drop state
+  const [draggingVehicleIndex, setDraggingVehicleIndex] = useState<number | null>(null);
+  const [draggingTransferIndex, setDraggingTransferIndex] = useState<number | null>(null);
+
   // Forms
   const vehicleForm = useForm<VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
@@ -315,7 +320,7 @@ function AdminDashboard() {
           case 'price-desc': return sorted.sort((a, b) => b.price - a.price);
           case 'name-asc': return sorted.sort((a, b) => a.name.localeCompare(b.name));
           case 'name-desc': return sorted.sort((a, b) => b.name.localeCompare(a.name));
-          case 'order': default: return sorted.sort((a, b) => (a.displayOrder || 999) - (b.displayOrder || 999));
+          case 'order': default: return sorted.sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
       }
   }, [vehicles, vehicleSort]);
 
@@ -325,7 +330,7 @@ function AdminDashboard() {
       switch (transferSort) {
           case 'name-asc': return sorted.sort((a, b) => a.title_ru.localeCompare(b.title_ru));
           case 'name-desc': return sorted.sort((a, b) => b.title_ru.localeCompare(a.title_ru));
-          case 'order': default: return sorted.sort((a, b) => (a.displayOrder || 999) - (b.displayOrder || 999));
+          case 'order': default: return sorted.sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
       }
   }, [transfers, transferSort]);
 
@@ -396,36 +401,53 @@ function AdminDashboard() {
     setEditingTransferId(null);
   };
 
-  const handleReorder = async (collectionName: 'vehicles' | 'transfers', itemId: string, direction: 'up' | 'down') => {
-    if (!firestore) return;
-    
-    const list = collectionName === 'vehicles' ? sortedVehicles : sortedTransfers;
-    if (!list) return;
-
-    const currentIndex = list.findIndex(item => item.id === itemId);
-    if (currentIndex === -1) return;
-
-    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    if (swapIndex < 0 || swapIndex >= list.length) return;
-    
-    const currentItem = list[currentIndex];
-    const swapItem = list[swapIndex];
-    
-    // Ensure displayOrder exists before swapping by using index as a fallback
-    const currentOrder = currentItem.displayOrder ?? currentIndex;
-    const swapOrder = swapItem.displayOrder ?? swapIndex;
-
-    // Use updateDoc for non-blocking updates; useCollection hook will handle UI refresh
-    await updateDoc(doc(firestore, collectionName, currentItem.id), { displayOrder: swapOrder });
-    await updateDoc(doc(firestore, collectionName, swapItem.id), { displayOrder: currentOrder });
-
-    toast({ title: "Порядок обновлен" });
-  };
-
   const handleLogout = async () => {
     await signOutUser();
     toast({ title: "Вы вышли из системы." });
   };
+
+    // --- Drag and Drop Handlers ---
+  const handleDragOver = (e: React.DragEvent<HTMLTableRowElement>) => e.preventDefault();
+
+  const createDropHandler = (
+    collectionName: 'vehicles' | 'transfers',
+    list: any[],
+    draggingIndex: number | null,
+    setDraggingIndex: (index: number | null) => void
+  ) => async (droppedOnIndex: number) => {
+      if (draggingIndex === null || draggingIndex === droppedOnIndex) {
+          setDraggingIndex(null);
+          return;
+      }
+      
+      if (!list || !firestore) return;
+
+      let itemsToUpdate = [...list];
+      const [draggedItem] = itemsToUpdate.splice(draggingIndex, 1);
+      itemsToUpdate.splice(droppedOnIndex, 0, draggedItem);
+
+      const batch = writeBatch(firestore);
+      itemsToUpdate.forEach((item, index) => {
+          if (item.displayOrder !== index) {
+              const docRef = doc(firestore, collectionName, item.id);
+              batch.update(docRef, { displayOrder: index });
+          }
+      });
+
+      try {
+          await batch.commit();
+          toast({ title: `Порядок обновлен` });
+      } catch (err) {
+          console.error(`Failed to reorder ${collectionName}:`, err);
+          toast({ variant: 'destructive', title: "Ошибка при обновлении порядка" });
+      } finally {
+          setDraggingIndex(null);
+      }
+  };
+  
+  const handleVehicleDrop = createDropHandler('vehicles', sortedVehicles, draggingVehicleIndex, setDraggingVehicleIndex);
+  const handleTransferDrop = createDropHandler('transfers', sortedTransfers, draggingTransferIndex, setDraggingTransferIndex);
+
   
   // Dialog and form open/close handlers
   const handleEditVehicle = (vehicle: Vehicle) => { setEditingVehicleId(vehicle.id); setIsVehicleFormOpen(true); };
@@ -832,7 +854,7 @@ function AdminDashboard() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className='w-[60px]'>Порядок</TableHead>
+                                <TableHead className='w-[60px] pl-4'>Порядок</TableHead>
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.name')}</TableHead>
                                 <TableHead>{t('admin.table.category')}</TableHead>
@@ -843,16 +865,24 @@ function AdminDashboard() {
                         </TableHeader>
                         <TableBody>
                         {sortedVehicles.map((vehicle, index) => (
-                            <TableRow key={vehicle.id}>
-                                <TableCell>
-                                    <div className="flex flex-col items-center gap-1">
-                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={vehicleSort !== 'order' || index === 0} onClick={() => handleReorder('vehicles', vehicle.id, 'up')}>
-                                            <ArrowUp className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={vehicleSort !== 'order' || index === sortedVehicles.length - 1} onClick={() => handleReorder('vehicles', vehicle.id, 'down')}>
-                                            <ArrowDown className="h-4 w-4" />
-                                        </Button>
-                                    </div>
+                            <TableRow 
+                                key={vehicle.id}
+                                draggable={vehicleSort === 'order'}
+                                onDragStart={(e) => {
+                                    setDraggingVehicleIndex(index);
+                                    e.dataTransfer.effectAllowed = 'move';
+                                }}
+                                onDragOver={handleDragOver}
+                                onDrop={() => handleVehicleDrop(index)}
+                                onDragEnd={() => setDraggingVehicleIndex(null)}
+                                className={cn('transition-opacity', draggingVehicleIndex === index && 'opacity-30')}
+                            >
+                                <TableCell className='pl-4'>
+                                    {vehicleSort === 'order' ? (
+                                        <div className="flex items-center justify-center cursor-grab active:cursor-grabbing">
+                                            <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                    ) : null}
                                 </TableCell>
                                 <TableCell>{vehicle.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
                                 <TableCell className="font-medium">{vehicle.name}</TableCell>
@@ -923,7 +953,7 @@ function AdminDashboard() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className='w-[60px]'>Порядок</TableHead>
+                                <TableHead className='w-[60px] pl-4'>Порядок</TableHead>
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.title')}</TableHead>
                                 <TableHead>{t('admin.table.route')}</TableHead>
@@ -932,16 +962,24 @@ function AdminDashboard() {
                         </TableHeader>
                         <TableBody>
                         {sortedTransfers.map((transfer, index) => (
-                            <TableRow key={transfer.id}>
-                                <TableCell>
-                                    <div className="flex flex-col items-center gap-1">
-                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={transferSort !== 'order' || index === 0} onClick={() => handleReorder('transfers', transfer.id, 'up')}>
-                                            <ArrowUp className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={transferSort !== 'order' || index === sortedTransfers.length - 1} onClick={() => handleReorder('transfers', transfer.id, 'down')}>
-                                            <ArrowDown className="h-4 w-4" />
-                                        </Button>
-                                    </div>
+                            <TableRow 
+                                key={transfer.id}
+                                draggable={transferSort === 'order'}
+                                onDragStart={(e) => {
+                                    setDraggingTransferIndex(index);
+                                    e.dataTransfer.effectAllowed = 'move';
+                                }}
+                                onDragOver={handleDragOver}
+                                onDrop={() => handleTransferDrop(index)}
+                                onDragEnd={() => setDraggingTransferIndex(null)}
+                                className={cn('transition-opacity', draggingTransferIndex === index && 'opacity-30')}
+                            >
+                                <TableCell className='pl-4'>
+                                    {transferSort === 'order' ? (
+                                        <div className="flex items-center justify-center cursor-grab active:cursor-grabbing">
+                                            <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                    ) : null}
                                 </TableCell>
                                 <TableCell>{transfer.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
                                 <TableCell className="font-medium">{transfer.title_ru}</TableCell>
