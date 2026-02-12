@@ -135,7 +135,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                                 <div key={priceInfo.category}>
                                     <div className="flex justify-between items-baseline">
                                         <Link href={`/fleet?category=${priceInfo.category}`} passHref>
-                                            <h4 className="font-semibold text-primary hover:underline cursor-pointer">
+                                            <h4 className="font-semibold text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary transition-colors cursor-pointer">
                                                 {t(`vehicleCategories.${priceInfo.category}`)}
                                             </h4>
                                         </Link>
@@ -155,7 +155,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                                                 const vehicle = allVehicles.find(v => v.id === id);
                                                 return vehicle ? (
                                                     <li key={id}>
-                                                         <Link href={`/fleet/${vehicle.id}`} className="hover:underline text-primary/80 hover:text-primary">
+                                                         <Link href={`/fleet/${vehicle.id}`} className="text-primary/90 underline underline-offset-2 decoration-primary/40 hover:text-primary hover:decoration-primary/100 transition-colors">
                                                             {vehicle.name}
                                                         </Link>
                                                     </li>
