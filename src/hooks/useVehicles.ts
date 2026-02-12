@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { Vehicle } from '@/lib/vehicles';
 
@@ -11,32 +11,28 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     
-    const ids = options?.ids;
-    const isFeatured = options?.isFeatured;
-
     useEffect(() => {
         if (!firestore) {
             // Firestore is not yet available, wait.
             return;
         }
 
-        const fetchVehicles = async () => {
-            setLoading(true);
-            try {
-                const vehiclesRef = collection(firestore, 'vehicles');
-                const querySnapshot = await getDocs(vehiclesRef);
-                const vehiclesData = querySnapshot.docs.map(doc => ({ ...doc.data() as Vehicle, id: doc.id }));
-                setAllVehicles(vehiclesData);
-                setError(null);
-            } catch (e: any) {
-                console.error("Error fetching vehicles:", e);
-                setError(e);
-            } finally {
-                setLoading(false);
-            }
-        };
+        setLoading(true);
+        const vehiclesRef = collection(firestore, 'vehicles');
+        
+        const unsubscribe = onSnapshot(vehiclesRef, (querySnapshot) => {
+            const vehiclesData = querySnapshot.docs.map(doc => ({ ...doc.data() as Vehicle, id: doc.id }));
+            setAllVehicles(vehiclesData);
+            setError(null);
+            setLoading(false);
+        }, (e: any) => {
+            console.error("Error fetching vehicles:", e);
+            setError(e);
+            setLoading(false);
+        });
 
-        fetchVehicles();
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
 
     }, [firestore]); // Only re-run when firestore instance changes
 
@@ -44,6 +40,8 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
         if (!allVehicles) return null;
 
         let filtered = allVehicles;
+        const ids = options?.ids;
+        const isFeatured = options?.isFeatured;
 
         // Filter by IDs if provided
         if (ids && ids.length > 0) {
@@ -57,6 +55,7 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
         }
         
         // Default sort by displayOrder, then by name as a fallback.
+        // This is the default order that the consuming component will receive.
         if (!ids) {
             return [...filtered].sort((a, b) => {
                 const orderA = a.displayOrder ?? 999;
@@ -69,7 +68,7 @@ export function useVehicles(options?: { ids?: string[], isFeatured?: boolean }) 
         }
 
         return filtered;
-    }, [allVehicles, ids ? JSON.stringify(ids) : undefined, isFeatured]);
+    }, [allVehicles, options?.ids, options?.isFeatured]);
 
     return { data: processedData, loading, error };
 }

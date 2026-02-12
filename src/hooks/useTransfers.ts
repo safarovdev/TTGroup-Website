@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { Transfer } from '@/lib/transfers';
 
@@ -11,31 +11,28 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     
-    const isFeatured = options?.isFeatured;
-
     useEffect(() => {
         if (!firestore) {
             // Firestore is not yet available, wait.
             return;
         }
 
-        const fetchTransfers = async () => {
-            setLoading(true);
-            try {
-                const transfersRef = collection(firestore, 'transfers');
-                const querySnapshot = await getDocs(transfersRef);
-                const transfersData = querySnapshot.docs.map(doc => ({ ...doc.data() as Transfer, id: doc.id }));
-                setAllTransfers(transfersData);
-                setError(null);
-            } catch (e: any) {
-                console.error("Error fetching transfers:", e);
-                setError(e);
-            } finally {
-                setLoading(false);
-            }
-        };
+        setLoading(true);
+        const transfersRef = collection(firestore, 'transfers');
 
-        fetchTransfers();
+        const unsubscribe = onSnapshot(transfersRef, (querySnapshot) => {
+            const transfersData = querySnapshot.docs.map(doc => ({ ...doc.data() as Transfer, id: doc.id }));
+            setAllTransfers(transfersData);
+            setError(null);
+            setLoading(false);
+        }, (e: any) => {
+            console.error("Error fetching transfers:", e);
+            setError(e);
+            setLoading(false);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
 
     }, [firestore]); // Only re-run when firestore instance changes
 
@@ -43,6 +40,7 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
         if (!allTransfers) return null;
 
         let filtered = allTransfers;
+        const isFeatured = options?.isFeatured;
 
         // Filter by isFeatured if provided
         if (isFeatured === true) {
@@ -58,7 +56,7 @@ export function useTransfers(options?: { isFeatured?: boolean }) {
             }
             return a.title_ru.localeCompare(b.title_ru);
         });
-    }, [allTransfers, isFeatured]);
+    }, [allTransfers, options?.isFeatured]);
 
     return { data: processedData, loading, error };
 }
