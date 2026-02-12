@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { FirebaseClientProvider } from '@/firebase';
+import { Suspense } from 'react';
+import { PageLoader } from '@/components/layout/page-loader';
 
 export const metadata: Metadata = {
   title: 'TourEast Transport Group | Premium Transport in Uzbekistan',
@@ -25,6 +27,9 @@ export default function RootLayout({
       <body className={cn("font-body antialiased", "bg-background")}>
         <FirebaseClientProvider>
           <LanguageProvider>
+            <Suspense fallback={null}>
+              <PageLoader />
+            </Suspense>
             {children}
             <Toaster />
           </LanguageProvider>
