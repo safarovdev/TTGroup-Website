@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookingForm } from '@/components/booking-form';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const featureIcons: { [key: string]: React.ReactElement } = {
     'meet_and_greet': <Star />,
@@ -30,6 +31,7 @@ const VehicleDetailPage = () => {
     const { id } = useParams();
     const firestore = useFirestore();
     const { t } = useTranslation();
+    const { formatPrice } = useCurrency();
 
     const vehicleRef = useMemoFirebase(() => {
         if (!firestore || !id) return null;
@@ -152,11 +154,11 @@ const VehicleDetailPage = () => {
                             <p className="text-sm uppercase tracking-widest text-muted-foreground">{t(`vehicleCategories.${vehicle.category}`)}</p>
                             
                             <div className="mt-4">
-                                {vehicle.price && vehicle.price > 0 ? (
-                                    <p className="text-4xl font-bold text-primary">{t('vehicleDetail.priceLabel', { price: vehicle.price })}</p>
-                                ) : (
-                                    <p className="text-2xl font-bold text-primary">{t('vehicleDetail.negotiablePrice')}</p>
-                                )}
+                                <p className="text-4xl font-bold text-primary">
+                                    {vehicle.price > 0 
+                                        ? t('priceFormats.day', { price: formatPrice(vehicle.price) }) 
+                                        : t('priceFormats.negotiable')}
+                                </p>
                             </div>
 
                             <div className="mt-8 space-y-4">

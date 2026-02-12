@@ -13,11 +13,13 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { locale, setLocale } = useLanguage();
+  const { currency, setCurrency } = useCurrency();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -68,6 +70,23 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <div className="h-10 w-[58px]" /> // Placeholder to prevent layout shift
+            )}
+            {isMounted ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-1 text-sm">
+                    {currency} <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setCurrency('USD')}>USD</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrency('EUR')}>EUR</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrency('RUB')}>RUB</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrency('UZS')}>UZS</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="h-10 w-[65px]" /> // Placeholder to prevent layout shift
             )}
           </div>
 

@@ -920,7 +920,7 @@ function AdminDashboard() {
                                 <TableCell>{vehicle.isFeatured && <Star className="h-5 w-5 text-amber-500 fill-amber-500" />}</TableCell>
                                 <TableCell className="font-medium">{vehicle.name}</TableCell>
                                 <TableCell>{t(`vehicleCategories.${vehicle.category}`)}</TableCell>
-                                <TableCell className="text-right">{vehicle.price > 0 ? `$${vehicle.price}`: t('vehicleDetail.negotiablePrice')}</TableCell>
+                                <TableCell className="text-right">{vehicle.price > 0 ? `$${vehicle.price}`: t('priceFormats.negotiable')}</TableCell>
                                 <TableCell className="text-right">{vehicle.capacity}</TableCell>
                                 <TableCell className="text-right">
                                 <div className="flex gap-2 justify-end">
@@ -1029,7 +1029,7 @@ function AdminDashboard() {
                                     <TableCell>{transfer.duration ? `${transfer.duration} ч.` : '—'}</TableCell>
                                     <TableCell>{transfer.distance ? `${transfer.distance} км` : '—'}</TableCell>
                                     <TableCell className="text-right">
-                                        {minPrice > 0 ? `$${minPrice}` : t('vehicleDetail.negotiablePrice')}
+                                        {minPrice > 0 ? `$${minPrice}` : t('priceFormats.negotiable')}
                                     </TableCell>
                                     <TableCell className="text-right">
                                     <div className="flex gap-2 justify-end">

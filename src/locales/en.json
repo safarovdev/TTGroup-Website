@@ -270,6 +270,11 @@
     "distanceLabel": "Distance (km)",
     "distancePlaceholder": "e.g., 450"
   },
+  "priceFormats": {
+    "day": "from {{price}} / day",
+    "negotiable": "Negotiable Price",
+    "from": "from {{price}}"
+  },
   "vehicleCategories": {
     "premium": "💎 Premium & VIP",
     "comfort": "🚗 Comfort & Standard",
@@ -285,7 +290,7 @@
     "city_tours": "City Trips & Excursions"
   },
   "vehicleDetail": {
-    "priceLabel": "from ${{price}} / day",
+    "priceLabel": "from {{price}} / day",
     "capacity": "{{count}} passengers",
     "capacityRange": "{{min}}-{{max}} passengers",
     "features": "Features",

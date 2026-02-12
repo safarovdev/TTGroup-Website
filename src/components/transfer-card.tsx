@@ -13,11 +13,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { BookingForm } from '@/components/booking-form';
 import { useVehicles } from '@/hooks/useVehicles';
 import Link from 'next/link';
+import { useCurrency } from '@/context/CurrencyContext';
 
 export function TransferCard({ transfer }: { transfer: Transfer }) {
   const { t } = useTranslation();
   const { locale } = useLanguage();
   const { data: allVehicles } = useVehicles();
+  const { formatPrice } = useCurrency();
 
   const capacityByCategory = useMemo(() => {
     if (!allVehicles) return {};
@@ -121,7 +123,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                             </div>
                         )}
                     </div>
-                    <span className="font-bold text-lg text-primary shrink-0">${p.price}</span>
+                    <span className="font-bold text-lg text-primary shrink-0">{formatPrice(p.price)}</span>
                 </li>
             )}) : <p className="text-sm text-muted-foreground text-center">{t('transfers.noPrices')}</p>}
         </ul>
@@ -179,7 +181,7 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                                             <ArrowRight className="h-4 w-4 text-primary/40 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                                           </span>
                                         </Link>
-                                        <span className="font-bold text-lg text-primary">${priceInfo.price}</span>
+                                        <span className="font-bold text-lg text-primary">{formatPrice(priceInfo.price)}</span>
                                     </div>
 
                                     {capacityString && (

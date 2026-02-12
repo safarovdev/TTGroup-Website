@@ -10,10 +10,12 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/hooks/useTranslation";
 import { type Vehicle } from "@/lib/vehicles";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export const VehicleCard = ({ vehicle, priority = false }: { vehicle: Vehicle; priority?: boolean }) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
+  const { formatPrice } = useCurrency();
   
   if (!vehicle) return null;
 
@@ -56,11 +58,11 @@ export const VehicleCard = ({ vehicle, priority = false }: { vehicle: Vehicle; p
                 <div className="flex-grow" />
 
                 <div className="mt-4">
-                    {vehicle.price && vehicle.price > 0 ? (
-                        <p className="text-2xl font-bold text-foreground">{t('vehicleDetail.priceLabel', { price: vehicle.price })}</p>
-                    ) : (
-                        <p className="text-lg font-bold text-foreground">{t('vehicleDetail.negotiablePrice')}</p>
-                    )}
+                    <p className="text-2xl font-bold text-foreground">
+                        {vehicle.price > 0 
+                            ? t('priceFormats.day', { price: formatPrice(vehicle.price) })
+                            : t('priceFormats.negotiable')}
+                    </p>
                 </div>
                 
                 <Button size="lg" className="w-full mt-4 font-semibold">
