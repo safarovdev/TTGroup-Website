@@ -121,7 +121,14 @@ export function TransferCard({ transfer }: { transfer: Transfer }) {
                     <div className="space-y-4 py-4 max-h-96 overflow-y-auto">
                         {sortedPrices.map(priceInfo => {
                             const categoryCapacity = capacityByCategory[priceInfo.category];
-                            const capacityString = categoryCapacity ? t('vehicleDetail.capacity', { count: categoryCapacity.max }) : '';
+                            let capacityString = '';
+                            if (categoryCapacity) {
+                                if (categoryCapacity.min === categoryCapacity.max) {
+                                    capacityString = t('vehicleDetail.capacity', { count: categoryCapacity.max });
+                                } else {
+                                    capacityString = t('vehicleDetail.capacityRange', { min: categoryCapacity.min, max: categoryCapacity.max });
+                                }
+                            }
                             
                             return (
                                 <div key={priceInfo.category}>

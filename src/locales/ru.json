@@ -280,7 +280,8 @@
   },
   "vehicleDetail": {
     "priceLabel": "от ${{price}} / день",
-    "capacity": "до {{count}} пассажиров",
+    "capacity": "{{count}} пассажиров",
+    "capacityRange": "{{min}}-{{max}} пассажиров",
     "features": "Характеристики",
     "negotiablePrice": "Цена договорная",
     "imagePopupDescription": "Увеличенное изображение автомобиля {{name}}"

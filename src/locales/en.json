@@ -281,6 +281,7 @@
   "vehicleDetail": {
     "priceLabel": "from ${{price}} / day",
     "capacity": "{{count}} passengers",
+    "capacityRange": "{{min}}-{{max}} passengers",
     "features": "Features",
     "negotiablePrice": "Negotiable Price",
     "imagePopupDescription": "Enlarged image of the {{name}} vehicle"
