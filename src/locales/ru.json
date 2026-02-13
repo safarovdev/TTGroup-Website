@@ -238,7 +238,8 @@
       "title": "Название",
       "route": "Маршрут",
       "duration": "Время",
-      "distance": "Дистанция"
+      "distance": "Дистанция",
+      "vehicles": "Машины"
     },
     "deleteConfirmTitle": "Вы уверены?",
     "deleteConfirmDescription": "Это действие нельзя отменить. Запись \"{{name}}\" будет удалена навсегда.",

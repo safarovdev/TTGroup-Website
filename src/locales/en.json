@@ -238,7 +238,8 @@
       "title": "Title",
       "route": "Route",
       "duration": "Duration",
-      "distance": "Distance"
+      "distance": "Distance",
+      "vehicles": "Vehicles"
     },
     "deleteConfirmTitle": "Are you absolutely sure?",
     "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the item \"{{name}}\".",

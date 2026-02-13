@@ -992,6 +992,7 @@ function AdminDashboard() {
                                 <TableHead className='w-[80px]'>{t('admin.table.isFeatured')}</TableHead>
                                 <TableHead>{t('admin.table.title')}</TableHead>
                                 <TableHead>{t('admin.table.route')}</TableHead>
+                                <TableHead>{t('admin.table.vehicles')}</TableHead>
                                 <TableHead>{t('admin.table.duration')}</TableHead>
                                 <TableHead>{t('admin.table.distance')}</TableHead>
                                 <TableHead className="text-right">{t('admin.table.price')}</TableHead>
@@ -1001,6 +1002,11 @@ function AdminDashboard() {
                         <TableBody>
                         {sortedTransfers.map((transfer, index) => {
                             const minPrice = getMinTransferPriceForDisplay(transfer);
+                            const assignedVehicleNames = (transfer.prices || [])
+                                .flatMap(p => p.vehicleIds || [])
+                                .map(id => vehicles?.find(v => v.id === id)?.name)
+                                .filter(Boolean)
+                                .join(', ');
                             return (
                                 <TableRow 
                                     key={transfer.id}
@@ -1025,6 +1031,9 @@ function AdminDashboard() {
                                     <TableCell className="font-medium">{transfer.title_ru}</TableCell>
                                     <TableCell>
                                         {transfer.serviceType === 'intercity' ? `${transfer.from} → ${transfer.to}` : transfer.city}
+                                    </TableCell>
+                                    <TableCell className="max-w-[200px] truncate" title={assignedVehicleNames}>
+                                        {assignedVehicleNames || '—'}
                                     </TableCell>
                                     <TableCell>{transfer.duration ? `${transfer.duration} ч.` : '—'}</TableCell>
                                     <TableCell>{transfer.distance ? `${transfer.distance} км` : '—'}</TableCell>
