@@ -11,6 +11,13 @@ import { Faq } from '@/components/sections/faq';
 import { Contacts } from '@/components/sections/contacts';
 import { Gallery } from '@/components/sections/gallery';
 import { FeaturedTransfers } from '@/components/sections/featured-transfers';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  verification: {
+    google: "tJw7eqDozlZuzL2XmJHmYgLK_2FLVuZeRv9W5YAC_Ec",
+  },
+};
 
 export default function Home() {
   return (
