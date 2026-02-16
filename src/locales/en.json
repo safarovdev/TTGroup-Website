@@ -15,15 +15,15 @@
     "copyright": "TourEast Transport Group. All rights reserved."
   },
   "hero": {
-    "title": "TourEast Transport Group",
-    "subtitle": "Professional passenger transport: from individual airport transfers to group tours.",
+    "title": "Uzbekistan Transfers & Car Rentals",
+    "subtitle": "Reliable airport transfers in Tashkent, Samarkand, Bukhara. Comfortable city tours in ancient cities. Private car rentals with a driver for your perfect trip.",
     "bookButton": "Book Now",
     "fleetButton": "Our Fleet",
     "transfersButton": "View Transfers"
   },
   "principles": {
-    "title": "Welcome to TourEast Transport Group",
-    "description": "We create comfortable and safe trips throughout Uzbekistan — for those who value quality. TourEast Transport Group is your reliable partner in the world of premium transportation.",
+    "title": "Your reliable partner for tours and transfers in Uzbekistan",
+    "description": "We create comfortable and safe tours and trips throughout Uzbekistan — for those who value quality. TourEast Transport Group is your reliable partner for car rentals and premium transportation in Tashkent, Samarkand, Bukhara, and Khiva.",
     "bookButton": "Book Online",
     "contactButton": "Contact Us",
     "stats": {
@@ -323,8 +323,8 @@
     "gallery_6_desc": "View of the desert from a car window."
   },
   "fleetPage": {
-    "title": "Our Fleet",
-    "description": "Choose the perfect vehicle for your trip. We offer a wide range of transport for any purpose, from business meetings to large sightseeing tours.",
+    "title": "Car Rentals in Uzbekistan",
+    "description": "Choose the perfect vehicle for your tour or transfer in Uzbekistan. We offer a wide range of cars for rent with a driver for any purpose: from business meetings in Tashkent to large sightseeing tours in Samarkand and Bukhara.",
     "filters": {
       "title": "Filters",
       "clear": "Clear",
@@ -342,12 +342,12 @@
     }
   },
   "featuredTransfers": {
-    "title": "Popular Transfers",
-    "description": "Fixed prices for our most requested routes. Choose your direction and travel with comfort."
+    "title": "Popular Transfers in Uzbekistan",
+    "description": "Fixed prices for our most requested routes. Choose your direction and book a transfer from Tashkent, Samarkand, Bukhara. Travel with comfort."
   },
   "transfers": {
-    "pageTitle": "All Transfer Routes",
-    "pageDescription": "Find the perfect transfer for your trip. We offer a wide range of routes for any purpose.",
+    "pageTitle": "Transfers in Uzbekistan: Tashkent, Samarkand, Bukhara",
+    "pageDescription": "Find the perfect transfer for your trip. We offer a wide range of routes between the cities of Uzbekistan and from airports for tourist and business trips.",
     "noResultsTitle": "No transfers found",
     "noResultsDescription": "Try changing your search parameters or clearing the filters.",
     "noPrices": "Prices not specified.",
