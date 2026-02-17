@@ -16,7 +16,7 @@ const getDb = () => {
 
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = 'https://ttgroup.uz';
+  const siteUrl = 'https://triptransfers.uz/sitemap.xml';
   
   let vehiclePages: MetadataRoute.Sitemap = [];
 
